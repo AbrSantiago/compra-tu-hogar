@@ -1,12 +1,24 @@
+# app/core/database.py
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from app.core.config import DATABASE_URL
 
-DATABASE_URL = "postgresql+psycopg://user:password@localhost:5432/cth"
+if DATABASE_URL is None:
+    raise ValueError("DATABASE_URL is not set in .env")
 
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(DATABASE_URL)
 
 SessionLocal = sessionmaker(bind=engine)
 
 
 class Base(DeclarativeBase):
     pass
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
