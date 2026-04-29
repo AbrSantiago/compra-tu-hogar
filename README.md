@@ -2,6 +2,8 @@
 
 Web app for browsing, tracking, and managing real estate properties, helping users and agencies streamline the home-buying process.
 
+---
+
 ## 🛠 Tech Stack
 
 * Python
@@ -9,36 +11,76 @@ Web app for browsing, tracking, and managing real estate properties, helping use
 * SQLAlchemy
 * PostgreSQL
 * uv (dependency & environment manager)
-* Docker
+* Docker & Docker Compose
 
 ---
 
-## 🐳 Backend Setup with Docker (Recommended)
+## 📋 Project Management
 
-### 🔨 Build the image
+**Board:** [Jira](https://arodriguezfontana-1776905831869.atlassian.net/jira/software/projects/KAN/boards/1)
 
-From the `backend` folder:
+---
+
+## 🐳 Full Backend Setup with Docker (Recommended)
+
+This project uses **Docker Compose** to run both:
+
+* FastAPI backend
+* PostgreSQL database
+
+---
+
+### ▶️ Run the full stack
+
+From the project root:
 
 ```bash
-docker build -t compra-tu-hogar-back .
+docker compose up --build
 ```
 
 ---
 
-### ▶️ Run the container
+### 🌐 Available services
 
-```bash
-docker run -p 8000:8000 compra-tu-hogar-back
-```
-
-The API will be available at:
-
-* http://localhost:8000
+* API: http://localhost:8000
 * Swagger docs: http://localhost:8000/docs
+* ReDoc: http://localhost:8000/redoc
+
+---
+
+### 🧠 How it works
+
+* `backend` service → FastAPI app
+* `db` service → PostgreSQL
+* Internal connection uses:
+
+```text
+postgresql+psycopg2://postgres:postgres@db:5432/compra_tu_hogar
+```
+
+> ⚠️ Inside Docker, the database host is `db`, not `localhost`.
+
+---
+
+### 💾 Persistence
+
+Database data is stored in a Docker volume:
+
+```yaml
+volumes:
+  postgres_data:
+```
+
+This means:
+
+* Data persists between container restarts
+* Data is lost only if the volume is removed
 
 ---
 
 ## 📦 Backend Setup (Local - without Docker)
+
+---
 
 ### 🚀 Install `uv`
 
@@ -73,21 +115,27 @@ uv sync
 
 ---
 
+### ⚙️ Environment variables
+
+Create a `.env` file inside `backend/`:
+
+```env
+DATABASE_URL=postgresql+psycopg2://user:password@host:port/db
+```
+
+> You can use Supabase or any PostgreSQL instance for local runs.
+
+---
+
 ### ▶️ Run the application
 
 ```bash
 uv run uvicorn app.main:app --reload
 ```
 
-API will be available at:
-
-* http://127.0.0.1:8000
-* Swagger docs: http://127.0.0.1:8000/docs
-* ReDoc: http://127.0.0.1:8000/redoc
-
 ---
 
-### 🧪 Run tests
+## 🧪 Run tests
 
 ```bash
 uv run pytest
@@ -95,22 +143,47 @@ uv run pytest
 
 ---
 
-## 📁 Project Structure (backend)
+## 📁 Project Structure
 
 ```bash
-backend/
-├── app/
-├── pyproject.toml
-├── uv.lock
-└── Dockerfile
+.
+├── backend/
+│   ├── app/
+│   │   ├── api/
+│   │   ├── core/
+│   │   ├── model/
+│   │   ├── schema/
+│   │   └── main.py
+│   ├── pyproject.toml
+│   ├── uv.lock
+│   └── Dockerfile
+├── docker-compose.yml
+└── README.md
 ```
+
+---
+
+## 🔐 Security
+
+* Passwords are hashed using `bcrypt` via `passlib`
+* Never store plain-text passwords
 
 ---
 
 ## 📌 Notes
 
-* Docker ensures a consistent environment across all developers.
-* Prefer Docker for development once the full stack (frontend + DB) is integrated.
-* Local setup is still useful for debugging and faster iteration.
+* Docker setup uses a **local PostgreSQL instance** for development
+* External databases (e.g. Supabase) are optional and intended for non-Docker environments
+* The app currently creates tables automatically at startup (development only)
+* Future improvement: database migrations with Alembic
+
+---
+
+## 🚀 Next Steps
+
+* Add proper error handling (e.g. unique email validation)
+* Introduce service layer (business logic separation)
+* Add authentication (JWT)
+* Integrate Alembic for migrations
 
 ---
