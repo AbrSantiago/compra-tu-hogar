@@ -2,9 +2,9 @@
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from app.core.security import hash_password
 
 from app.core.database import get_db
+from app.core.security import hash_password
 from app.model.client import Client
 from app.schema.client import ClientCreate
 

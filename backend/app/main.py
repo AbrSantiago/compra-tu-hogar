@@ -1,13 +1,14 @@
 # app/main.py
 
-from fastapi import FastAPI
 from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
 
 from app.api.client import router as client_router
 from app.core.database import Base, engine
 
-from app.model.user import User
-from app.model.client import Client
+# from app.model.user import User
+# from app.model.client import Client
 
 
 @asynccontextmanager
@@ -18,10 +19,7 @@ async def lifespan(app: FastAPI):
     # Shutdown
 
 
-app = FastAPI(
-    title="Compra tu Hogar API",
-    lifespan=lifespan
-)
+app = FastAPI(title="Compra tu Hogar API", lifespan=lifespan)
 
 app.include_router(client_router)
 
