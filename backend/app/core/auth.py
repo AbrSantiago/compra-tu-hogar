@@ -78,3 +78,19 @@ def require_real_estate(
         )
 
     return current_user
+
+
+def require_admin_or_owner(
+    current_user: User,
+    resource_owner_id: int,
+) -> User:
+    is_admin = isinstance(current_user, Admin)
+    is_owner = current_user.id == resource_owner_id
+
+    if not (is_admin or is_owner):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized",
+        )
+
+    return current_user

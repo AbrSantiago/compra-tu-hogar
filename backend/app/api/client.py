@@ -3,36 +3,21 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.core.auth import get_current_user, require_admin, require_admin_or_owner
 from app.core.database import get_db
 from app.core.security import hash_password
+from app.model.admin import Admin
 from app.model.client import Client
-from app.schema.client import ClientCreate, ClientUpdate
+from app.model.user import User
+from app.schema.client import ClientUpdate
 
 router = APIRouter(prefix="/clients", tags=["clients"])
-
-
-@router.post("/")
-def create_client(
-    client: ClientCreate,
-    db: Session = Depends(get_db),
-):
-    new_client = Client(
-        name=client.name,
-        surname=client.surname,
-        email=client.email,
-        password=hash_password(client.password),
-    )
-
-    db.add(new_client)
-    db.commit()
-    db.refresh(new_client)
-
-    return new_client
 
 
 @router.get("/")
 def get_clients(
     db: Session = Depends(get_db),
+    _: Admin = Depends(require_admin),
 ):
     return db.query(Client).all()
 
@@ -41,6 +26,8 @@ def get_clients(
 def get_client(
     client_id: int,
     db: Session = Depends(get_db),
+    _: Admin = Depends(require_admin),
+    current_user: User = Depends(get_current_user),
 ):
     client = db.query(Client).filter(Client.id == client_id).first()
 
@@ -49,6 +36,11 @@ def get_client(
             status_code=404,
             detail="Client not found",
         )
+
+    require_admin_or_owner(
+        current_user,
+        client.id,
+    )
 
     return client
 
@@ -58,6 +50,7 @@ def update_client(
     client_id: int,
     client_data: ClientUpdate,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     client = db.query(Client).filter(Client.id == client_id).first()
 
@@ -66,6 +59,11 @@ def update_client(
             status_code=404,
             detail="Client not found",
         )
+
+    require_admin_or_owner(
+        current_user,
+        client.id,
+    )
 
     if client_data.name is not None:
         client.name = client_data.name
@@ -89,6 +87,7 @@ def update_client(
 def delete_client(
     client_id: int,
     db: Session = Depends(get_db),
+    _: Admin = Depends(require_admin),
 ):
     client = db.query(Client).filter(Client.id == client_id).first()
 

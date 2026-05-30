@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from app.api.admin import router as admin_router
 from app.api.auth import router as auth_router
 from app.api.client import router as client_router
 from app.core.database import Base, engine
@@ -20,6 +21,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+app.include_router(admin_router)
 app.include_router(auth_router)
 app.include_router(client_router)
 
