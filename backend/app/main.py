@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from app.api.admin import router as admin_router
 from app.api.auth import router as auth_router
 from app.api.client import router as client_router
+from app.api.real_estate import router as real_estate_router
 from app.core.database import Base, engine
 
 
@@ -24,6 +25,7 @@ app = FastAPI(
 app.include_router(admin_router)
 app.include_router(auth_router)
 app.include_router(client_router)
+app.include_router(real_estate_router)
 
 
 @app.get("/")
