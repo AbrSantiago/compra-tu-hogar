@@ -3,10 +3,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.core.database import Base
-from app.model.property import Property, PropertyType, PropertyStatus
-
+from app.model.property import Property, PropertyStatus, PropertyType
 
 # ---------- Test DB setup ----------
+
 
 @pytest.fixture
 def db():
@@ -23,6 +23,7 @@ def db():
 
 # ---------- Tests ----------
 
+
 def test_create_property(db):
     property = Property(
         property_id="PROP001",
@@ -31,7 +32,7 @@ def test_create_property(db):
         type=PropertyType.HOUSE,
         price=150000.0,
         status=PropertyStatus.AVAILABLE,
-        characteristics="wifi,pool,garage"
+        characteristics="wifi,pool,garage",
     )
 
     db.add(property)
@@ -52,7 +53,7 @@ def test_query_property(db):
         type=PropertyType.APARTMENT,
         price=90000.0,
         status=PropertyStatus.AVAILABLE,
-        characteristics="balcony,air_conditioning"
+        characteristics="balcony,air_conditioning",
     )
 
     db.add(property)

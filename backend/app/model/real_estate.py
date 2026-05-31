@@ -1,5 +1,8 @@
+# model/real_estate.py
+
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
+
 from app.model.user import User
 
 

@@ -1,7 +1,9 @@
-from sqlalchemy import String, Float, Enum
-from sqlalchemy.orm import Mapped, mapped_column
-from app.core.database import Base
 import enum
+
+from sqlalchemy import Enum, Float, String
+from sqlalchemy.orm import Mapped, mapped_column
+
+from app.core.database import Base
 
 
 class PropertyType(enum.Enum):

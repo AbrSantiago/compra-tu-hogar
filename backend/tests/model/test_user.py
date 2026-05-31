@@ -6,8 +6,8 @@ from app.core.database import Base
 from app.model.client import Client
 from app.model.user import User
 
-
 # ---------- Test DB setup ----------
+
 
 @pytest.fixture
 def db():
@@ -24,13 +24,9 @@ def db():
 
 # ---------- Tests ----------
 
+
 def test_create_client(db):
-    client = Client(
-        name="Juan",
-        surname="Perez",
-        email="juan@test.com",
-        password="1234"
-    )
+    client = Client(name="Juan", surname="Perez", email="juan@test.com", password="1234")
 
     db.add(client)
     db.commit()
@@ -42,12 +38,7 @@ def test_create_client(db):
 
 
 def test_polymorphic_query(db):
-    client = Client(
-        name="Ana",
-        surname="Gomez",
-        email="ana@test.com",
-        password="abcd"
-    )
+    client = Client(name="Ana", surname="Gomez", email="ana@test.com", password="abcd")
 
     db.add(client)
     db.commit()
