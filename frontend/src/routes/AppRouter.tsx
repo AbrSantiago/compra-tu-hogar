@@ -6,6 +6,7 @@ import { Register } from '../pages/Register/RegisterPage';
 import Admin from '../pages/Admin/AdminPage';
 import RealEstate from '../pages/RealEstate';
 import Client from '../pages/Client';
+import { AdminClientsPage } from '@/pages/Admin/AdminClientsPage';
 
 export const AppRouter = () => {
   return (
@@ -15,29 +16,33 @@ export const AppRouter = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        <Route 
-          path="/admin" 
+        <Route
+          path="/admin"
           element={
-            <ProtectedRoute allowedRoles={['Admin']}>
+            <ProtectedRoute allowedRoles={['admin']}>
               <Admin />
             </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/realestate" 
+          }
+        >
+          <Route index element={<Navigate to="clients" replace />} />
+          <Route path="clients" element={<AdminClientsPage />} />
+          <Route path="real-estate" element={<div>Próximamente Inmobiliarias</div>} />
+        </Route>
+        <Route
+          path="/realestate"
           element={
-            <ProtectedRoute allowedRoles={['Real Estate']}>
+            <ProtectedRoute allowedRoles={['real_estate']}>
               <RealEstate />
             </ProtectedRoute>
-          } 
+          }
         />
-        <Route 
-          path="/client" 
+        <Route
+          path="/client"
           element={
-            <ProtectedRoute allowedRoles={['Client']}>
+            <ProtectedRoute allowedRoles={['client']}>
               <Client />
             </ProtectedRoute>
-          } 
+          }
         />
 
         <Route path="*" element={<Navigate to="/" replace />} />

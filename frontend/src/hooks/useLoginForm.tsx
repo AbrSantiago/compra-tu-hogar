@@ -15,24 +15,31 @@ export const useLoginForm = () => {
     setErrorMsg(null);
 
     try {
+      console.log("1. Intentando loginUser con:", email);
       await loginUser({ email, password });
 
+      console.log("2. Pidiendo /auth/me...");
       const currentUser = await authService.getMe();
+      
+      console.log("3. Datos reales que devuelve el backend:", currentUser); // <-- CLAVE
 
       switch (currentUser.type) {
-        case 'Admin':
+        case 'admin':
+          console.log("-> Redirigiendo a /admin");
           navigate('/admin');
           break;
-        case 'Real Estate':
+        case 'real_estate':
           navigate('/realestate');
           break;
-        case 'Client':
+        case 'client':
           navigate('/client');
           break;
         default:
+          console.log("-> Cayó en el default, mandando al Home. Tipo:", currentUser.type);
           navigate('/');
       }
     } catch (error: any) {
+      console.error("Error en el proceso de login:", error);
       const backendMessage = error.response?.data?.detail;
       setErrorMsg(backendMessage || 'Credenciales inválidas. Inténtalo de nuevo.');
     } finally {
