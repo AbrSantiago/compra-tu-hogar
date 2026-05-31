@@ -17,7 +17,7 @@ export const FloatingInput: React.FC<FloatingInputProps> = ({ label, name, ...pr
       />
       <label
         htmlFor={name}
-        className="absolute left-4 top-4 text-sm text-slate-400 font-medium origin-[0] -translate-y-3 scale-75 transform transition-all duration-150 cursor-text
+        className="absolute left-4 top-4 text-sm text-slate-400 font-medium origin-left -translate-y-3 scale-75 transform transition-all duration-150 cursor-text
                    peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 
                    peer-focus:-translate-y-3 peer-focus:scale-75 peer-focus:text-blue-600"
       >
