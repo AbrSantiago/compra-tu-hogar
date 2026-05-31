@@ -1,11 +1,7 @@
 import React from 'react';
-import { useRegisterForm } from '../../hooks/useRegisterForm';
-import { FloatingInput } from '../../components/form/FloatingInput';
-import { ErrorMessage } from '../../components/ui/ErrorMessage';
-import { BackButton } from '../../components/ui/BackButton';
-import { FormHeader } from '../../components/form/FormHeader';
-import { FormFooter } from '../../components/form/FormFooter';
-import { SubmitButton } from '../../components/form/SubmitButton.tsx';
+import { useRegisterForm } from '@/hooks/useRegisterForm';
+import { FloatingInput, FormHeader, FormFooter, SubmitButton } from '@/components/form';
+import { BackButton, ErrorMessage } from '@/components/ui';
 
 export const Register: React.FC = () => {
   const { formData, errorMsg, isSubmitting, handleChange, handleSubmit } = useRegisterForm();

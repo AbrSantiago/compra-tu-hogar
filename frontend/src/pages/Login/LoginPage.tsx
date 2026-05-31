@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
-import { useLoginForm } from '../../hooks/useLoginForm.tsx';
-import { FloatingInput } from '../../components/form/FloatingInput';
-import { ErrorMessage } from '../../components/ui/ErrorMessage';
-import { BackButton } from '../../components/ui/BackButton';
-import { FormHeader } from '../../components/form/FormHeader';
-import { FormFooter } from '../../components/form/FormFooter';
-import { SubmitButton } from '../../components/form/SubmitButton.tsx';
+import { useLoginForm } from '@/hooks/useLoginForm';
+import { FloatingInput, FormHeader, FormFooter, SubmitButton } from '@/components/form';
+import { BackButton, ErrorMessage } from '@/components/ui';
 
 export const Login: React.FC = () => {
   const { handleLogin, isLoading, errorMsg } = useLoginForm();
