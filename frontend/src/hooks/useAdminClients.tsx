@@ -1,16 +1,9 @@
 import { useState, useEffect } from 'react';
 import apiClient from '@/services/apiClient';
-
-interface ClientUser {
-  id: number;
-  name: string;
-  surname: string;
-  email: string;
-  type: string;
-}
+import type { ClientResponse } from '@/types/client';
 
 export const useAdminClients = () => {
-  const [clients, setClients] = useState<ClientUser[]>([]);
+  const [clients, setClients] = useState<ClientResponse[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,7 +11,7 @@ export const useAdminClients = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await apiClient.get<ClientUser[]>('/admin/clients');
+      const response = await apiClient.get<ClientResponse[]>('/clients');
       setClients(response.data);
     } catch (err: any) {
       const backendMessage = err.response?.data?.detail;

@@ -7,6 +7,7 @@ import Admin from '../pages/Admin/AdminPage';
 import RealEstate from '../pages/RealEstate';
 import Client from '../pages/Client';
 import { AdminClientsPage } from '@/pages/Admin/AdminClientsPage';
+import { AdminRealEstatePage } from '@/pages/Admin/AdminRealEstatePage';
 
 export const AppRouter = () => {
   return (
@@ -24,9 +25,14 @@ export const AppRouter = () => {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="clients" replace />} />
+          <Route index element={
+            <div style={{ padding: '20px', textAlign: 'center' }}>
+              <h1>¡Bienvenido, Administrador! 👋🏻</h1>
+              <p style={{ color: '#666', marginTop: '10px' }}>Seleccioná una opción para empezar a gestionar.</p>
+            </div>
+          } />
           <Route path="clients" element={<AdminClientsPage />} />
-          <Route path="real-estate" element={<div>Próximamente Inmobiliarias</div>} />
+          <Route path="real-estate" element={<AdminRealEstatePage />} />
         </Route>
         <Route
           path="/realestate"
