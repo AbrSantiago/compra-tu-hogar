@@ -8,7 +8,7 @@ export interface LoginResponse {
   token_type: string;
 }
 
-export type UserRole = 'Client' | 'Real Estate' | 'Admin';
+export type UserRole = 'client' | 'real_estate' | 'admin';
 
 export interface UserMeResponse {
   id: number;
