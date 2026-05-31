@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
 import Home from '../pages/Home';
 import Login from '../pages/Login/LoginPage';
-import { Register } from '../pages/Register/RegisterPage';
+import Register from '../pages/Register/RegisterPage';
 import Admin from '../pages/Admin/AdminPage';
 import RealEstate from '../pages/RealEstate';
 import Client from '../pages/Client';

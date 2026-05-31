@@ -11,3 +11,11 @@ export interface ClientUpdate {
   email?: string;
   password?: string;
 }
+
+export interface ClientResponse {
+  id: number;
+  name: string;
+  surname: string;
+  email: string;
+  type: string;
+}
