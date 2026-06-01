@@ -11,10 +11,12 @@ from app.api.client import router as client_router
 from app.api.real_estate import router as real_estate_router
 from app.core.database import Base, engine
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
     yield
+
 
 app = FastAPI(
     title="Compra tu Hogar API",
@@ -28,11 +30,11 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,       
-    allow_credentials=True,      
-    allow_methods=["*"],         
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
     allow_headers=["*"],
-    )
+)
 
 app.include_router(admin_router)
 app.include_router(auth_router)
