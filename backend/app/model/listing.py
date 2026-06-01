@@ -1,18 +1,16 @@
-import enum
+from __future__ import annotations
 
-from backend.app.model.property import Property
-from backend.app.model.real_estate import RealEstate
+from typing import TYPE_CHECKING
+
 from sqlalchemy import Enum, Float, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
+from app.schema.listing import ListingStatus
 
-
-class ListingStatus(enum.Enum):
-    ACTIVE = "active"
-    RESERVED = "reserved"
-    SOLD = "sold"
-    PAUSED = "paused"
+if TYPE_CHECKING:
+    from app.model.property import Property
+    from app.model.real_estate import RealEstate
 
 
 class Listing(Base):
@@ -41,7 +39,7 @@ class Listing(Base):
         default=ListingStatus.ACTIVE,
     )
 
-    property: Mapped[Property] = relationship(back_populates="listings")
+    listed_property: Mapped[Property] = relationship(back_populates="listings")
 
     real_estate: Mapped[RealEstate] = relationship(back_populates="listings")
 
