@@ -1,47 +1,26 @@
-import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
+import { AdminNavLink } from '@/components/admin/index';
 
 export default function AdminPage() {
   const navigate = useNavigate();
-  const location = useLocation();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/login');
   };
 
-  const isActive = (path: string) => location.pathname === path;
-
   return (
     <div className="flex min-h-screen bg-slate-50 font-sans antialiased text-slate-800">
       <aside className="w-64 bg-white border-r border-slate-200 p-5 flex flex-col justify-between shadow-xs shrink-0">
         <div>
           <div className="mb-6 border-b border-slate-100 pb-4">
-            <span className="text-xl font-extrabold text-blue-600 block">
-              Compra Tu Hogar
-            </span>
+            <span className="text-xl font-extrabold text-blue-600 block">Compra Tu Hogar</span>
             <p className="text-xs text-slate-400 font-medium mt-1">Panel de Administración</p>
           </div>
 
           <nav className="flex flex-col gap-2">
-            <Link
-              to="/admin/clients"
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150 active:scale-[0.99] cursor-pointer ${isActive('/admin/clients')
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                }`}
-            >
-              Listar Clientes
-            </Link>
-
-            <Link
-              to="/admin/real-estate"
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150 active:scale-[0.99] cursor-pointer ${isActive('/admin/real-estate')
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                }`}
-            >
-              Gestión Inmobiliarias
-            </Link>
+            <AdminNavLink to="/admin/clients">Listar Clientes</AdminNavLink>
+            <AdminNavLink to="/admin/real-estate">Gestión Inmobiliarias</AdminNavLink>
           </nav>
         </div>
 
@@ -58,7 +37,6 @@ export default function AdminPage() {
           <Outlet />
         </div>
       </main>
-
     </div>
   );
 }
