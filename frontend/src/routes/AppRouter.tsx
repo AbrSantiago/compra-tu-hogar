@@ -8,6 +8,8 @@ import RealEstate from '../pages/RealEstate';
 import Client from '../pages/Client';
 import { AdminClientsPage } from '@/pages/Admin/AdminClientsPage';
 import { AdminRealEstatePage } from '@/pages/Admin/AdminRealEstatePage';
+import { RealEstatePropertiesPage } from '@/pages/RealEstate/RealEstatePropertiesPage';
+import { RealEstateListingsPage } from '@/pages/RealEstate/RealEstateListingsPage';
 
 export const AppRouter = () => {
   return (
@@ -19,32 +21,43 @@ export const AppRouter = () => {
 
         <Route
           path="/admin"
-          element={
+          element = {
             <ProtectedRoute allowedRoles={['admin']}>
               <Admin />
             </ProtectedRoute>
           }
         >
           <Route index element={
-            <div style={{ padding: '20px', textAlign: 'center' }}>
-              <h1>¡Bienvenido, Administrador! 👋🏻</h1>
-              <p style={{ color: '#666', marginTop: '10px' }}>Seleccioná una opción para empezar a gestionar.</p>
+            <div className="text-center py-12 space-y-2">
+              <h1 className="text-2xl font-semibold tracking-tight text-slate-900">¡Bienvenido, Administrador! 👋🏻</h1>
+              <p className="text-sm text-slate-500">Seleccioná una opción para empezar a gestionar.</p>
             </div>
           } />
           <Route path="clients" element={<AdminClientsPage />} />
           <Route path="real-estate" element={<AdminRealEstatePage />} />
         </Route>
+
         <Route
-          path="/realestate"
-          element={
+          path="/real-estate"
+          element = {
             <ProtectedRoute allowedRoles={['real_estate']}>
               <RealEstate />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route index element={
+            <div className="text-center py-12 space-y-2">
+              <h1 className="text-2xl font-semibold tracking-tight text-slate-900">¡Bienvenido al Panel Inmobiliario! 🏢</h1>
+              <p className="text-sm text-slate-500">Gestioná tus inmobiliarias o publicá nuevas ofertas.</p>
+            </div>
+          } />
+          <Route path="properties" element={<RealEstatePropertiesPage />} />
+          <Route path="listings" element={<RealEstateListingsPage />} />
+        </Route>
+
         <Route
           path="/client"
-          element={
+          element = {
             <ProtectedRoute allowedRoles={['client']}>
               <Client />
             </ProtectedRoute>
