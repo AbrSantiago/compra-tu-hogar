@@ -29,7 +29,7 @@ export const useLoginForm = () => {
           navigate('/admin');
           break;
         case 'real_estate':
-          navigate('/realestate');
+          navigate('/real-estate');
           break;
         case 'client':
           navigate('/client');

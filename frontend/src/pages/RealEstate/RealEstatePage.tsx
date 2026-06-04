@@ -1,7 +1,7 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import { AdminNavLink } from '@/components/admin/index';
 
-export default function AdminPage() {
+export default function RealEstatePage() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -15,12 +15,12 @@ export default function AdminPage() {
         <div>
           <div className="mb-6 border-b border-slate-100 pb-4">
             <span className="text-xl font-extrabold text-blue-600 block">Compra Tu Hogar</span>
-            <p className="text-xs text-slate-400 font-medium mt-1">Panel de Administración</p>
+            <p className="text-xs text-slate-400 font-medium mt-1">Panel Inmobiliario</p>
           </div>
 
           <nav className="flex flex-col gap-2">
-            <AdminNavLink to="/admin/clients">Listar Clientes</AdminNavLink>
-            <AdminNavLink to="/admin/real-estate">Gestión Inmobiliarias</AdminNavLink>
+            <AdminNavLink to="/real-estate/properties">Inmuebles</AdminNavLink>
+            <AdminNavLink to="/real-estate/listings">Publicaciones Activas</AdminNavLink>
           </nav>
         </div>
 

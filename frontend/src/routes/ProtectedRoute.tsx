@@ -13,8 +13,10 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowe
 
   if (isLoading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <p>Verificando credenciales</p>
+      <div className="flex justify-center items-center h-screen bg-slate-50 text-slate-500 font-medium">
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-sm animate-pulse">Verificando credenciales</span>
+        </div>
       </div>
     );
   }
@@ -24,8 +26,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowe
   }
 
   if (allowedRoles && user && !allowedRoles.includes(user.type)) {
-  return <Navigate to="/" replace />;
-}
+    return <Navigate to="/" replace />;
+  }
 
   return children;
 };
