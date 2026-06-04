@@ -94,8 +94,12 @@ export const useRealEstate = () => {
       
       await fetchRealEstateData();
     } catch (err: any) {
-      const backendMessage = err.response?.data?.detail;
-      setFormError(backendMessage || 'Error al crear la publicación.');
+      if (err.response?.status === 409) {
+        setFormError('Esta propiedad ya cuenta con una publicación activa creada por tu inmobiliaria.');
+      } else {
+        const backendMessage = err.response?.data?.detail;
+        setFormError(backendMessage || 'Error al crear la publicación.');
+      }
     } finally {
       setIsSubmitting(false);
     }

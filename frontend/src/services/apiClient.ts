@@ -36,6 +36,9 @@ apiClient.interceptors.response.use(
         case 403:
           console.error('No tenés permisos para realizar esta acción.');
           break;
+        case 409:
+          console.warn('Conflicto de duplicidad.', data?.detail);
+          break;
 
         case 422:
           console.error('Error de validación en el backend:', data?.detail);

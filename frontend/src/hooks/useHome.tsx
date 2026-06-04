@@ -17,6 +17,17 @@ export const useHome = () => {
   const [listings, setListings] = useState<EnrichedListing[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+  };
 
   const fetchHomeData = async () => {
     setIsLoading(true);
@@ -58,5 +69,12 @@ export const useHome = () => {
     fetchHomeData();
   }, []);
 
-  return { listings, isLoading, error, refetch: fetchHomeData };
+  return { 
+    listings, 
+    isLoading, 
+    error, 
+    isLoggedIn, 
+    handleLogout, 
+    refetch: fetchHomeData 
+  };
 };
