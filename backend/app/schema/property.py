@@ -9,7 +9,6 @@ class PropertyType(enum.Enum):
 
 
 class PropertyCreate(BaseModel):
-    property_id: str
     address: str
     location: str
     type: PropertyType
@@ -18,7 +17,6 @@ class PropertyCreate(BaseModel):
 
 class PropertyResponse(BaseModel):
     id: int
-    property_id: str
     address: str
     location: str
     type: PropertyType
