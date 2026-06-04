@@ -5,7 +5,8 @@ Web app for browsing, tracking, and managing real estate properties, helping use
 ---
 
 ## 🛠 Tech Stack
-
+* React
+* TypeScript
 * Python
 * FastAPI
 * SQLAlchemy
@@ -15,16 +16,11 @@ Web app for browsing, tracking, and managing real estate properties, helping use
 
 ---
 
-## 📋 Project Management
+## 🐳 Full Application Setup with Docker (Recommended)
 
-**Board:** [Jira](https://arodriguezfontana-1776905831869.atlassian.net/jira/software/projects/KAN/boards/1)
+This project uses Docker Compose to run the complete application stack:
 
----
-
-## 🐳 Full Backend Setup with Docker (Recommended)
-
-This project uses **Docker Compose** to run both:
-
+* React frontend
 * FastAPI backend
 * PostgreSQL database
 
@@ -42,6 +38,7 @@ docker compose up --build
 
 ### 🌐 Available services
 
+* Frontend: http://localhost:5173
 * API: http://localhost:8000
 * Swagger docs: http://localhost:8000/docs
 * ReDoc: http://localhost:8000/redoc
@@ -50,9 +47,11 @@ docker compose up --build
 
 ### 🧠 How it works
 
+* `frontend` service → React application
 * `backend` service → FastAPI app
 * `db` service → PostgreSQL
-* Internal connection uses:
+
+Internal connection uses:
 
 ```text
 postgresql+psycopg2://postgres:postgres@db:5432/compra_tu_hogar
@@ -167,23 +166,5 @@ uv run pytest
 
 * Passwords are hashed using `bcrypt` via `passlib`
 * Never store plain-text passwords
-
----
-
-## 📌 Notes
-
-* Docker setup uses a **local PostgreSQL instance** for development
-* External databases (e.g. Supabase) are optional and intended for non-Docker environments
-* The app currently creates tables automatically at startup (development only)
-* Future improvement: database migrations with Alembic
-
----
-
-## 🚀 Next Steps
-
-* Add proper error handling (e.g. unique email validation)
-* Introduce service layer (business logic separation)
-* Add authentication (JWT)
-* Integrate Alembic for migrations
 
 ---
