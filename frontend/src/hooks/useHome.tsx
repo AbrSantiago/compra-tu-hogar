@@ -50,7 +50,8 @@ export const useHome = () => {
         .filter(list => list.status === 'active') 
         .map((list) => {
           const matchedProp = propertiesData.find(p => p.id === list.property_id);
-          const matchedInmo = realEstatesData.find(re => re.id === (matchedProp as any)?.real_estate_id);
+          const inmoId = matchedProp ? (matchedProp as any).real_estate_id : null;
+          const matchedInmo = inmoId ? realEstatesData.find(re => re.id === inmoId) : null;
 
           return {
             id: list.id,
