@@ -1,5 +1,7 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import { AdminNavLink } from '@/components/admin/index';
+import { HomeButton } from '@/components/ui/HomeButton';
+import { LogoutButton } from '@/components/ui/LogoutButton';
 
 export default function RealEstatePage() {
   const navigate = useNavigate();
@@ -24,12 +26,10 @@ export default function RealEstatePage() {
           </nav>
         </div>
 
-        <button
-          onClick={handleLogout}
-          className="w-full mt-auto py-3 bg-red-50 hover:bg-red-100 active:scale-[0.99] cursor-pointer text-red-600 font-semibold text-sm rounded-xl transition-all duration-150 text-center"
-        >
-          Cerrar Sesión
-        </button>
+        <div className="flex flex-col gap-2 mt-auto">
+          <HomeButton />
+          <LogoutButton onLogout={handleLogout} />
+        </div>
       </aside>
 
       <main className="flex-1 p-8 overflow-y-auto">

@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { SearchBar, PropertyCard } from '@/components/home/index.ts';
 import { Link } from 'react-router-dom';
 import { useHome } from '@/hooks/useHome';
 import { ErrorMessage } from '@/components/ui';
+import { LogoutButton } from '@/components/ui/LogoutButton';
 
 export const Home: React.FC = () => {
-  const { listings, isLoading, error } = useHome();
+  const { listings, isLoading, error, isLoggedIn, handleLogout } = useHome();
 
   return (
     <div className="min-h-screen bg-white text-slate-800 font-sans antialiased">
@@ -17,18 +18,25 @@ export const Home: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-4 text-sm font-semibold text-slate-600">
-          <Link
-            to="/register"
-            className="hover:text-slate-900 active:scale-[0.99] transition-all cursor-pointer"
-          >
-            Registrarme
-          </Link>
-          <Link
-            to="/login"
-            className="px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-800 rounded-xl transition-all active:scale-[0.99] cursor-pointer text-center"
-          >
-            Iniciar Sesión
-          </Link>
+          {isLoggedIn ? (
+            <div className="w-36">
+              <LogoutButton onLogout={handleLogout} />
+            </div>
+          ) : (
+            <>
+              <Link
+                to="/register"
+                className="px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-800 rounded-xl transition-all active:scale-[0.99] cursor-pointer text-center"              >
+                Registrarme
+              </Link>
+              <Link
+                to="/login"
+                className="px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-800 rounded-xl transition-all active:scale-[0.99] cursor-pointer text-center"
+              >
+                Iniciar Sesión
+              </Link>
+            </>
+          )}
         </div>
       </header>
 
@@ -80,7 +88,6 @@ export const Home: React.FC = () => {
           </div>
         )}
       </main>
-
     </div>
   );
 };
