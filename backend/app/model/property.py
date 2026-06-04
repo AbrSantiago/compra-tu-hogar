@@ -1,33 +1,36 @@
-from sqlalchemy import String, Float, Enum
-from sqlalchemy.orm import Mapped, mapped_column
+# model/property.py
+
+from sqlalchemy import Enum, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from app.core.database import Base
-import enum
-
-
-class PropertyType(enum.Enum):
-    HOUSE = "house"
-    APARTMENT = "apartment"
-    LAND = "land"
-
-
-class PropertyStatus(enum.Enum):
-    AVAILABLE = "available"
-    SOLD = "sold"
-    RENTED = "rented"
+from app.model.listing import Listing
+from app.schema.property import PropertyType
 
 
 class Property(Base):
     __tablename__ = "properties"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    property_id: Mapped[str] = mapped_column(String, unique=True, nullable=False)
 
-    address: Mapped[str] = mapped_column(String, nullable=False)
-    location: Mapped[str] = mapped_column(String, nullable=False)
+    address: Mapped[str] = mapped_column(
+        String,
+        nullable=False,
+    )
 
-    type: Mapped[PropertyType] = mapped_column(Enum(PropertyType), nullable=False)
-    price: Mapped[float] = mapped_column(Float, nullable=False)
+    location: Mapped[str] = mapped_column(
+        String,
+        nullable=False,
+    )
 
-    status: Mapped[PropertyStatus] = mapped_column(Enum(PropertyStatus), nullable=False)
+    type: Mapped[PropertyType] = mapped_column(
+        Enum(PropertyType),
+        nullable=False,
+    )
 
-    characteristics: Mapped[str] = mapped_column(String)
+    characteristics: Mapped[str] = mapped_column(
+        String,
+        nullable=True,
+    )
+
+    listings: Mapped[list[Listing]] = relationship(back_populates="listed_property")
