@@ -20,16 +20,20 @@ export const AppRouter = () => {
 
         <Route
           path="/admin"
-          element = {
+          element={
             <ProtectedRoute allowedRoles={['admin']}>
               <Admin />
             </ProtectedRoute>
           }
         >
           <Route index element={
-            <div className="text-center py-12 space-y-2">
-              <h1 className="text-2xl font-semibold tracking-tight text-slate-900">¡Bienvenido, Administrador! 👋🏻</h1>
-              <p className="text-sm text-slate-500">Seleccioná una opción para empezar a gestionar.</p>
+            <div className="flex flex-col items-center justify-center text-center min-h-[50vh] space-y-2">
+              <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+                ¡Bienvenido, Administrador! 👋🏻
+              </h1>
+              <p className="text-md text-slate-500">
+                Seleccioná una opción para empezar a gestionar.
+              </p>
             </div>
           } />
           <Route path="clients" element={<AdminClientsPage />} />
@@ -38,16 +42,20 @@ export const AppRouter = () => {
 
         <Route
           path="/real-estate"
-          element = {
+          element={
             <ProtectedRoute allowedRoles={['real_estate']}>
               <RealEstatePage />
             </ProtectedRoute>
           }
         >
           <Route index element={
-            <div className="text-center py-12 space-y-2">
-              <h1 className="text-2xl font-semibold tracking-tight text-slate-900">¡Bienvenido al Panel Inmobiliario! 🏢</h1>
-              <p className="text-sm text-slate-500">Gestioná tus inmobiliarias o publicá nuevas ofertas.</p>
+            <div className="flex flex-col items-center justify-center text-center min-h-[50vh] space-y-2">
+              <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+                ¡Bienvenido al Panel Inmobiliario! 👋🏻
+              </h1>
+              <p className="text-md text-slate-500">
+                Gestioná tus inmobiliarias o publicá nuevas ofertas.
+              </p>
             </div>
           } />
           <Route path="properties" element={<RealEstatePropertiesPage />} />

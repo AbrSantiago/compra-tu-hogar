@@ -8,12 +8,13 @@ export default function RealEstatePage() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('type');
     navigate('/login');
   };
 
   return (
     <div className="flex min-h-screen bg-slate-50 font-sans antialiased text-slate-800">
-      <aside className="w-64 bg-white border-r border-slate-200 p-5 flex flex-col justify-between shadow-xs shrink-0">
+      <aside className="w-64 bg-white border-r border-slate-200 p-5 flex flex-col justify-between shadow-xs shrink-0 sticky top-0 h-screen">
         <div>
           <div className="mb-6 border-b border-slate-100 pb-4">
             <span className="text-xl font-extrabold text-blue-600 block">Compra Tu Hogar</span>
@@ -21,8 +22,8 @@ export default function RealEstatePage() {
           </div>
 
           <nav className="flex flex-col gap-2">
-            <AdminNavLink to="/real-estate/properties">Inmuebles</AdminNavLink>
-            <AdminNavLink to="/real-estate/listings">Publicaciones Activas</AdminNavLink>
+            <AdminNavLink to="/real-estate/properties">Gestionar Inmuebles</AdminNavLink>
+            <AdminNavLink to="/real-estate/listings">Gestionar Publicaciones</AdminNavLink>
           </nav>
         </div>
 

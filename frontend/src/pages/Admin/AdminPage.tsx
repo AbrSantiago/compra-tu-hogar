@@ -1,19 +1,19 @@
 import { Outlet, useNavigate } from 'react-router-dom';
-import { AdminNavLink } from '@/components/admin/index';
-import { HomeButton } from '@/components/ui/HomeButton';
-import { LogoutButton } from '@/components/ui/LogoutButton';
+import { AdminNavLink } from '@/components/admin';
+import { HomeButton, LogoutButton } from '@/components/ui';
 
 export default function AdminPage() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('type');
     navigate('/login');
   };
 
   return (
     <div className="flex min-h-screen bg-slate-50 font-sans antialiased text-slate-800">
-      <aside className="w-64 bg-white border-r border-slate-200 p-5 flex flex-col justify-between shadow-xs shrink-0">
+      <aside className="w-64 bg-white border-r border-slate-200 p-5 flex flex-col justify-between shadow-xs shrink-0 sticky top-0 h-screen">
         <div>
           <div className="mb-6 border-b border-slate-100 pb-4">
             <span className="text-xl font-extrabold text-blue-600 block">Compra Tu Hogar</span>
@@ -22,7 +22,7 @@ export default function AdminPage() {
 
           <nav className="flex flex-col gap-2">
             <AdminNavLink to="/admin/clients">Listar Clientes</AdminNavLink>
-            <AdminNavLink to="/admin/real-estate">Gestión Inmobiliarias</AdminNavLink>
+            <AdminNavLink to="/admin/real-estate">Gestionar Inmobiliarias</AdminNavLink>
           </nav>
         </div>
 

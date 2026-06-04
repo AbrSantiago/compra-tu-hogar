@@ -15,17 +15,16 @@ export const useLoginForm = () => {
     setErrorMsg(null);
 
     try {
-      console.log("1. Intentando loginUser con:", email);
       await loginUser({ email, password });
-
-      console.log("2. Pidiendo /auth/me...");
-      const currentUser = await authService.getMe();
       
-      console.log("3. Datos reales que devuelve el backend:", currentUser); // <-- CLAVE
+      const currentUser = await authService.getMe();
+
+      if (currentUser && currentUser.type) {
+        localStorage.setItem('type', currentUser.type);
+      }
 
       switch (currentUser.type) {
         case 'admin':
-          console.log("-> Redirigiendo a /admin");
           navigate('/admin');
           break;
         case 'real_estate':
@@ -35,13 +34,15 @@ export const useLoginForm = () => {
           navigate('/client');
           break;
         default:
-          console.log("-> Cayó en el default, mandando al Home. Tipo:", currentUser.type);
           navigate('/');
       }
     } catch (error: any) {
       console.error("Error en el proceso de login:", error);
-      const backendMessage = error.response?.data?.detail;
-      setErrorMsg(backendMessage || 'Credenciales inválidas. Inténtalo de nuevo.');
+      
+      localStorage.removeItem('type');
+      
+      const friendlyMsg = error.response?.data?.friendlyMessage;
+      setErrorMsg(friendlyMsg || 'Usuario o contraseña incorrectos. Verificá tus credenciales.');
     } finally {
       setIsLoading(false);
     }

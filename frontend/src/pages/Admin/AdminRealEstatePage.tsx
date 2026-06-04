@@ -30,7 +30,7 @@ export const AdminRealEstatePage = () => {
             <FloatingInput type="text" name="name" label="Nombre" value={name} onChange={(e) => setName(e.target.value)} required />
             <FloatingInput type="email" name="email" label="Correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)} required />
             <FloatingInput type="password" name="password" label="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} required />
-            <SubmitButton isLoading={false} text="Guardar" loadingText="Registrando..." />
+            <SubmitButton isLoading={false} text="Guardar" loadingText="Registrando" />
           </form>
         </div>
 

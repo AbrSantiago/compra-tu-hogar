@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { SearchBar, PropertyCard } from '@/components/home/index.ts';
 import { Link } from 'react-router-dom';
 import { useHome } from '@/hooks/useHome';
@@ -6,7 +6,7 @@ import { ErrorMessage } from '@/components/ui';
 import { LogoutButton } from '@/components/ui/LogoutButton';
 
 export const Home: React.FC = () => {
-  const { listings, isLoading, error, isLoggedIn, handleLogout } = useHome();
+  const { listings, isLoading, error, isLoggedIn, userRole, handleLogout } = useHome();
 
   return (
     <div className="min-h-screen bg-white text-slate-800 font-sans antialiased">
@@ -19,19 +19,40 @@ export const Home: React.FC = () => {
 
         <div className="flex items-center gap-4 text-sm font-semibold text-slate-600">
           {isLoggedIn ? (
-            <div className="w-36">
-              <LogoutButton onLogout={handleLogout} />
-            </div>
+            <>
+              {userRole === 'admin' && (
+                <Link
+                  to="/admin"
+                  className="hover:text-slate-900 active:scale-[0.99] transition-all cursor-pointer text-blue-600 font-bold"
+                >
+                  Panel Admin
+                </Link>
+              )}
+
+              {userRole?.toLowerCase().replace('_', '-') === 'real-estate' && (
+                <Link
+                  to="/real-estate"
+                  className="hover:text-slate-900 active:scale-[0.99] transition-all cursor-pointer text-blue-600 font-bold"
+                >
+                  Panel Inmobiliaria
+                </Link>
+              )}
+
+              <div className="w-36">
+                <LogoutButton onLogout={handleLogout} />
+              </div>
+            </>
           ) : (
             <>
               <Link
                 to="/register"
-                className="px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-800 rounded-xl transition-all active:scale-[0.99] cursor-pointer text-center"              >
+                className="hover:text-slate-900 active:scale-[0.99] transition-all cursor-pointer"
+              >
                 Registrarme
               </Link>
               <Link
                 to="/login"
-                className="px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-800 rounded-xl transition-all active:scale-[0.99] cursor-pointer text-center"
+                className="hover:text-slate-900 active:scale-[0.99] transition-all cursor-pointer"
               >
                 Iniciar Sesión
               </Link>
@@ -80,9 +101,9 @@ export const Home: React.FC = () => {
                 location={property.location}
                 price={property.price}
                 image={property.image}
+                type={property.type}
                 realEstateName={property.realEstateName}
-                beds={property.beds}
-                baths={property.baths}
+                characteristics={property.characteristics}
               />
             ))}
           </div>

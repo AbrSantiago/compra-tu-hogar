@@ -27,7 +27,7 @@ export const RealEstatePropertiesPage: React.FC = () => {
     <div className="space-y-6">
       <AdminHeader 
         title="Mis Inmuebles" 
-        description="Registrá y administrá las propiedades de tu catálogo interno." 
+        description="Registrá y administrá tus propiedades." 
       />
 
       <ErrorMessage message={error} />
@@ -46,7 +46,7 @@ export const RealEstatePropertiesPage: React.FC = () => {
             <FloatingInput 
               type="text" 
               name="address" 
-              label="Dirección (Ej: Av. Santa Fe 1234)" 
+              label="Dirección" 
               value={propAddress} 
               onChange={(e) => setPropAddress(e.target.value)} 
               required 
@@ -55,7 +55,7 @@ export const RealEstatePropertiesPage: React.FC = () => {
             <FloatingInput 
               type="text" 
               name="location" 
-              label="Ubicación / Zona (Ej: Palermo, CABA)" 
+              label="Provincia" 
               value={propLocation} 
               onChange={(e) => setPropLocation(e.target.value)} 
               required 
@@ -76,7 +76,7 @@ export const RealEstatePropertiesPage: React.FC = () => {
             <FloatingInput 
               type="text" 
               name="characteristics" 
-              label="Características (Ej: 3 dorm, 2 baños, balcón)" 
+              label="Características" 
               value={propCharacteristics} 
               onChange={(e) => setPropCharacteristics(e.target.value)} 
             />
@@ -84,7 +84,7 @@ export const RealEstatePropertiesPage: React.FC = () => {
             <SubmitButton 
               isLoading={isSubmitting} 
               text="Registrar Unidad" 
-              loadingText="Guardando..." 
+              loadingText="Guardando" 
             />
           </form>
         </div>
@@ -93,12 +93,12 @@ export const RealEstatePropertiesPage: React.FC = () => {
           <AdminTable
             isLoading={isLoading}
             data={properties}
-            headers={['ID', 'Dirección', 'Ubicación / Zona', 'Tipo']}
-            emptyMessage="Aún no cargaste ninguna propiedad física."
+            headers={['ID', 'Dirección', 'Provincia', 'Tipo']}
+            emptyMessage="No cargaste ninguna propiedad aún."
             renderRow={(prop) => (
               <tr key={prop.id} className="hover:bg-slate-50/70 transition-colors">
                 <td className="px-6 py-4 font-mono text-xs text-slate-400">#{prop.id}</td>
-                <td className="px-6 py-4 font-semibold text-slate-900">{prop.address}</td>
+                <td className="px-6 py-4 text-slate-900">{prop.address}</td>
                 <td className="px-6 py-4 text-slate-600">{prop.location}</td>
                 <td className="px-6 py-4 capitalize">
                   <span className={`inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-semibold ${
