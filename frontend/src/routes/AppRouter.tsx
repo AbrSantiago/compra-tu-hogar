@@ -1,15 +1,14 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
-import Home from '../pages/Home';
-import { Login } from '../pages/Login/LoginPage';
-import { Register } from '../pages/Register/RegisterPage';
-import Admin from '../pages/Admin/AdminPage';
-import RealEstate from '../pages/RealEstate';
-import Client from '../pages/Client';
+import { Home } from '@/pages/Home';
+import { Login } from '@/pages/Login/LoginPage';
+import { Register } from '@/pages/Register/RegisterPage';
+import Admin from '@/pages/Admin/AdminPage';
 import { AdminClientsPage } from '@/pages/Admin/AdminClientsPage';
 import { AdminRealEstatePage } from '@/pages/Admin/AdminRealEstatePage';
 import { RealEstatePropertiesPage } from '@/pages/RealEstate/RealEstatePropertiesPage';
 import { RealEstateListingsPage } from '@/pages/RealEstate/RealEstateListingsPage';
+import RealEstatePage from '@/pages/RealEstate/RealEstatePage';
 
 export const AppRouter = () => {
   return (
@@ -41,7 +40,7 @@ export const AppRouter = () => {
           path="/real-estate"
           element = {
             <ProtectedRoute allowedRoles={['real_estate']}>
-              <RealEstate />
+              <RealEstatePage />
             </ProtectedRoute>
           }
         >
@@ -54,15 +53,6 @@ export const AppRouter = () => {
           <Route path="properties" element={<RealEstatePropertiesPage />} />
           <Route path="listings" element={<RealEstateListingsPage />} />
         </Route>
-
-        <Route
-          path="/client"
-          element = {
-            <ProtectedRoute allowedRoles={['client']}>
-              <Client />
-            </ProtectedRoute>
-          }
-        />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
