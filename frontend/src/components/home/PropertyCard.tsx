@@ -6,9 +6,9 @@ interface PropertyCardProps {
   location: string;
   price: number;
   image: string;
-  realEstateName: string;
-  beds: number;
-  baths: number;
+  type: "house" | "apartment"; 
+  realEstateName: string; 
+  characteristics: string | null; 
 }
 
 export const PropertyCard: React.FC<PropertyCardProps> = ({
@@ -16,9 +16,9 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   location,
   price,
   image,
+  type,
   realEstateName,
-  beds,
-  baths
+  characteristics
 }) => {
   return (
     <div className="group cursor-pointer space-y-3 active:scale-[0.99] transition-all duration-150">
@@ -34,17 +34,21 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
       </div>
 
       <div className="space-y-1 px-1">
-        <div className="flex justify-between items-start">
-          <h3 className="font-semibold text-slate-900 text-sm tracking-tight line-clamp-1">
+        <div className="flex justify-between items-start gap-2">
+          <h3 className="font-semibold text-slate-900 text-sm tracking-tight line-clamp-1 flex-1">
             {location}
           </h3>
-          <div className="text-xs text-slate-500 font-medium whitespace-nowrap">
-            {beds} dorm · {baths} baños
+          <div className="text-xs text-slate-500 font-semibold uppercase tracking-wider whitespace-nowrap pt-0.5">
+            {type === 'house' ? 'Casa' : 'Depto'}
           </div>
         </div>
         
-        <p className="text-xs text-slate-400 font-medium line-clamp-1">
+        <p className="text-xs text-slate-700 font-medium line-clamp-1">
           {title}
+        </p>
+
+        <p className="text-xs text-slate-400 font-medium line-clamp-2 min-h-8 pt-0.5 leading-relaxed">
+          {characteristics || 'Sin descripción adicional disponible.'}
         </p>
         
         <div className="pt-0.5">

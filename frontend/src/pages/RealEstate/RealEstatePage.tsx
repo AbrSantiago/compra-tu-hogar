@@ -13,7 +13,7 @@ export default function RealEstatePage() {
 
   return (
     <div className="flex min-h-screen bg-slate-50 font-sans antialiased text-slate-800">
-      <aside className="w-64 bg-white border-r border-slate-200 p-5 flex flex-col justify-between shadow-xs shrink-0">
+      <aside className="w-64 bg-white border-r border-slate-200 p-5 flex flex-col justify-between shadow-xs shrink-0 sticky top-0 h-screen">
         <div>
           <div className="mb-6 border-b border-slate-100 pb-4">
             <span className="text-xl font-extrabold text-blue-600 block">Compra Tu Hogar</span>

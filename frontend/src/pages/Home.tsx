@@ -6,7 +6,7 @@ import { ErrorMessage } from '@/components/ui';
 import { LogoutButton } from '@/components/ui/LogoutButton';
 
 export const Home: React.FC = () => {
-  const { listings, isLoading, error, isLoggedIn, handleLogout } = useHome();
+  const { listings, isLoading, error, isLoggedIn, userRole, handleLogout } = useHome();
 
   return (
     <div className="min-h-screen bg-white text-slate-800 font-sans antialiased">
@@ -19,9 +19,29 @@ export const Home: React.FC = () => {
 
         <div className="flex items-center gap-4 text-sm font-semibold text-slate-600">
           {isLoggedIn ? (
-            <div className="w-36">
-              <LogoutButton onLogout={handleLogout} />
-            </div>
+            <>
+              {userRole === 'admin' && (
+                <Link
+                  to="/admin"
+                  className="hover:text-slate-900 active:scale-[0.99] transition-all cursor-pointer text-blue-600 font-bold"
+                >
+                  Panel Admin
+                </Link>
+              )}
+
+              {userRole === 'real-estate' && (
+                <Link
+                  to="/real-estate"
+                  className="hover:text-slate-900 active:scale-[0.99] transition-all cursor-pointer text-blue-600 font-bold"
+                >
+                  Panel Inmobiliaria
+                </Link>
+              )}
+
+              <div className="w-36">
+                <LogoutButton onLogout={handleLogout} />
+              </div>
+            </>
           ) : (
             <>
               <Link
@@ -76,13 +96,13 @@ export const Home: React.FC = () => {
               <PropertyCard
                 key={property.id}
                 id={property.id}
-                title={property.title}
-                location={property.location}
+                title={property.title}       
+                location={property.location}  
                 price={property.price}
                 image={property.image}
+                type={property.type}        
                 realEstateName={property.realEstateName}
-                beds={property.beds}
-                baths={property.baths}
+                characteristics={property.characteristics} 
               />
             ))}
           </div>
