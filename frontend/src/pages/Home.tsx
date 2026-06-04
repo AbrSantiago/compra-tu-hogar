@@ -26,12 +26,12 @@ export const Home: React.FC = () => {
             <>
               <Link
                 to="/register"
-                className="px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-800 rounded-xl transition-all active:scale-[0.99] cursor-pointer text-center"              >
+                className="hover:text-slate-900 active:scale-[0.99] transition-all cursor-pointer"              >
                 Registrarme
               </Link>
               <Link
                 to="/login"
-                className="px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-800 rounded-xl transition-all active:scale-[0.99] cursor-pointer text-center"
+                className="hover:text-slate-900 active:scale-[0.99] transition-all cursor-pointer"
               >
                 Iniciar Sesión
               </Link>
