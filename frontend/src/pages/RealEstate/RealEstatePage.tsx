@@ -8,6 +8,7 @@ export default function RealEstatePage() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('type');
     navigate('/login');
   };
 

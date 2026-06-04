@@ -29,7 +29,7 @@ export const Home: React.FC = () => {
                 </Link>
               )}
 
-              {userRole === 'real-estate' && (
+              {userRole?.toLowerCase().replace('_', '-') === 'real-estate' && (
                 <Link
                   to="/real-estate"
                   className="hover:text-slate-900 active:scale-[0.99] transition-all cursor-pointer text-blue-600 font-bold"
@@ -46,7 +46,8 @@ export const Home: React.FC = () => {
             <>
               <Link
                 to="/register"
-                className="hover:text-slate-900 active:scale-[0.99] transition-all cursor-pointer"              >
+                className="hover:text-slate-900 active:scale-[0.99] transition-all cursor-pointer"
+              >
                 Registrarme
               </Link>
               <Link
@@ -96,13 +97,13 @@ export const Home: React.FC = () => {
               <PropertyCard
                 key={property.id}
                 id={property.id}
-                title={property.title}       
-                location={property.location}  
+                title={property.title}
+                location={property.location}
                 price={property.price}
                 image={property.image}
-                type={property.type}        
+                type={property.type}
                 realEstateName={property.realEstateName}
-                characteristics={property.characteristics} 
+                characteristics={property.characteristics}
               />
             ))}
           </div>

@@ -51,7 +51,7 @@ export const RealEstateListingsPage: React.FC = () => {
                 <option value="">Elegir propiedad</option>
                 {properties.map((prop) => (
                   <option key={prop.id} value={prop.id}>
-                    #{prop.id} - {prop.address} ({prop.location})
+                    {prop.id}. {prop.address} ({prop.location})
                   </option>
                 ))}
               </select>
@@ -94,7 +94,7 @@ export const RealEstateListingsPage: React.FC = () => {
                 <tr key={list.id} className="hover:bg-slate-50/70 transition-colors">
                   <td className="px-6 py-4 font-mono text-xs text-slate-400">#{list.id}</td>
                   <td className="px-6 py-4 font-mono text-xs text-slate-500">#{list.property_id}</td>
-                  <td className="px-6 py-4 font-bold text-slate-900">USD {list.price.toLocaleString('es-AR')}</td>
+                  <td className="px-6 py-4 text-slate-900">USD {list.price.toLocaleString('es-AR')}</td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-semibold border capitalize transition-all ${currentBadgeClass}`}>
                       {list.status}

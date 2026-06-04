@@ -39,8 +39,10 @@ export const useRegisterForm = () => {
       await authService.register(formData);
       navigate('/login');
     } catch (error: any) {
-      const backendMessage = error.response?.data?.detail;
-      setErrorMsg(backendMessage || 'Error al procesar el registro. Inténtalo de nuevo.');
+      console.error("Error en el proceso de registro:", error);
+
+      const friendlyMsg = error.response?.data?.friendlyMessage;
+      setErrorMsg(friendlyMsg || 'No se pudo completar el registro. Inténtalo de nuevo.');
     } finally {
       setIsSubmitting(false);
     }

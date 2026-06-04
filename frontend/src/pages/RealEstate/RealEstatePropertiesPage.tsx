@@ -98,7 +98,7 @@ export const RealEstatePropertiesPage: React.FC = () => {
             renderRow={(prop) => (
               <tr key={prop.id} className="hover:bg-slate-50/70 transition-colors">
                 <td className="px-6 py-4 font-mono text-xs text-slate-400">#{prop.id}</td>
-                <td className="px-6 py-4 font-semibold text-slate-900">{prop.address}</td>
+                <td className="px-6 py-4 text-slate-900">{prop.address}</td>
                 <td className="px-6 py-4 text-slate-600">{prop.location}</td>
                 <td className="px-6 py-4 capitalize">
                   <span className={`inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-semibold ${
