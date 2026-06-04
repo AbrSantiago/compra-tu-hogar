@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { SearchBar, PropertyCard } from '@/components/home/index.ts';
 import { Link } from 'react-router-dom';
 import { useHome } from '@/hooks/useHome';

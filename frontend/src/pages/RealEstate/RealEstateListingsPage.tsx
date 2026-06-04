@@ -24,7 +24,7 @@ export const RealEstateListingsPage: React.FC = () => {
     <div className="space-y-6">
       <AdminHeader 
         title="Publicaciones" 
-        description="Asigná precios y gestioná tus publicaciones activas." 
+        description="Crea y gestioná tus publicaciones." 
       />
 
       <ErrorMessage message={error} />
@@ -32,8 +32,8 @@ export const RealEstateListingsPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
           <div>
-            <h3 className="text-lg font-semibold tracking-tight text-slate-900">Publicar al Mercado</h3>
-            <p className="text-sm text-slate-500 mt-1">Vinculá un inmueble físico con un valor de venta.</p>
+            <h3 className="text-lg font-semibold tracking-tight text-slate-900">Publicar Inmueble</h3>
+            <p className="text-sm text-slate-500 mt-1">Realiza la publicación de un inmueble con un precio de venta.</p>
           </div>
 
           <ErrorMessage message={formError} />
@@ -48,7 +48,7 @@ export const RealEstateListingsPage: React.FC = () => {
                 className="w-full px-4 py-3 text-sm bg-white border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-all cursor-pointer font-medium"
                 required
               >
-                <option value="">-- Elegir propiedad física --</option>
+                <option value="">Elegir propiedad</option>
                 {properties.map((prop) => (
                   <option key={prop.id} value={prop.id}>
                     #{prop.id} - {prop.address} ({prop.location})
@@ -60,7 +60,7 @@ export const RealEstateListingsPage: React.FC = () => {
             <FloatingInput 
               type="number" 
               name="price" 
-              label="Precio de Venta (USD)" 
+              label="Precio (USD)" 
               value={listingPrice} 
               onChange={(e) => setListingPrice(e.target.value)} 
               required 
@@ -68,8 +68,8 @@ export const RealEstateListingsPage: React.FC = () => {
 
             <SubmitButton 
               isLoading={isSubmitting} 
-              text="Lanzar Publicación" 
-              loadingText="Publicando..." 
+              text="Publicar" 
+              loadingText="Publicando" 
             />
           </form>
         </div>
@@ -78,8 +78,8 @@ export const RealEstateListingsPage: React.FC = () => {
           <AdminTable
             isLoading={isLoading}
             data={listings}
-            headers={['ID', 'ID Propiedad', 'Precio Comercial', 'Estado']}
-            emptyMessage="No tenés publicaciones activas en la cartelera de ofertas."
+            headers={['ID Publicación', 'ID Propiedad', 'Precio', 'Estado']}
+            emptyMessage="No tenés publicaciones aún."
             renderRow={(list) => {
               const statusStyles: Record<string, string> = {
                 active: 'bg-blue-50 text-blue-700 border-blue-100',

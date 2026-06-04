@@ -1,7 +1,6 @@
 import { Outlet, useNavigate } from 'react-router-dom';
-import { AdminNavLink } from '@/components/admin/index';
-import { HomeButton } from '@/components/ui/HomeButton';
-import { LogoutButton } from '@/components/ui/LogoutButton';
+import { AdminNavLink } from '@/components/admin';
+import { HomeButton, LogoutButton } from '@/components/ui';
 
 export default function AdminPage() {
   const navigate = useNavigate();
@@ -22,7 +21,7 @@ export default function AdminPage() {
 
           <nav className="flex flex-col gap-2">
             <AdminNavLink to="/admin/clients">Listar Clientes</AdminNavLink>
-            <AdminNavLink to="/admin/real-estate">Gestión Inmobiliarias</AdminNavLink>
+            <AdminNavLink to="/admin/real-estate">Gestionar Inmobiliarias</AdminNavLink>
           </nav>
         </div>
 

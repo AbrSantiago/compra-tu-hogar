@@ -10,7 +10,7 @@ export const AdminClientsPage: React.FC = () => {
     <div className="space-y-6">
       <AdminHeader 
         title="Control de Clientes" 
-        description="Listado de usuarios registrados en la plataforma como clientes." 
+        description="Listado de los clientes registrados en la plataforma." 
       />
 
       <ErrorMessage message={error} />
