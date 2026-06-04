@@ -8,7 +8,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.admin import router as admin_router
 from app.api.auth import router as auth_router
 from app.api.client import router as client_router
-from app.api.real_estate import router as real_estate_router
+from app.api.listing import router as real_estate_router
+from app.api.propertiy import router as property_router
+from app.api.real_estate import router as listing_router
 from app.core.database import Base, engine
 
 
@@ -40,6 +42,8 @@ app.include_router(admin_router)
 app.include_router(auth_router)
 app.include_router(client_router)
 app.include_router(real_estate_router)
+app.include_router(property_router)
+app.include_router(listing_router)
 
 
 @app.get("/")
