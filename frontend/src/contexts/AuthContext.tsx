@@ -1,23 +1,14 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { authService } from '../services/authService';
 import type { LoginRequest, UserMeResponse } from '../types/auth';
-
-interface AuthContextType {
-  user: UserMeResponse | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  loginUser: (credentials: LoginRequest) => Promise<void>;
-  logoutUser: () => void;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+import { AuthContext } from '../hooks/useAuth'; 
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => { 
   const [user, setUser] = useState<UserMeResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -32,7 +23,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         const userData = await authService.getMe();
         setUser(userData);
-      } catch (error) {
+      } catch { 
         localStorage.removeItem('token');
         setUser(null);
       } finally {
@@ -81,14 +72,4 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  
-  if (context === undefined) {
-    throw new Error('useAuth debe ser utilizado estrictamente dentro de un AuthProvider');
-  }
-  
-  return context;
 };

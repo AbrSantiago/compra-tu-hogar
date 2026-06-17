@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { clientService } from '../services/clientService';
 import { realEstateService } from '../services/realEstateService';
 import type { UserMeResponse } from '../types/auth';
 import type { RealEstateResponse, RealEstateCreate } from '../types/realEstate';
+import { AxiosError } from 'axios';
 
 export const useAdmin = () => {
   const [clients, setClients] = useState<UserMeResponse[]>([]);
@@ -15,8 +16,7 @@ export const useAdmin = () => {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
 
-  const fetchDashboardData = async () => {
-    setIsLoading(true);
+  const fetchDashboardData = useCallback(async () => {
     setError(null);
     try {
       const [clientsData, realEstatesData] = await Promise.all([
@@ -26,12 +26,12 @@ export const useAdmin = () => {
 
       setClients(clientsData);
       setRealEstates(realEstatesData);
-    } catch (err: any) {
+    } catch { 
       setError('Error al cargar la información del panel de administración.');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   const createRealEstate = async (formData: RealEstateCreate) => {
     setIsSubmitting(true);
@@ -39,13 +39,11 @@ export const useAdmin = () => {
     setSubmitSuccess(null);
     try {
       await realEstateService.create(formData);
-      
       setSubmitSuccess('Inmobiliaria dada de alta de forma exitosa.');
-      
       await fetchDashboardData();
       return true; 
-    } catch (err: any) {
-      const backendMessage = err.response?.data?.detail;
+    } catch (err: unknown) {
+      const backendMessage = (err as AxiosError<{ detail?: string }>)?.response?.data?.detail;
       setSubmitError(backendMessage || 'Error al procesar el alta de la inmobiliaria.');
       return false;
     } finally {
@@ -54,8 +52,20 @@ export const useAdmin = () => {
   };
 
   useEffect(() => {
-    fetchDashboardData();
-  }, []);
+    let isMounted = true;
+
+    const loadData = async () => {
+      if (isMounted) {
+        await fetchDashboardData();
+      }
+    };
+
+    loadData();
+
+    return () => {
+      isMounted = false; 
+    };
+  }, [fetchDashboardData]);
 
   return { 
     clients, 
