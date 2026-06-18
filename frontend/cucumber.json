@@ -1,0 +1,7 @@
+{
+  "default": {
+    "import": ["src/features/steps/**/*.ts"],
+    "paths": ["src/features/*.feature", "src/features/**/*.feature"],
+    "publishQuiet": true
+  }
+}

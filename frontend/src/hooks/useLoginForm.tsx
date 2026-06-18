@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
+import { AxiosError } from 'axios';
 
 export const useLoginForm = () => {
   const { loginUser } = useAuth();
@@ -36,12 +37,14 @@ export const useLoginForm = () => {
         default:
           navigate('/');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error en el proceso de login:", error);
       
       localStorage.removeItem('type');
       
-      const friendlyMsg = error.response?.data?.friendlyMessage;
+      const err = error as AxiosError<{ friendlyMessage?: string }>;
+      const friendlyMsg = err.response?.data?.friendlyMessage;
+      
       setErrorMsg(friendlyMsg || 'Usuario o contraseña incorrectos. Verificá tus credenciales.');
     } finally {
       setIsLoading(false);

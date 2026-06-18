@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { propertyService } from '../services/propertyService';
 import { listingService } from '../services/listingService';
 import type { PropertyResponse, PropertyType } from '../types/property';
@@ -19,22 +19,22 @@ export const useRealEstate = () => {
   const [formError, setFormError] = useState<string | null>(null);
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
 
-  const fetchRealEstateData = async () => {
+  const fetchRealEstateData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
       const [propertiesData, listingsData] = await Promise.all([
         propertyService.getAll(),
-        listingService.getAll(), 
+        listingService.getAll(),
       ]);
       setProperties(propertiesData);
       setListings(listingsData);
-    } catch (err: any) {
+    } catch {
       setError('Error al cargar los datos del panel inmobiliario.');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   const handleCreatePropertySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,8 +62,8 @@ export const useRealEstate = () => {
       setPropCharacteristics('');
       
       await fetchRealEstateData();
-    } catch (err: any) {
-      const backendMessage = err.response?.data?.detail;
+    } catch (err: unknown) {
+      const backendMessage = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
       setFormError(backendMessage || 'Error al registrar la propiedad.');
     } finally {
       setIsSubmitting(false);
@@ -93,11 +93,12 @@ export const useRealEstate = () => {
       setListingPrice('');
       
       await fetchRealEstateData();
-    } catch (err: any) {
-      if (err.response?.status === 409) {
+    } catch (err: unknown) {
+      const errorTyped = err as { response?: { status?: number, data?: { detail?: string } } };
+      if (errorTyped.response?.status === 409) {
         setFormError('Esta propiedad ya cuenta con una publicación activa creada por tu inmobiliaria.');
       } else {
-        const backendMessage = err.response?.data?.detail;
+        const backendMessage = errorTyped.response?.data?.detail;
         setFormError(backendMessage || 'Error al crear la publicación.');
       }
     } finally {
@@ -106,8 +107,20 @@ export const useRealEstate = () => {
   };
 
   useEffect(() => {
-    fetchRealEstateData();
-  }, []);
+    let isMounted = true;
+
+    const loadData = async () => {
+      if (isMounted) {
+        await fetchRealEstateData();
+      }
+    };
+
+    loadData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [fetchRealEstateData]);
 
   return {
     properties,
