@@ -15,5 +15,14 @@ export const listingService = {
   create: async (listingData: ListingCreate): Promise<ListingResponse> => {
     const response = await apiClient.post<ListingResponse>('/listings/', listingData);
     return response.data;
+  },
+
+  update: async (id: number, listingData: Partial<ListingCreate> & { status?: string }): Promise<ListingResponse> => {
+    const response = await apiClient.put<ListingResponse>(`/listings/${id}`, listingData);
+    return response.data;
+  },
+
+  delete: async (id: number): Promise<void> => {
+    await apiClient.delete(`/listings/${id}`);
   }
 };
