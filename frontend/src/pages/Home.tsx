@@ -1,18 +1,41 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { SearchBar, PropertyCard } from '@/components/home/index.ts';
 import { Link } from 'react-router-dom';
 import { useHome } from '@/hooks/useHome';
 import { ErrorMessage } from '@/components/ui';
 import { LogoutButton } from '@/components/ui/LogoutButton';
+import { listingService } from '@/services/listingService';
+import { clientService } from '@/services/clientService'; 
 
 export const Home: React.FC = () => {
-  const { listings, isLoading, error, isLoggedIn, userRole, handleLogout } = useHome();
+  const { listings, isLoading, error, isLoggedIn, userRole, handleLogout, refetch } = useHome();
+  const [userFavIds, setUserFavIds] = useState<number[]>([]); 
+
+  useEffect(() => {
+    const loadUserFavorites = async () => {
+      const clientId = Number(localStorage.getItem('userId'));
+      if (isLoggedIn && userRole === 'client' && clientId) {
+        try {
+          const favs = await clientService.getFavorites(clientId);
+          setUserFavIds(favs.map((f) => f.id));
+        } catch (err) {
+          console.error("Error cargando favoritos del usuario:", err);
+        }
+      }
+    };
+    loadUserFavorites();
+  }, [isLoggedIn, userRole, listings]); 
+
+  const handlePurchaseConfirm = async (listingId: number) => {
+    await listingService.purchase(listingId);
+    await refetch();
+  };
 
   return (
     <div className="min-h-screen bg-white text-slate-800 font-sans antialiased">
       <header className="sticky top-0 z-50 bg-white border-b border-slate-100 px-6 py-4 flex justify-between items-center max-w-7xl mx-auto w-full">
         <div className="flex flex-col">
-          <span className="text-xl font-extrabold text-blue-600 tracking-tight">
+          <span className="text-xl font-bold text-blue-600 tracking-tight">
             Compra Tu Hogar
           </span>
         </div>
@@ -20,6 +43,22 @@ export const Home: React.FC = () => {
         <div className="flex items-center gap-4 text-sm font-semibold text-slate-600">
           {isLoggedIn ? (
             <>
+              {userRole === 'client' && (
+                <div className="flex items-center gap-4">
+                  <Link
+                    to="/mis-propiedades"
+                    className="hover:text-slate-900 active:scale-[0.99] transition-all cursor-pointer text-blue-600 font-bold"
+                  >
+                    Mis Propiedades
+                  </Link>
+                  <Link
+                    to="/mis-favoritos"
+                    className="hover:text-slate-900 active:scale-[0.99] transition-all cursor-pointer text-amber-500 font-bold flex items-center gap-1"
+                  >
+                    Mis Favoritos
+                  </Link>
+                </div>
+              )}
               {userRole === 'admin' && (
                 <Link
                   to="/admin"
@@ -93,19 +132,26 @@ export const Home: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
-            {listings.map((property) => (
-              <PropertyCard
-                key={property.id}
-                id={property.id}
-                title={property.title}
-                location={property.location}
-                price={property.price}
-                image={property.image}
-                type={property.type}
-                realEstateName={property.realEstateName}
-                characteristics={property.characteristics}
-              />
-            ))}
+            {listings.map((property) => {
+              const isSaved = userFavIds.includes(property.id);
+
+              return (
+                <PropertyCard
+                  key={property.id}
+                  id={property.id}
+                  title={property.title}
+                  location={property.location}
+                  price={property.price}
+                  image={property.image}
+                  type={property.type}
+                  realEstateName={property.realEstateName}
+                  characteristics={property.characteristics}
+                  userRole={userRole}
+                  onPurchaseConfirm={handlePurchaseConfirm}
+                  initialIsFavorite={isSaved}
+                />
+              );
+            })}
           </div>
         )}
       </main>

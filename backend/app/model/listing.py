@@ -9,6 +9,7 @@ from app.core.database import Base
 from app.schema.listing import ListingStatus
 
 if TYPE_CHECKING:
+    from app.model.client import Client
     from app.model.property import Property
     from app.model.real_estate import RealEstate
 
@@ -39,9 +40,20 @@ class Listing(Base):
         default=ListingStatus.ACTIVE,
     )
 
-    listed_property: Mapped[Property] = relationship(back_populates="listings")
+    property: Mapped[Property] = relationship(
+        back_populates="listings",
+    )
 
     real_estate: Mapped[RealEstate] = relationship(back_populates="listings")
+
+    buyer_id: Mapped[int | None] = mapped_column(
+        ForeignKey("clients.id"),
+        nullable=True,
+    )
+
+    buyer: Mapped[Client | None] = relationship(
+        back_populates="purchased_listings",
+    )
 
     __table_args__ = (
         UniqueConstraint(

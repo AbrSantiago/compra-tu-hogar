@@ -1,15 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.core.auth import require_admin, require_real_estate
 from app.core.database import get_db
-from app.model.property import Property
 from app.model.user import User
 from app.schema.property import (
     PropertyCreate,
     PropertyResponse,
     PropertyUpdate,
 )
+from app.service import property_service
 
 router = APIRouter(
     prefix="/properties",
@@ -21,7 +21,7 @@ router = APIRouter(
 def get_properties(
     db: Session = Depends(get_db),
 ):
-    return db.query(Property).all()
+    return property_service.get_properties(db)
 
 
 @router.get("/{property_id}", response_model=PropertyResponse)
@@ -29,15 +29,10 @@ def get_property(
     property_id: int,
     db: Session = Depends(get_db),
 ):
-    property_obj = db.get(Property, property_id)
-
-    if property_obj is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Property not found",
-        )
-
-    return property_obj
+    return property_service.get_property(
+        db=db,
+        property_id=property_id,
+    )
 
 
 @router.post(
@@ -50,18 +45,10 @@ def create_property(
     db: Session = Depends(get_db),
     _: User = Depends(require_real_estate),
 ):
-    property_obj = Property(
-        address=property_data.address,
-        location=property_data.location,
-        type=property_data.type,
-        characteristics=property_data.characteristics,
+    return property_service.create_property(
+        db=db,
+        property_data=property_data,
     )
-
-    db.add(property_obj)
-    db.commit()
-    db.refresh(property_obj)
-
-    return property_obj
 
 
 @router.put("/{property_id}", response_model=PropertyResponse)
@@ -71,23 +58,11 @@ def update_property(
     db: Session = Depends(get_db),
     _: User = Depends(require_real_estate),
 ):
-    property_obj = db.get(Property, property_id)
-
-    if property_obj is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Property not found",
-        )
-
-    update_data = property_data.model_dump(exclude_unset=True)
-
-    for field, value in update_data.items():
-        setattr(property_obj, field, value)
-
-    db.commit()
-    db.refresh(property_obj)
-
-    return property_obj
+    return property_service.update_property(
+        db=db,
+        property_id=property_id,
+        property_data=property_data,
+    )
 
 
 @router.delete(
@@ -99,13 +74,7 @@ def delete_property(
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
-    property_obj = db.get(Property, property_id)
-
-    if property_obj is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Property not found",
-        )
-
-    db.delete(property_obj)
-    db.commit()
+    property_service.delete_property(
+        db=db,
+        property_id=property_id,
+    )

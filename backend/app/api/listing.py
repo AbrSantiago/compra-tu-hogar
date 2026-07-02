@@ -1,10 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
-from app.core.auth import require_real_estate
+from app.core.auth import require_client, require_real_estate
 from app.core.database import get_db
-from app.model.listing import Listing
-from app.model.property import Property
+from app.model.client import Client
 from app.model.real_estate import RealEstate
 from app.model.user import User
 from app.schema.listing import (
@@ -12,6 +11,7 @@ from app.schema.listing import (
     ListingResponse,
     ListingUpdate,
 )
+from app.service import listing_service
 
 router = APIRouter(
     prefix="/listings",
@@ -23,7 +23,7 @@ router = APIRouter(
 def get_listings(
     db: Session = Depends(get_db),
 ):
-    return db.query(Listing).all()
+    return listing_service.get_listings(db)
 
 
 @router.get("/{listing_id}", response_model=ListingResponse)
@@ -31,15 +31,10 @@ def get_listing(
     listing_id: int,
     db: Session = Depends(get_db),
 ):
-    listing = db.get(Listing, listing_id)
-
-    if listing is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Listing not found",
-        )
-
-    return listing
+    return listing_service.get_listing(
+        db=db,
+        listing_id=listing_id,
+    )
 
 
 @router.post(
@@ -52,44 +47,11 @@ def create_listing(
     db: Session = Depends(get_db),
     real_estate: RealEstate = Depends(require_real_estate),
 ):
-    property_obj = db.get(
-        Property,
-        listing_data.property_id,
-    )
-
-    if property_obj is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Property not found",
-        )
-
-    existing_listing = (
-        db.query(Listing)
-        .filter(
-            Listing.property_id == listing_data.property_id,
-            Listing.real_estate_id == real_estate.id,
-        )
-        .first()
-    )
-
-    if existing_listing:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Listing already exists for this property and real estate",
-        )
-
-    listing = Listing(
-        property_id=listing_data.property_id,
+    return listing_service.create_listing(
+        db=db,
+        listing_data=listing_data,
         real_estate_id=real_estate.id,
-        price=listing_data.price,
-        status=listing_data.status,
     )
-
-    db.add(listing)
-    db.commit()
-    db.refresh(listing)
-
-    return listing
 
 
 @router.put("/{listing_id}", response_model=ListingResponse)
@@ -99,47 +61,11 @@ def update_listing(
     db: Session = Depends(get_db),
     _: User = Depends(require_real_estate),
 ):
-    listing = db.get(Listing, listing_id)
-
-    if listing is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Listing not found",
-        )
-
-    update_data = listing_data.model_dump(exclude_unset=True)
-
-    if "property_id" in update_data:
-        property_obj = db.get(
-            Property,
-            update_data["property_id"],
-        )
-
-        if property_obj is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Property not found",
-            )
-
-    if "real_estate_id" in update_data:
-        real_estate = db.get(
-            RealEstate,
-            update_data["real_estate_id"],
-        )
-
-        if real_estate is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Real estate not found",
-            )
-
-    for field, value in update_data.items():
-        setattr(listing, field, value)
-
-    db.commit()
-    db.refresh(listing)
-
-    return listing
+    return listing_service.update_listing(
+        db=db,
+        listing_id=listing_id,
+        listing_data=listing_data,
+    )
 
 
 @router.delete(
@@ -151,13 +77,23 @@ def delete_listing(
     db: Session = Depends(get_db),
     _: User = Depends(require_real_estate),
 ):
-    listing = db.get(Listing, listing_id)
+    listing_service.delete_listing(
+        db=db,
+        listing_id=listing_id,
+    )
 
-    if listing is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Listing not found",
-        )
 
-    db.delete(listing)
-    db.commit()
+@router.post(
+    "/{listing_id}/purchase",
+    response_model=ListingResponse,
+)
+def purchase_listing(
+    listing_id: int,
+    db: Session = Depends(get_db),
+    client: Client = Depends(require_client),
+):
+    return listing_service.purchase_listing(
+        db=db,
+        listing_id=listing_id,
+        client=client,
+    )

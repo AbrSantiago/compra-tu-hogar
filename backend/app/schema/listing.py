@@ -2,6 +2,10 @@ import enum
 
 from pydantic import BaseModel, ConfigDict
 
+from app.schema.client import ClientResponse
+from app.schema.property import PropertyResponse
+from app.schema.real_estate import RealEstateResponse
+
 
 class ListingStatus(enum.Enum):
     ACTIVE = "active"
@@ -24,8 +28,11 @@ class ListingUpdate(BaseModel):
 
 class ListingResponse(BaseModel):
     id: int
-    property_id: int
     price: float
     status: ListingStatus
+
+    property: PropertyResponse
+    real_estate: RealEstateResponse
+    buyer: ClientResponse | None = None
 
     model_config = ConfigDict(from_attributes=True)

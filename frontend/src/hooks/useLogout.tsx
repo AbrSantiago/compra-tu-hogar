@@ -1,4 +1,4 @@
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
 export const useLogout = () => {
@@ -7,6 +7,8 @@ export const useLogout = () => {
 
   const handleLogout = () => {
     logoutUser();
+    localStorage.removeItem('type');
+    localStorage.removeItem('userId');    
     navigate('/');
   };
 

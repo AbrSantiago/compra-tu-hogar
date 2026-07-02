@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr
 
 
 class RealEstateCreate(BaseModel):
@@ -19,5 +19,4 @@ class RealEstateResponse(BaseModel):
     email: EmailStr
     type: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

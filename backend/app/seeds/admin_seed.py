@@ -16,6 +16,12 @@ def create_default_admin(db: Session) -> None:
         email="root@test.com",
         password=hash_password("123456"),
     )
+    admin2 = Admin(
+        name="admin",
+        email="admin@test.com",
+        password=hash_password("123456"),
+    )
 
     db.add(admin)
+    db.add(admin2)
     db.commit()

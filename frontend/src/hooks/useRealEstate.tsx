@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { propertyService } from '../services/propertyService';
 import { listingService } from '../services/listingService';
 import type { PropertyResponse, PropertyType } from '../types/property';
@@ -19,22 +19,43 @@ export const useRealEstate = () => {
   const [formError, setFormError] = useState<string | null>(null);
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
 
-  const fetchRealEstateData = async () => {
+  const fetchRealEstateData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
+      const currentRealEstateId = Number(localStorage.getItem('userId'));
+
       const [propertiesData, listingsData] = await Promise.all([
         propertyService.getAll(),
-        listingService.getAll(), 
+        listingService.getAll(),
       ]);
-      setProperties(propertiesData);
-      setListings(listingsData);
-    } catch (err: any) {
+
+      const filteredListings = listingsData.filter((list: ListingResponse) => {
+        const idInmo = list.real_estate?.id;
+        return idInmo === currentRealEstateId;
+      });
+
+      const filteredProperties = propertiesData.filter((prop) => {
+        const perteneceAMisListings = filteredListings.some(
+          (list: ListingResponse) => list.property_id === prop.id
+        );
+        
+        const esPropiedadNuevaSinPublicar = !listingsData.some(
+          (list: ListingResponse) => list.property_id === prop.id
+        );
+
+        return perteneceAMisListings || esPropiedadNuevaSinPublicar;
+      });
+
+      setProperties(filteredProperties);
+      setListings(filteredListings);
+    } catch (err) {
+      console.error(err);
       setError('Error al cargar los datos del panel inmobiliario.');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   const handleCreatePropertySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,10 +81,10 @@ export const useRealEstate = () => {
       setPropAddress('');
       setPropLocation('');
       setPropCharacteristics('');
-      
+
       await fetchRealEstateData();
-    } catch (err: any) {
-      const backendMessage = err.response?.data?.detail;
+    } catch (err: unknown) {
+      const backendMessage = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
       setFormError(backendMessage || 'Error al registrar la propiedad.');
     } finally {
       setIsSubmitting(false);
@@ -91,13 +112,14 @@ export const useRealEstate = () => {
       setFormSuccess('¡Propiedad publicada en el mercado de forma exitosa!');
       setSelectedPropertyId(null);
       setListingPrice('');
-      
+
       await fetchRealEstateData();
-    } catch (err: any) {
-      if (err.response?.status === 409) {
+    } catch (err: unknown) {
+      const errorTyped = err as { response?: { status?: number, data?: { detail?: string } } };
+      if (errorTyped.response?.status === 409) {
         setFormError('Esta propiedad ya cuenta con una publicación activa creada por tu inmobiliaria.');
       } else {
-        const backendMessage = err.response?.data?.detail;
+        const backendMessage = errorTyped.response?.data?.detail;
         setFormError(backendMessage || 'Error al crear la publicación.');
       }
     } finally {
@@ -105,9 +127,53 @@ export const useRealEstate = () => {
     }
   };
 
+  const handleDeleteListing = async (listingId: number) => {
+    setFormError(null);
+    setFormSuccess(null);
+    setIsSubmitting(true);
+    try {
+      await listingService.delete(listingId);
+      setFormSuccess('Publicación eliminada con éxito');
+      await fetchRealEstateData();
+    } catch (err: unknown) {
+      const backendMessage = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
+      setFormError(backendMessage || 'Error al eliminar la publicación.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleUpdateListing = async (listingId: number, updateData: { price?: number; status?: ListingStatus }) => {
+    setFormError(null);
+    setFormSuccess(null);
+    setIsSubmitting(true);
+    try {
+      await listingService.update(listingId, updateData);
+      setFormSuccess('Publicación actualizada con éxito');
+      await fetchRealEstateData();
+    } catch (err: unknown) {
+      const backendMessage = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
+      setFormError(backendMessage || 'Error al actualizar la publicación.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   useEffect(() => {
-    fetchRealEstateData();
-  }, []);
+    let isMounted = true;
+
+    const loadData = async () => {
+      if (isMounted) {
+        await fetchRealEstateData();
+      }
+    };
+
+    loadData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [fetchRealEstateData]);
 
   return {
     properties,
@@ -123,6 +189,8 @@ export const useRealEstate = () => {
     selectedPropertyId, setSelectedPropertyId,
     listingPrice, setListingPrice,
     handleCreateListingSubmit,
+    handleDeleteListing,
+    handleUpdateListingPrice: handleUpdateListing,
     isSubmitting,
     formError,
     formSuccess,

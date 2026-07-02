@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.core.auth import (
@@ -7,14 +7,13 @@ from app.core.auth import (
     require_admin_or_owner,
 )
 from app.core.database import get_db
-from app.core.security import hash_password
-from app.model.real_estate import RealEstate
 from app.model.user import User
 from app.schema.real_estate import (
     RealEstateCreate,
     RealEstateResponse,
     RealEstateUpdate,
 )
+from app.service import real_estate_service
 
 router = APIRouter(
     prefix="/real-estates",
@@ -28,25 +27,10 @@ def create_real_estate(
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
-    existing_user = db.query(User).filter(User.email == real_estate.email).first()
-
-    if existing_user:
-        raise HTTPException(
-            status_code=400,
-            detail="Email already registered",
-        )
-
-    new_real_estate = RealEstate(
-        name=real_estate.name,
-        email=real_estate.email,
-        password=hash_password(real_estate.password),
+    return real_estate_service.create_real_estate(
+        db=db,
+        real_estate_data=real_estate,
     )
-
-    db.add(new_real_estate)
-    db.commit()
-    db.refresh(new_real_estate)
-
-    return new_real_estate
 
 
 @router.get("/", response_model=list[RealEstateResponse])
@@ -54,7 +38,7 @@ def get_real_estates(
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
-    return db.query(RealEstate).all()
+    return real_estate_service.get_real_estates(db)
 
 
 @router.get("/{real_estate_id}", response_model=RealEstateResponse)
@@ -63,20 +47,15 @@ def get_real_estate(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    real_estate = db.query(RealEstate).filter(RealEstate.id == real_estate_id).first()
-
-    if not real_estate:
-        raise HTTPException(
-            status_code=404,
-            detail="Real estate not found",
-        )
-
     require_admin_or_owner(
         current_user,
-        real_estate.id,
+        real_estate_id,
     )
 
-    return real_estate
+    return real_estate_service.get_real_estate(
+        db=db,
+        real_estate_id=real_estate_id,
+    )
 
 
 @router.put("/{real_estate_id}", response_model=RealEstateResponse)
@@ -86,32 +65,16 @@ def update_real_estate(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    real_estate = db.query(RealEstate).filter(RealEstate.id == real_estate_id).first()
-
-    if not real_estate:
-        raise HTTPException(
-            status_code=404,
-            detail="Real estate not found",
-        )
-
     require_admin_or_owner(
         current_user,
-        real_estate.id,
+        real_estate_id,
     )
 
-    if real_estate_data.name is not None:
-        real_estate.name = real_estate_data.name
-
-    if real_estate_data.email is not None:
-        real_estate.email = real_estate_data.email
-
-    if real_estate_data.password is not None:
-        real_estate.password = hash_password(real_estate_data.password)
-
-    db.commit()
-    db.refresh(real_estate)
-
-    return real_estate
+    return real_estate_service.update_real_estate(
+        db=db,
+        real_estate_id=real_estate_id,
+        real_estate_data=real_estate_data,
+    )
 
 
 @router.delete("/{real_estate_id}")
@@ -120,15 +83,7 @@ def delete_real_estate(
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
-    real_estate = db.query(RealEstate).filter(RealEstate.id == real_estate_id).first()
-
-    if not real_estate:
-        raise HTTPException(
-            status_code=404,
-            detail="Real estate not found",
-        )
-
-    db.delete(real_estate)
-    db.commit()
-
-    return {"message": "Real estate deleted"}
+    return real_estate_service.delete_real_estate(
+        db=db,
+        real_estate_id=real_estate_id,
+    )
