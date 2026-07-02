@@ -10,6 +10,7 @@ import { RealEstatePropertiesPage } from '@/pages/RealEstate/RealEstatePropertie
 import { RealEstateListingsPage } from '@/pages/RealEstate/RealEstateListingsPage';
 import RealEstatePage from '@/pages/RealEstate/RealEstatePage';
 import { ClientPurchasesPage } from '@/pages/Client/ClientPurchasesPage.tsx';
+import { ClientFavoritesPage } from '@/pages/Client/ClientFavoritesPage';
 
 export const AppRouter = () => {
   return (
@@ -24,6 +25,15 @@ export const AppRouter = () => {
           element={
             <ProtectedRoute allowedRoles={['client']}>
               <ClientPurchasesPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/mis-favoritos"
+          element={
+            <ProtectedRoute allowedRoles={['client']}>
+              <ClientFavoritesPage />
             </ProtectedRoute>
           }
         />

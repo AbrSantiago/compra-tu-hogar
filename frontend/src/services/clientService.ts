@@ -27,5 +27,20 @@ export const clientService = {
   getPurchases: async (clientId: number): Promise<ListingResponse[]> => {
     const response = await apiClient.get<ListingResponse[]>(`/clients/${clientId}/purchases`);
     return response.data;
+  },
+
+  addFavorite: async (clientId: number, listingId: number): Promise<{ status: string; message: string }> => {
+    const response = await apiClient.post<{ status: string; message: string }>(`/clients/${clientId}/favorites/${listingId}`);
+    return response.data;
+  },
+
+  removeFavorite: async (clientId: number, listingId: number): Promise<{ status: string; message: string }> => {
+    const response = await apiClient.delete<{ status: string; message: string }>(`/clients/${clientId}/favorites/${listingId}`);
+    return response.data;
+  },
+
+  getFavorites: async (clientId: number): Promise<ListingResponse[]> => {
+    const response = await apiClient.get<ListingResponse[]>(`/clients/${clientId}/favorites`);
+    return response.data;
   }
 };

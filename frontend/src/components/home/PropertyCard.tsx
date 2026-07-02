@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PurchaseListingModal } from '../modals/PurchaseListingModal';
+import { clientService } from '@/services/clientService'; 
 
 interface PropertyCardProps {
   id: number;
@@ -12,6 +13,7 @@ interface PropertyCardProps {
   characteristics: string | null; 
   userRole?: string | null; 
   onPurchaseConfirm: (id: number) => Promise<void>; 
+  initialIsFavorite?: boolean;
 }
 
 export const PropertyCard: React.FC<PropertyCardProps> = ({
@@ -24,10 +26,16 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   realEstateName,
   characteristics,
   userRole,
-  onPurchaseConfirm
+  onPurchaseConfirm,
+  initialIsFavorite = false
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
+
+  useEffect(() => {
+    setIsFavorite(initialIsFavorite);
+  }, [initialIsFavorite]);
 
   const handleOpenModal = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -46,9 +54,27 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
     }
   };
 
+  const handleToggleFavorite = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const clientId = Number(localStorage.getItem('userId'));
+    if (!clientId) return;
+
+    try {
+      if (isFavorite) {
+        await clientService.removeFavorite(clientId, id);
+        setIsFavorite(false);
+      } else {
+        await clientService.addFavorite(clientId, id);
+        setIsFavorite(true);
+      }
+    } catch (error) {
+      console.error("Error al actualizar favoritos:", error);
+    }
+  };
+
   return (
     <>
-      <div className="group cursor-pointer space-y-3 active:scale-[0.99] transition-all duration-150 bg-white rounded-2xl p-2 border border-transparent hover:border-slate-100 hover:shadow-xs">
+      <div className="group cursor-pointer space-y-3 active:scale-[0.99] transition-all duration-150 bg-white rounded-2xl p-2 border border-transparent hover:border-slate-100 hover:shadow-xs relative">
         <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-slate-100 border border-slate-100">
           <img
             src={image}
@@ -58,6 +84,29 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
           <span className="absolute top-3 left-3 px-2.5 py-1 text-xs font-semibold bg-white/90 backdrop-blur-xs text-slate-900 rounded-xl shadow-xs border border-slate-200/50">
             {realEstateName}
           </span>
+
+          {userRole === 'client' && (
+            <button
+              type="button"
+              onClick={handleToggleFavorite}
+              className="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-xs hover:bg-white rounded-xl transition-all shadow-xs text-amber-500 active:scale-90 border border-slate-200/20 z-10"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill={isFavorite ? "currentColor" : "none"}
+                stroke="currentColor"
+                strokeWidth={2}
+                className="w-4 h-4 transition-transform group-hover:scale-110"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M11.48 3.499c.151-.326.617-.326.768 0l2.124 4.592 4.937.697c.36.051.503.504.234.757l-3.606 3.424 1.011 5.006c.074.364-.32.659-.636.471L12 16.142l-4.428 2.396c-.317.189-.711-.107-.636-.47l1.011-5.006L4.34 9.545c-.269-.253-.125-.706.234-.757l4.937-.697 2.124-4.592z"
+                />
+              </svg>
+            </button>
+          )}
         </div>
 
         <div className="space-y-1 px-1">

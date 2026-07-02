@@ -19,17 +19,38 @@ export const useRealEstate = () => {
   const [formError, setFormError] = useState<string | null>(null);
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
 
-  const fetchRealEstateData = useCallback(async () => {
+const fetchRealEstateData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
+      const currentRealEstateId = Number(localStorage.getItem('userId'));
+
       const [propertiesData, listingsData] = await Promise.all([
         propertyService.getAll(),
         listingService.getAll(),
       ]);
-      setProperties(propertiesData);
-      setListings(listingsData);
-    } catch {
+
+      // 1. Filtrás las publicaciones pertenecientes a tu inmobiliaria
+      const filteredListings = listingsData.filter((list: any) => {
+        const idInmo = list.real_estate_id || list.real_estate?.id;
+        return idInmo == currentRealEstateId;
+      });
+
+      // 2. Filtrás tus propiedades usando un doble criterio:
+      const filteredProperties = propertiesData.filter((prop) => {
+        // Criterio A: La propiedad ya tiene al menos una publicación hecha por vos
+        const perteneceAMisListings = filteredListings.some((list) => list.property_id === prop.id);
+        
+        // Criterio B: Es una propiedad nueva recién creada (no tiene publicaciones de NADIE en el sistema)
+        const esPropiedadNuevaSinPublicar = !listingsData.some((list: any) => list.property_id === prop.id);
+
+        return perteneceAMisListings || esPropiedadNuevaSinPublicar;
+      });
+
+      setProperties(filteredProperties);
+      setListings(filteredListings);
+    } catch (err) {
+      console.error(err);
       setError('Error al cargar los datos del panel inmobiliario.');
     } finally {
       setIsLoading(false);
@@ -60,7 +81,7 @@ export const useRealEstate = () => {
       setPropAddress('');
       setPropLocation('');
       setPropCharacteristics('');
-      
+
       await fetchRealEstateData();
     } catch (err: unknown) {
       const backendMessage = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
@@ -91,7 +112,7 @@ export const useRealEstate = () => {
       setFormSuccess('¡Propiedad publicada en el mercado de forma exitosa!');
       setSelectedPropertyId(null);
       setListingPrice('');
-      
+
       await fetchRealEstateData();
     } catch (err: unknown) {
       const errorTyped = err as { response?: { status?: number, data?: { detail?: string } } };
