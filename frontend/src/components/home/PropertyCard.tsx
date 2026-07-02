@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { PurchaseListingModal } from '../modals/PurchaseListingModal';
 import { clientService } from '@/services/clientService'; 
 
@@ -32,10 +32,12 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
+  const [prevInitialIsFavorite, setPrevInitialIsFavorite] = useState(initialIsFavorite);
 
-  useEffect(() => {
+  if (initialIsFavorite !== prevInitialIsFavorite) {
     setIsFavorite(initialIsFavorite);
-  }, [initialIsFavorite]);
+    setPrevInitialIsFavorite(initialIsFavorite);
+  }
 
   const handleOpenModal = (e: React.MouseEvent) => {
     e.stopPropagation();

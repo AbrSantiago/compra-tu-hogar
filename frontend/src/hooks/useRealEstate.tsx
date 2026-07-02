@@ -19,7 +19,7 @@ export const useRealEstate = () => {
   const [formError, setFormError] = useState<string | null>(null);
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
 
-const fetchRealEstateData = useCallback(async () => {
+  const fetchRealEstateData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -30,19 +30,19 @@ const fetchRealEstateData = useCallback(async () => {
         listingService.getAll(),
       ]);
 
-      // 1. Filtrás las publicaciones pertenecientes a tu inmobiliaria
-      const filteredListings = listingsData.filter((list: any) => {
-        const idInmo = list.real_estate_id || list.real_estate?.id;
-        return idInmo == currentRealEstateId;
+      const filteredListings = listingsData.filter((list: ListingResponse) => {
+        const idInmo = list.real_estate?.id;
+        return idInmo === currentRealEstateId;
       });
 
-      // 2. Filtrás tus propiedades usando un doble criterio:
       const filteredProperties = propertiesData.filter((prop) => {
-        // Criterio A: La propiedad ya tiene al menos una publicación hecha por vos
-        const perteneceAMisListings = filteredListings.some((list) => list.property_id === prop.id);
+        const perteneceAMisListings = filteredListings.some(
+          (list: ListingResponse) => list.property_id === prop.id
+        );
         
-        // Criterio B: Es una propiedad nueva recién creada (no tiene publicaciones de NADIE en el sistema)
-        const esPropiedadNuevaSinPublicar = !listingsData.some((list: any) => list.property_id === prop.id);
+        const esPropiedadNuevaSinPublicar = !listingsData.some(
+          (list: ListingResponse) => list.property_id === prop.id
+        );
 
         return perteneceAMisListings || esPropiedadNuevaSinPublicar;
       });
