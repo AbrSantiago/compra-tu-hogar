@@ -40,7 +40,9 @@ class Listing(Base):
         default=ListingStatus.ACTIVE,
     )
 
-    listed_property: Mapped[Property] = relationship(back_populates="listings")
+    property: Mapped[Property] = relationship(
+        back_populates="listings",
+    )
 
     real_estate: Mapped[RealEstate] = relationship(back_populates="listings")
 

@@ -33,4 +33,6 @@ class Property(Base):
         nullable=True,
     )
 
-    listings: Mapped[list[Listing]] = relationship(back_populates="listed_property")
+    listings: Mapped[list[Listing]] = relationship(
+        back_populates="property",
+    )

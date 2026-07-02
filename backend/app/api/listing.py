@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.core.auth import require_client, require_real_estate
 from app.core.database import get_db
@@ -25,7 +25,15 @@ router = APIRouter(
 def get_listings(
     db: Session = Depends(get_db),
 ):
-    return db.query(Listing).all()
+    return (
+        db.query(Listing)
+        .options(
+            joinedload(Listing.property),
+            joinedload(Listing.real_estate),
+            joinedload(Listing.buyer),
+        )
+        .all()
+    )
 
 
 @router.get("/{listing_id}", response_model=ListingResponse)
@@ -33,7 +41,16 @@ def get_listing(
     listing_id: int,
     db: Session = Depends(get_db),
 ):
-    listing = db.get(Listing, listing_id)
+    listing = (
+        db.query(Listing)
+        .options(
+            joinedload(Listing.property),
+            joinedload(Listing.real_estate),
+            joinedload(Listing.buyer),
+        )
+        .filter(Listing.id == listing_id)
+        .first()
+    )
 
     if listing is None:
         raise HTTPException(
