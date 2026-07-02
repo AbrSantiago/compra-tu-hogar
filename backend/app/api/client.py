@@ -8,8 +8,10 @@ from app.core.database import get_db
 from app.core.security import hash_password
 from app.model.admin import Admin
 from app.model.client import Client
+from app.model.listing import Listing
 from app.model.user import User
 from app.schema.client import ClientUpdate
+from app.schema.listing import ListingResponse
 
 router = APIRouter(prefix="/clients", tags=["clients"])
 
@@ -101,3 +103,28 @@ def delete_client(
     db.commit()
 
     return {"message": "Client deleted"}
+
+
+@router.get(
+    "/{client_id}/purchases",
+    response_model=list[ListingResponse],
+)
+def get_purchased_properties(
+    client_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    client = db.get(Client, client_id)
+
+    if client is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Client not found",
+        )
+
+    require_admin_or_owner(
+        current_user,
+        client.id,
+    )
+
+    return db.query(Listing).filter(Listing.buyer_id == client_id).all()

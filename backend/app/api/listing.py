@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.core.auth import require_real_estate
+from app.core.auth import require_client, require_real_estate
 from app.core.database import get_db
+from app.model.client import Client
 from app.model.listing import Listing
 from app.model.property import Property
 from app.model.real_estate import RealEstate
@@ -10,6 +11,7 @@ from app.model.user import User
 from app.schema.listing import (
     ListingCreate,
     ListingResponse,
+    ListingStatus,
     ListingUpdate,
 )
 
@@ -161,3 +163,35 @@ def delete_listing(
 
     db.delete(listing)
     db.commit()
+
+
+@router.post(
+    "/{listing_id}/purchase",
+    response_model=ListingResponse,
+)
+def purchase_listing(
+    listing_id: int,
+    db: Session = Depends(get_db),
+    client: Client = Depends(require_client),
+):
+    listing = db.get(Listing, listing_id)
+
+    if listing is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Listing not found",
+        )
+
+    if listing.status != ListingStatus.ACTIVE:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Listing is not available",
+        )
+
+    listing.status = ListingStatus.SOLD
+    listing.buyer = client
+
+    db.commit()
+    db.refresh(listing)
+
+    return listing
