@@ -106,6 +106,38 @@ export const useRealEstate = () => {
     }
   };
 
+  const handleDeleteListing = async (listingId: number) => {
+    setFormError(null);
+    setFormSuccess(null);
+    setIsSubmitting(true);
+    try {
+      await listingService.delete(listingId);
+      setFormSuccess('Publicación eliminada con éxito');
+      await fetchRealEstateData();
+    } catch (err: unknown) {
+      const backendMessage = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
+      setFormError(backendMessage || 'Error al eliminar la publicación.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleUpdateListing = async (listingId: number, updateData: { price?: number; status?: ListingStatus }) => {
+    setFormError(null);
+    setFormSuccess(null);
+    setIsSubmitting(true);
+    try {
+      await listingService.update(listingId, updateData);
+      setFormSuccess('Publicación actualizada con éxito');
+      await fetchRealEstateData();
+    } catch (err: unknown) {
+      const backendMessage = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
+      setFormError(backendMessage || 'Error al actualizar la publicación.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   useEffect(() => {
     let isMounted = true;
 
@@ -136,6 +168,8 @@ export const useRealEstate = () => {
     selectedPropertyId, setSelectedPropertyId,
     listingPrice, setListingPrice,
     handleCreateListingSubmit,
+    handleDeleteListing,
+    handleUpdateListingPrice: handleUpdateListing,
     isSubmitting,
     formError,
     formSuccess,
