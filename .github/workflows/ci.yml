@@ -63,8 +63,8 @@ jobs:
 
       - name: Levantar entorno completo con Docker Compose para E2E
         run: |
-          docker compose up -d db backend
-          sleep 10
+          docker compose up --build -d
+          sleep 20
 
       - name: Ejecutar Tests de Cucumber (E2E)
         run: npm run test:e2e
