@@ -1,19 +1,22 @@
-# app/api/client.py
-
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.core.auth import get_current_user, require_admin, require_admin_or_owner
+from app.core.auth import (
+    get_current_user,
+    require_admin,
+    require_admin_or_owner,
+)
 from app.core.database import get_db
-from app.core.security import hash_password
 from app.model.admin import Admin
-from app.model.client import Client
-from app.model.listing import Listing
 from app.model.user import User
 from app.schema.client import ClientUpdate
 from app.schema.listing import ListingResponse
+from service import client_service
 
-router = APIRouter(prefix="/clients", tags=["clients"])
+router = APIRouter(
+    prefix="/clients",
+    tags=["clients"],
+)
 
 
 @router.get("/")
@@ -21,7 +24,7 @@ def get_clients(
     db: Session = Depends(get_db),
     _: Admin = Depends(require_admin),
 ):
-    return db.query(Client).all()
+    return client_service.get_clients(db)
 
 
 @router.get("/{client_id}")
@@ -31,20 +34,15 @@ def get_client(
     _: Admin = Depends(require_admin),
     current_user: User = Depends(get_current_user),
 ):
-    client = db.query(Client).filter(Client.id == client_id).first()
-
-    if not client:
-        raise HTTPException(
-            status_code=404,
-            detail="Client not found",
-        )
-
     require_admin_or_owner(
         current_user,
-        client.id,
+        client_id,
     )
 
-    return client
+    return client_service.get_client(
+        db=db,
+        client_id=client_id,
+    )
 
 
 @router.put("/{client_id}")
@@ -54,35 +52,16 @@ def update_client(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    client = db.query(Client).filter(Client.id == client_id).first()
-
-    if not client:
-        raise HTTPException(
-            status_code=404,
-            detail="Client not found",
-        )
-
     require_admin_or_owner(
         current_user,
-        client.id,
+        client_id,
     )
 
-    if client_data.name is not None:
-        client.name = client_data.name
-
-    if client_data.surname is not None:
-        client.surname = client_data.surname
-
-    if client_data.email is not None:
-        client.email = client_data.email
-
-    if client_data.password is not None:
-        client.password = hash_password(client_data.password)
-
-    db.commit()
-    db.refresh(client)
-
-    return client
+    return client_service.update_client(
+        db=db,
+        client_id=client_id,
+        client_data=client_data,
+    )
 
 
 @router.delete("/{client_id}")
@@ -91,18 +70,10 @@ def delete_client(
     db: Session = Depends(get_db),
     _: Admin = Depends(require_admin),
 ):
-    client = db.query(Client).filter(Client.id == client_id).first()
-
-    if not client:
-        raise HTTPException(
-            status_code=404,
-            detail="Client not found",
-        )
-
-    db.delete(client)
-    db.commit()
-
-    return {"message": "Client deleted"}
+    return client_service.delete_client(
+        db=db,
+        client_id=client_id,
+    )
 
 
 @router.get(
@@ -114,17 +85,12 @@ def get_purchased_properties(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    client = db.get(Client, client_id)
-
-    if client is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Client not found",
-        )
-
     require_admin_or_owner(
         current_user,
-        client.id,
+        client_id,
     )
 
-    return db.query(Listing).filter(Listing.buyer_id == client_id).all()
+    return client_service.get_purchased_properties(
+        db=db,
+        client_id=client_id,
+    )
