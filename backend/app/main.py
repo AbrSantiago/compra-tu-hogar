@@ -1,10 +1,8 @@
 # app/main.py
-
 from contextlib import asynccontextmanager
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from prometheus_fastapi_instrumentator import Instrumentator
 from app.api.admin import router as admin_router
 from app.api.auth import router as auth_router
 from app.api.client import router as client_router
@@ -17,6 +15,8 @@ from app.seeds.seed import run_seeds
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    Instrumentator().instrument(app).expose(app)
+    
     Base.metadata.create_all(bind=engine)
 
     db = SessionLocal()
@@ -37,6 +37,8 @@ app = FastAPI(
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://localhost:30173",
+    "http://127.0.0.1:30173",
 ]
 
 app.add_middleware(
