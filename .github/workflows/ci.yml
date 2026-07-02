@@ -64,7 +64,8 @@ jobs:
       - name: Levantar entorno completo con Docker Compose para E2E
         run: |
           docker compose up --build -d
-          sleep 60
+          sleep 20
+          docker compose exec -T backend uv run python app/seeds/seed.py
 
       - name: Ejecutar Tests de Cucumber (E2E)
         run: npm run test:e2e
