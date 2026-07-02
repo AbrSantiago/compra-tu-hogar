@@ -9,6 +9,7 @@ import { AdminRealEstatePage } from '@/pages/Admin/AdminRealEstatePage';
 import { RealEstatePropertiesPage } from '@/pages/RealEstate/RealEstatePropertiesPage';
 import { RealEstateListingsPage } from '@/pages/RealEstate/RealEstateListingsPage';
 import RealEstatePage from '@/pages/RealEstate/RealEstatePage';
+import { ClientPurchasesPage } from '@/pages/Client/ClientPurchasesPage.tsx';
 
 export const AppRouter = () => {
   return (
@@ -17,6 +18,15 @@ export const AppRouter = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
+        <Route
+          path="/mis-propiedades"
+          element={
+            <ProtectedRoute allowedRoles={['client']}>
+              <ClientPurchasesPage />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path="/admin"

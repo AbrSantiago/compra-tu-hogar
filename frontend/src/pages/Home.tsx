@@ -4,15 +4,21 @@ import { Link } from 'react-router-dom';
 import { useHome } from '@/hooks/useHome';
 import { ErrorMessage } from '@/components/ui';
 import { LogoutButton } from '@/components/ui/LogoutButton';
+import { listingService } from '@/services/listingService';
 
 export const Home: React.FC = () => {
-  const { listings, isLoading, error, isLoggedIn, userRole, handleLogout } = useHome();
+  const { listings, isLoading, error, isLoggedIn, userRole, handleLogout, refetch } = useHome();
+
+  const handlePurchaseConfirm = async (listingId: number) => {
+    await listingService.purchase(listingId);
+    await refetch();
+  };
 
   return (
     <div className="min-h-screen bg-white text-slate-800 font-sans antialiased">
       <header className="sticky top-0 z-50 bg-white border-b border-slate-100 px-6 py-4 flex justify-between items-center max-w-7xl mx-auto w-full">
         <div className="flex flex-col">
-          <span className="text-xl font-extrabold text-blue-600 tracking-tight">
+          <span className="text-xl font-bold text-blue-600 tracking-tight">
             Compra Tu Hogar
           </span>
         </div>
@@ -20,6 +26,15 @@ export const Home: React.FC = () => {
         <div className="flex items-center gap-4 text-sm font-semibold text-slate-600">
           {isLoggedIn ? (
             <>
+              {userRole === 'client' && (
+                <Link
+                  to="/mis-propiedades"
+                  className="hover:text-slate-900 active:scale-[0.99] transition-all cursor-pointer text-blue-600 font-bold"
+                >
+                  Mis Propiedades
+                </Link>
+              )}
+
               {userRole === 'admin' && (
                 <Link
                   to="/admin"
@@ -104,6 +119,8 @@ export const Home: React.FC = () => {
                 type={property.type}
                 realEstateName={property.realEstateName}
                 characteristics={property.characteristics}
+                userRole={userRole}
+                onPurchaseConfirm={handlePurchaseConfirm}
               />
             ))}
           </div>

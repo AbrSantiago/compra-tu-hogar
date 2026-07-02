@@ -7,6 +7,8 @@ export const useLogout = () => {
 
   const handleLogout = () => {
     logoutUser();
+    localStorage.removeItem('type');
+    localStorage.removeItem('userId');    
     navigate('/');
   };
 

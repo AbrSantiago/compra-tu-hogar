@@ -19,13 +19,13 @@ export const useHome = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => !!localStorage.getItem('token'));
   const [userRole, setUserRole] = useState<string | null>(() => localStorage.getItem('type'));
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('type');
-    setIsLoggedIn(false);
-    setUserRole(null);
-  };
-
+const handleLogout = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('type');
+  localStorage.removeItem('userId');
+  setIsLoggedIn(false);
+  setUserRole(null);
+};
   const fetchHomeData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
