@@ -2,9 +2,13 @@ name: CI Compra Tu Hogar
 
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches:
+      - main
+      - dev
   pull_request:
-    branches: [ "main", "dev" ]
+    branches:
+      - main
+      - dev
 
 jobs:
   backend-ci:
@@ -30,7 +34,7 @@ jobs:
         run: uv run pytest
         working-directory: ./backend
         env:
-          DATABASE_URL: sqlite:///:memory:
+          DATABASE_URL: "sqlite:///:memory:"
 
   frontend-ci:
     runs-on: ubuntu-latest
