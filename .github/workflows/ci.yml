@@ -63,7 +63,7 @@ jobs:
 
       - name: Levantar entorno completo con Docker Compose para E2E
         run: |
-          docker-compose up -d db backend
+          docker compose up -d db backend
           sleep 10
 
       - name: Ejecutar Tests de Cucumber (E2E)
@@ -72,7 +72,7 @@ jobs:
 
       - name: Apagar entorno de pruebas
         if: always()
-        run: docker-compose down -v
+        run: docker compose down -v
 
       - name: Validar compilación final (Build Test)
         run: npm run build
