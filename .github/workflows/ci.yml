@@ -65,7 +65,7 @@ jobs:
         run: |
           docker compose up --build -d
           sleep 20
-          docker compose exec -T backend env PYTHONPATH=. uv run python app/seeds/seed.py
+          docker compose exec -T backend env PYTHONPATH=. uv run python -m app.seeds.seed
 
       - name: Ejecutar Tests de Cucumber (E2E)
         run: npm run test:e2e
