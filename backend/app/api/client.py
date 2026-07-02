@@ -11,7 +11,7 @@ from app.model.admin import Admin
 from app.model.user import User
 from app.schema.client import ClientUpdate
 from app.schema.listing import ListingResponse
-from service import client_service
+from app.service import client_service
 
 router = APIRouter(
     prefix="/clients",
