@@ -24,5 +24,10 @@ export const listingService = {
 
   delete: async (id: number): Promise<void> => {
     await apiClient.delete(`/listings/${id}`);
+  },
+
+  purchase: async (id: number): Promise<ListingResponse> => {
+    const response = await apiClient.post<ListingResponse>(`/listings/${id}/purchase`);
+    return response.data;
   }
 };
