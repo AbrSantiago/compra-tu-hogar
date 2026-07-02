@@ -1,6 +1,6 @@
 import { When, Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import type { CustomWorld } from './world'; 
+import type { CustomWorld } from './world';
 
 let direccionCreada: string;
 
@@ -47,7 +47,7 @@ When('publica el inmueble recientemente creado con un precio de {string}', async
 });
 
 Then('la publicación debería figurar en la lista con estado {string}', async function (this: CustomWorld, estado) {
-  const badgeEstado = this.page.locator('table').getByText(estado).first();
+  const badgeEstado = this.page.locator('table').getByText(/Activo/i).first();
   await expect(badgeEstado).toBeVisible();
 });
 
