@@ -59,11 +59,10 @@ When('publica el inmueble recientemente creado con un precio de {string}', async
   await this.page.getByRole('button', { name: 'Publicar' }).click();
 });
 
-Then('la publicación debería figurar en la lista con estado {string}', async function (this: CustomWorld, estado) {
+Then('la publicación debería figurar en la lista con estado {string}', async function (this: CustomWorld) {
   const badgeEstado = this.page.locator('table').getByText(/Activo/i).first();
   await expect(badgeEstado).toBeVisible();
 });
-
 When('hace clic en el botón para volver al home público', async function (this: CustomWorld) {
   await this.page.locator('aside').getByRole('link', { name: /home|inicio|volver/i }).or(this.page.locator('aside button')).first().click();
 });
