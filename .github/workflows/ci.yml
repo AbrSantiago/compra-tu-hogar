@@ -48,22 +48,8 @@ jobs:
       - name: Checkout del código
         uses: actions/checkout@v4
 
-      - name: Configurar Python y UV (para Backend de soporte)
-        uses: astral-sh/setup-uv@v5
-        with:
-          version: "latest"
-
-      - name: Sincronizar dependencias Backend
-        run: uv sync
-        working-directory: ./backend
-
-      - name: Iniciar Backend en segundo plano
-        env:
-          DATABASE_URL: "sqlite:///./test.db"
-        run: |
-          PYTHONPATH=. nohup uv run uvicorn app.main:app --host 127.0.0.1 --port 8000 &
-          npx wait-on http://127.0.0.1:8000/docs --timeout 30000
-        working-directory: ./backend
+      - name: Levantar entorno completo con Docker Compose
+        run: docker compose up -d --build
 
       - name: Configurar Node.js
         uses: actions/setup-node@v4
@@ -88,15 +74,16 @@ jobs:
         run: npx playwright install --with-deps
         working-directory: ./frontend
 
-      - name: Iniciar Servidor Frontend en segundo plano
-        run: |
-          nohup npm run dev -- --port 5173 &
-          npx wait-on http://localhost:5173 --timeout 30000
-        working-directory: ./frontend
+      - name: Esperar que los servicios estén listos
+        run: npx wait-on http://localhost:8000/docs http://localhost:5173 --timeout 60000
 
       - name: Ejecutar Pruebas End-to-End
         run: npm run test:e2e
         working-directory: ./frontend
+
+      - name: Apagar Docker Compose
+        if: always()
+        run: docker compose down
 
   build-and-push:
     needs: [backend-ci, frontend-ci]
