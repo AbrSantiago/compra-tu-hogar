@@ -37,6 +37,10 @@ jobs:
         run: uv run ruff check .
         working-directory: ./backend
 
+      - name: Ejecutar Pruebas Unitarias e Integración (Pytest)
+        run: uv run pytest
+        working-directory: ./backend
+
   frontend-ci:
     needs: setup
     runs-on: ubuntu-latest
@@ -61,6 +65,14 @@ jobs:
 
       - name: Validar compilación final (Build Test)
         run: npm run build
+        working-directory: ./frontend
+
+      - name: Instalar Navegadores de Playwright
+        run: npx playwright install --with-deps
+        working-directory: ./frontend
+
+      - name: Ejecutar Pruebas de Extremo a Extremo (Cucumber E2E)
+        run: npm run test:e2e
         working-directory: ./frontend
 
   build-and-push:
