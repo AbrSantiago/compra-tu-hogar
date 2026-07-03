@@ -23,7 +23,7 @@ export const PurchaseListingModal: React.FC<PurchaseListingModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4 animate-fade-in">
       <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-md p-6 shadow-xl space-y-4">
         <div className="flex items-start space-x-4">
-          <div className="p-3 bg-emerald-50 text-blue-600 rounded-xl border border-emerald-100 shrink-0">
+          <div className="p-3 bg-blue-50 text-blue-600 rounded-xl border border-emerald-100 shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125V18M3.75 18v.75c0 .414.336.75.75.75h.061m0 0H19.5m-15.75 0a1.5 1.5 0 0 1-1.5-1.5V6m15.75 12a1.5 1.5 0 0 0 1.5-1.5V6M6 7.5h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H12m-3 3H12m-3 3H12m3-6h1.5m-1.5 3h1.5m-1.5 3h1.5M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
             </svg>

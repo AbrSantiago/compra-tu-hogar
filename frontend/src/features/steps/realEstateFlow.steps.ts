@@ -1,8 +1,21 @@
-import { When, Then } from '@cucumber/cucumber';
+import { Given, When, Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
 import type { CustomWorld } from './world';
 
 let direccionCreada: string;
+
+Given('que el usuario está en la página de login', async function (this: CustomWorld) {
+  await this.page.goto('http://localhost:5173/login');
+});
+
+When('ingresa el usuario {string} y la contraseña {string}', async function (this: CustomWorld, email, password) {
+  await this.page.locator('input[name="email"]').fill(email);
+  await this.page.locator('input[name="password"]').fill(password);
+});
+
+When('hace clic en el botón de ingresar', async function (this: CustomWorld) {
+  await this.page.getByRole('button', { name: 'Iniciar Sesión' }).click();
+});
 
 Then('debería ver el panel de la inmobiliaria', async function (this: CustomWorld) {
   await expect(this.page.locator('aside')).toContainText('Panel Inmobiliario', { timeout: 10000 });
