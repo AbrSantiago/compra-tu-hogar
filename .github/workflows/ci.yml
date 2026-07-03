@@ -48,6 +48,21 @@ jobs:
       - name: Checkout del código
         uses: actions/checkout@v4
 
+      - name: Configurar Python y UV (para Backend de soporte)
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Sincronizar dependencias Backend
+        run: uv sync
+        working-directory: ./backend
+
+      - name: Iniciar Backend en segundo plano
+        run: |
+          nohup uv run uvicorn app.main:app --host 127.0.0.1 --port 8000 &
+          npx wait-on http://127.0.0.1:8000/docs --timeout 30000
+        working-directory: ./backend
+
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
@@ -55,7 +70,7 @@ jobs:
           cache: 'npm'
           cache-dependency-path: ./frontend/package-lock.json
 
-      - name: Instalar dependencias
+      - name: Instalar dependencias Frontend
         run: npm ci --legacy-peer-deps
         working-directory: ./frontend
 
@@ -71,7 +86,13 @@ jobs:
         run: npx playwright install --with-deps
         working-directory: ./frontend
 
-      - name: Ejecutar Pruebas de Extremo a Extremo (Cucumber E2E)
+      - name: Iniciar Servidor Frontend en segundo plano
+        run: |
+          nohup npm run dev -- --port 5173 &
+          npx wait-on http://localhost:5173 --timeout 30000
+        working-directory: ./frontend
+
+      - name: Ejecutar Pruebas End-to-End
         run: npm run test:e2e
         working-directory: ./frontend
 
