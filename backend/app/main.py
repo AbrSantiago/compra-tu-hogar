@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
+
 from app.api.admin import router as admin_router
 from app.api.auth import router as auth_router
 from app.api.client import router as client_router
@@ -15,17 +16,12 @@ from app.seeds.seed import run_seeds
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    Instrumentator().instrument(app).expose(app)
-    
     Base.metadata.create_all(bind=engine)
-
     db = SessionLocal()
-
     try:
         run_seeds(db)
     finally:
         db.close()
-
     yield
 
 
@@ -33,6 +29,8 @@ app = FastAPI(
     title="Compra tu Hogar API",
     lifespan=lifespan,
 )
+
+Instrumentator().instrument(app).expose(app)
 
 origins = [
     "http://localhost:5173",
