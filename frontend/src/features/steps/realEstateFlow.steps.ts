@@ -46,7 +46,7 @@ When('publica el inmueble recientemente creado con un precio de {string}', async
   await this.page.getByRole('button', { name: 'Publicar' }).click();
 });
 
-Then('la publicación debería figurar en la lista con estado {string}', async function (this: CustomWorld, estado) {
+Then('la publicación debería figurar en la lista con estado {string}', async function (this: CustomWorld) {
   const badgeEstado = this.page.locator('table').getByText(/Activo/i).first();
   await expect(badgeEstado).toBeVisible();
 });
