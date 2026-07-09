@@ -37,9 +37,13 @@ jobs:
         run: uv run ruff check .
         working-directory: ./backend
 
+      - name: Ejecutar Pruebas Unitarias e Integración (Pytest)
+        run: uv run pytest
+        working-directory: ./backend
+
   frontend-ci:
     needs: setup
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest 
     steps:
       - name: Checkout del código
         uses: actions/checkout@v4

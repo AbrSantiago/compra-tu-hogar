@@ -13,7 +13,7 @@ Característica: Flujo Completo de Inmobiliaria
 
     Cuando navega a la sección de "Gestionar Publicaciones"
     Y publica el inmueble recientemente creado con un precio de "150000"
-    Entonces la publicación debería figurar en la lista con estado "active"
+    Entonces la publicación debería figurar en la lista con estado Activo
 
     Cuando hace clic en el botón para volver al home público
     Entonces debería ver reflejada la publicación de "Av. Mitre 742" con el precio "USD 150.000"
