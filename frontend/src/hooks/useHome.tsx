@@ -54,7 +54,7 @@ const handleLogout = () => {
 
       setListings(enriched);
     } catch {
-      setError('No se pudieron cargar las publicaciones del mercado inmobiliario.');
+      setError('No se pudieron cargar las publicaciones.');
     } finally {
       setIsLoading(false);
     }
