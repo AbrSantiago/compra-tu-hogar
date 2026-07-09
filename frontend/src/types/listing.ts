@@ -1,5 +1,6 @@
-import type { ListingStatus } from './shared';
 import type { ReviewResponse } from './review';
+
+export type ListingStatus = 'active' | 'reserved' | 'sold' | 'paused';
 
 export interface ListingRealEstate {
   id: number;

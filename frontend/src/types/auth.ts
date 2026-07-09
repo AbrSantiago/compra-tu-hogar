@@ -1,4 +1,4 @@
-import type { UserRole } from './shared';
+export type UserRole = 'client' | 'real_estate' | 'admin';
 
 export interface LoginResponse {
   access_token: string;

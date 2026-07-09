@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { listingService } from '../services/listingService';
 import { clientService } from '../services/clientService';
 import type { ReviewResponse } from '@/types/review';
+import type { PropertyType } from '@/types/property';
 
 export interface EnrichedListing {
   id: number;
@@ -9,7 +10,7 @@ export interface EnrichedListing {
   location: string;
   price: number;
   image: string;
-  type: "house" | "apartment";
+  type: PropertyType;
   realEstateName: string;
   characteristics: string | null;
   averageRating: number | null;
