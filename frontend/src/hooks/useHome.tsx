@@ -40,7 +40,7 @@ export const useHome = () => {
         .map((list) => {
           const prop = list.property;
           const inmo = list.real_estate;
-          
+
           const propType = isValidPropertyType(prop?.type) ? prop.type : 'house';
 
           return {
@@ -68,22 +68,43 @@ export const useHome = () => {
   }, []);
 
   useEffect(() => {
-    fetchHomeData();
+    let isMounted = true;
+
+    const loadData = async () => {
+      if (isMounted) {
+        await fetchHomeData();
+      }
+    };
+
+    loadData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [fetchHomeData]);
 
   useEffect(() => {
+    let isMounted = true;
+
     const loadUserFavorites = async () => {
       const clientId = Number(localStorage.getItem('userId'));
-      if (isLoggedIn && userRole === 'client' && clientId) {
+      if (isMounted && isLoggedIn && userRole === 'client' && clientId) {
         try {
           const favs = await clientService.getFavorites(clientId);
-          setUserFavIds(favs.map((f) => f.id));
+          if (isMounted) {
+            setUserFavIds(favs.map((f) => f.id));
+          }
         } catch (err) {
           console.error("Error cargando favoritos:", err);
         }
       }
     };
+
     loadUserFavorites();
+
+    return () => {
+      isMounted = false;
+    };
   }, [isLoggedIn, userRole]);
 
   const handlePurchaseConfirm = async (listingId: number) => {
