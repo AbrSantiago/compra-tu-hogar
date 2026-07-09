@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useHome } from '@/hooks/useHome';
 import { ErrorMessage } from '@/components/ui';
 import { LogoutButton } from '@/components/ui/LogoutButton';
+import { useLogout } from "@/hooks/useLogout";
 
 export const Home: React.FC = () => {
   const {
@@ -13,9 +14,10 @@ export const Home: React.FC = () => {
     isLoggedIn,
     userRole,
     userFavIds,
-    handleLogout,
     handlePurchaseConfirm,
   } = useHome();
+
+  const { handleLogout } = useLogout();
 
   return (
     <div className="min-h-screen bg-white text-slate-800 font-sans antialiased">

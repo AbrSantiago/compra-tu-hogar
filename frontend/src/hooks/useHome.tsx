@@ -21,16 +21,12 @@ export const useHome = () => {
   const [listings, setListings] = useState<EnrichedListing[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => !!localStorage.getItem('token'));
-  const [userRole, setUserRole] = useState<string | null>(() => localStorage.getItem('type'));
+  const [isLoggedIn] = useState<boolean>(() => !!localStorage.getItem('token'));
+  const [userRole] = useState<string | null>(() => localStorage.getItem('type'));
   const [userFavIds, setUserFavIds] = useState<number[]>([]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('type');
-    localStorage.removeItem('userId');
-    setIsLoggedIn(false);
-    setUserRole(null);
+  const isValidPropertyType = (t: string | undefined): t is PropertyType => {
+    return t === 'house' || t === 'apartment';
   };
 
   const fetchHomeData = useCallback(async () => {
@@ -44,16 +40,18 @@ export const useHome = () => {
         .map((list) => {
           const prop = list.property;
           const inmo = list.real_estate;
+          
+          const propType = isValidPropertyType(prop?.type) ? prop.type : 'house';
 
           return {
             id: list.id,
             title: prop?.address || 'Dirección no especificada',
             location: prop?.location || 'Localidad no especificada',
             price: list.price,
-            image: prop?.type === 'house'
+            image: propType === 'house'
               ? 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80'
               : 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80',
-            type: prop?.type || 'house',
+            type: propType,
             realEstateName: inmo?.name || 'Inmobiliaria',
             characteristics: prop?.characteristics || null,
             averageRating: list.average_rating ?? null,
@@ -70,19 +68,7 @@ export const useHome = () => {
   }, []);
 
   useEffect(() => {
-    let isMounted = true;
-
-    const loadData = async () => {
-      if (isMounted) {
-        await fetchHomeData();
-      }
-    };
-
-    loadData();
-
-    return () => {
-      isMounted = false;
-    };
+    fetchHomeData();
   }, [fetchHomeData]);
 
   useEffect(() => {
@@ -93,12 +79,12 @@ export const useHome = () => {
           const favs = await clientService.getFavorites(clientId);
           setUserFavIds(favs.map((f) => f.id));
         } catch (err) {
-          console.error("Error cargando favoritos del usuario:", err);
+          console.error("Error cargando favoritos:", err);
         }
       }
     };
     loadUserFavorites();
-  }, [isLoggedIn, userRole, listings]);
+  }, [isLoggedIn, userRole]);
 
   const handlePurchaseConfirm = async (listingId: number) => {
     await listingService.purchase(listingId);
@@ -112,7 +98,6 @@ export const useHome = () => {
     isLoggedIn,
     userRole,
     userFavIds,
-    handleLogout,
     handlePurchaseConfirm,
     refetch: fetchHomeData
   };
