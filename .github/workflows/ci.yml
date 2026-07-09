@@ -16,7 +16,6 @@ jobs:
     steps:
       - name: Checkout del código
         uses: actions/checkout@v4
-
   backend-ci:
     needs: setup
     runs-on: ubuntu-latest
@@ -36,7 +35,6 @@ jobs:
       - name: Ejecutar Pruebas Unitarias e Integración (Pytest)
         run: uv run pytest
         working-directory: ./backend
-
   frontend-ci:
     needs: setup
     runs-on: ubuntu-latest
@@ -58,14 +56,12 @@ jobs:
       - name: Validar compilación final (Build Test)
         run: npm run build
         working-directory: ./frontend
-
   e2e-tests:
     needs: [backend-ci, frontend-ci]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout del código
         uses: actions/checkout@v4
-
       - name: Crear archivo .env para Docker Compose
         run: |
           cat <<EOF > .env
@@ -73,45 +69,37 @@ jobs:
           SECRET_KEY=${{ secrets.SECRET_KEY }}
           VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
           EOF
-
       - name: Levantar stack con Docker Compose (corre la seed)
         run: docker compose up --build -d db backend frontend
-
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: 'npm'
           cache-dependency-path: ./frontend/package-lock.json
-
       - name: Instalar dependencias del frontend
         run: npm ci --legacy-peer-deps
         working-directory: ./frontend
-
       - name: Instalar navegadores de Playwright
         run: npx playwright install --with-deps chromium
         working-directory: ./frontend
-
       - name: Esperar a que los servicios estén listos
         run: npx wait-on tcp:5432 tcp:8000 tcp:5173 -t 60000
-
       - name: Ejecutar tests Cucumber E2E
         run: npm run test:e2e
         working-directory: ./frontend
         env:
           CI: 'true'
-
       - name: Logs de Docker Compose (si algo falla)
         if: failure()
         run: docker compose logs
-
       - name: Bajar el stack
         if: always()
         run: docker compose down -v
-
   build-and-push:
     needs: [backend-ci, frontend-ci, e2e-tests]
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
       - name: Checkout del código
         uses: actions/checkout@v4
@@ -132,3 +120,12 @@ jobs:
           context: ./frontend
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/compra-tu-hogar-frontend:latest
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Disparar deploy del backend en Render
+        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_BACKEND }}"
+      - name: Disparar deploy del frontend en Render
+        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_FRONTEND }}"
