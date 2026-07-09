@@ -38,7 +38,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           </span>
           
           {state.localRating != null && (
-            <span className="absolute bottom-3 left-3 px-2.5 py-1 flex items-center gap-1 text-xs font-bold bg-slate-900/90 backdrop-blur-xs text-white rounded-xl shadow-xs border border-slate-700/50">
+            <span className="absolute bottom-3 left-3 px-2.5 py-1 flex items-center gap-1 text-xs font-bold bg-amber-400/80 backdrop-blur-xs text-white rounded-xl shadow-xs border border-amber-500/50">
               ★ {state.localRating.toFixed(1)}
             </span>
           )}
@@ -53,7 +53,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = (props) => {
         <div className="px-1 space-y-1">
           <h3 className="font-semibold text-sm truncate">{props.location}</h3>
           <p className="text-xs text-slate-700 truncate">{props.title}</p>
-          <div className="flex items-center justify-between pt-2 border-t mt-1">
+          <div className="flex items-center justify-between pt-2">
             <span className="text-sm font-bold">USD {props.price.toLocaleString('es-AR')}</span>
             {props.userRole === 'client' && (
               <button onClick={(e) => { e.stopPropagation(); actions.setIsPurchaseModalOpen(true); }} className="px-3 py-1.5 text-xs font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700">Comprar</button>
