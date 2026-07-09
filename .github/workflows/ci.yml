@@ -6,8 +6,8 @@ on:
       - dev
       - pre-dev
   pull_request:
-    branches:
-      - main
+    branches: 
+      - main 
       - dev
       - pre-dev
 jobs:
