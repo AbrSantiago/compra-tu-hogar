@@ -47,7 +47,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm" onClick={onClose}>
-      <div 
+      <div
         className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col"
         onClick={e => e.stopPropagation()}
       >
@@ -58,9 +58,8 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
 
         <div className="p-6 space-y-6 flex-1">
           {statusMessage && (
-            <div className={`p-4 rounded-xl border font-semibold text-sm flex items-center gap-2 ${
-              statusMessage.type === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-red-50 text-red-800 border-red-200'
-            }`}>
+            <div className={`p-4 rounded-xl border font-semibold text-sm flex items-center gap-2 ${statusMessage.type === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-red-50 text-red-800 border-red-200'
+              }`}>
               {statusMessage.type === 'success' ? '✅' : '⚠️'} {statusMessage.text}
             </div>
           )}
@@ -85,6 +84,31 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
                 </span>
               )}
             </h3>
+
+            {userRole === 'client' && (
+              !hasReviewed ? (
+                <form onSubmit={handleSubmitReview} className="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                  <h4 className="font-semibold text-blue-900 mb-3 text-sm">Dejá tu opinión</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-medium text-slate-700 mb-1">Puntaje (0 a 10)</label>
+                      <input type="number" min="0" max="10" value={rating} onChange={e => setRating(Number(e.target.value))} className="w-full md:w-1/3 px-3 py-2 border border-slate-200 rounded-lg text-sm" required />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-slate-700 mb-1">Comentario</label>
+                      <textarea value={comment} onChange={e => setComment(e.target.value)} className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" rows={2} />
+                    </div>
+                    <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:opacity-50">
+                      {isSubmitting ? 'Enviando...' : 'Publicar Reseña'}
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <div className="bg-emerald-50/80 p-3.5 rounded-xl border border-emerald-100 text-xs font-semibold text-emerald-800">
+                  ✅ Ya registramos tu puntaje para esta propiedad. Podés ver tu comentario arriba.
+                </div>
+              )
+            )}
 
             <div className="space-y-4 mb-6">
               {property.reviews.length === 0 ? (
@@ -111,31 +135,6 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
                 })
               )}
             </div>
-
-            {userRole === 'client' && (
-              !hasReviewed ? (
-                <form onSubmit={handleSubmitReview} className="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
-                  <h4 className="font-semibold text-blue-900 mb-3 text-sm">Dejá tu opinión</h4>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-xs font-medium text-slate-700 mb-1">Puntaje (0 a 10)</label>
-                      <input type="number" min="0" max="10" value={rating} onChange={e => setRating(Number(e.target.value))} className="w-full md:w-1/3 px-3 py-2 border border-slate-200 rounded-lg text-sm" required />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-slate-700 mb-1">Comentario</label>
-                      <textarea value={comment} onChange={e => setComment(e.target.value)} className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" rows={2} />
-                    </div>
-                    <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:opacity-50">
-                      {isSubmitting ? 'Enviando...' : 'Publicar Reseña'}
-                    </button>
-                  </div>
-                </form>
-              ) : (
-                <div className="bg-emerald-50/80 p-3.5 rounded-xl border border-emerald-100 text-xs font-semibold text-emerald-800">
-                  ✅ Ya registramos tu puntaje para esta propiedad. Podés ver tu comentario arriba.
-                </div>
-              )
-            )}
           </div>
         </div>
       </div>

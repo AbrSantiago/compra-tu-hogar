@@ -41,13 +41,20 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
   const [prevInitialIsFavorite, setPrevInitialIsFavorite] = useState(initialIsFavorite);
-
   const [localReviews, setLocalReviews] = useState<ReviewResponse[]>(reviews);
-  const [localRating, setLocalRating] = useState<number | null>(averageRating);
+
+  const computeAverage = (list: ReviewResponse[]) =>
+  list.length > 0
+    ? list.reduce((sum, rev) => sum + rev.rating, 0) / list.length
+    : null;
+
+  const [localRating, setLocalRating] = useState<number | null>(
+    averageRating ?? computeAverage(reviews)
+  );
 
   useEffect(() => {
     setLocalReviews(reviews);
-    setLocalRating(averageRating);
+    setLocalRating(averageRating ?? computeAverage(reviews));
   }, [reviews, averageRating]);
 
   if (initialIsFavorite !== prevInitialIsFavorite) {

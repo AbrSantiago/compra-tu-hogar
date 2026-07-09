@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { listingService } from '../services/listingService';
+import type { ReviewResponse } from '@/types/review';
 
 export interface EnrichedListing {
   id: number;
@@ -10,6 +11,8 @@ export interface EnrichedListing {
   type: "house" | "apartment";
   realEstateName: string;
   characteristics: string | null;
+  averageRating: number | null;
+  reviews: ReviewResponse[];
 }
 
 export const useHome = () => {
@@ -19,13 +22,13 @@ export const useHome = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => !!localStorage.getItem('token'));
   const [userRole, setUserRole] = useState<string | null>(() => localStorage.getItem('type'));
 
-const handleLogout = () => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('type');
-  localStorage.removeItem('userId');
-  setIsLoggedIn(false);
-  setUserRole(null);
-};
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('type');
+    localStorage.removeItem('userId');
+    setIsLoggedIn(false);
+    setUserRole(null);
+  };
   const fetchHomeData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -48,7 +51,9 @@ const handleLogout = () => {
               : 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80',
             type: prop?.type || 'house',
             realEstateName: inmo?.name || 'Inmobiliaria',
-            characteristics: prop?.characteristics || null
+            characteristics: prop?.characteristics || null,
+            averageRating: list.average_rating ?? null,
+            reviews: list.reviews ?? [],
           };
         });
 
