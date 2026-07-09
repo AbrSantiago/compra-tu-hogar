@@ -1,4 +1,5 @@
 import logging
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -57,7 +58,10 @@ def login(
 def me(
     current_user: User = Depends(get_current_user),
 ):
-    logger.info(f"El usuario {current_user.email} (ID: {current_user.id}) solicitó sus datos de perfil.")
+    logger.info(
+    f"El usuario {current_user.email} (ID: {current_user.id}) "
+    "solicitó sus datos de perfil."
+)
     return {
         "id": current_user.id,
         "name": current_user.name,

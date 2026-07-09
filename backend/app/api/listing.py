@@ -1,4 +1,5 @@
 import logging
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -6,7 +7,6 @@ from app.core.auth import require_client, require_real_estate
 from app.core.database import get_db
 from app.model.client import Client
 from app.model.real_estate import RealEstate
-from app.model.user import User
 from app.schema.listing import (
     ListingCreate,
     ListingResponse,
@@ -60,7 +60,10 @@ def create_listing(
         logger.info(f"Publicación creada con éxito. ID asignado: {result.id}")
         return result
     except Exception as e:
-        logger.error(f"Error al crear publicación para Inmobiliaria ID {real_estate.id}. Motivo: {str(e)}")
+        logger.error(
+            f"Error al crear publicación para Inmobiliaria ID {real_estate.id}. "
+            f"Motivo: {str(e)}"
+        )
         raise HTTPException(status_code=400, detail=str(e))
 
 
@@ -71,7 +74,10 @@ def update_listing(
     db: Session = Depends(get_db),
     real_estate: RealEstate = Depends(require_real_estate),
 ):
-    logger.info(f"Inmobiliaria ID {real_estate.id} intenta modificar la publicación ID {listing_id}.")
+    logger.info(
+        f"Inmobiliaria ID {real_estate.id} intenta modificar "
+        f"la publicación ID {listing_id}."
+    )
     try:
         result = listing_service.update_listing(
             db=db,
@@ -81,7 +87,10 @@ def update_listing(
         logger.info(f"Publicación ID {listing_id} modificada con éxito.")
         return result
     except Exception as e:
-        logger.error(f"Error al modificar la publicación ID {listing_id}. Motivo: {str(e)}")
+        logger.error(
+            f"Error al modificar la publicación ID {listing_id}. "
+            f"Motivo: {str(e)}"
+        )
         raise HTTPException(status_code=400, detail=str(e))
 
 
@@ -94,7 +103,10 @@ def delete_listing(
     db: Session = Depends(get_db),
     real_estate: RealEstate = Depends(require_real_estate),
 ):
-    logger.info(f"Inmobiliaria ID {real_estate.id} intenta eliminar la publicación ID {listing_id}.")
+    logger.info(
+        f"Inmobiliaria ID {real_estate.id} intenta eliminar "
+        f"la publicación ID {listing_id}."
+    )
     try:
         listing_service.delete_listing(
             db=db,
@@ -102,7 +114,10 @@ def delete_listing(
         )
         logger.info(f"Publicación ID {listing_id} eliminada con éxito.")
     except Exception as e:
-        logger.error(f"Error al eliminar la publicación ID {listing_id}. Motivo: {str(e)}")
+        logger.error(
+            f"Error al eliminar la publicación ID {listing_id}. "
+            f"Motivo: {str(e)}"
+        )
         raise HTTPException(status_code=400, detail=str(e))
 
 
@@ -115,15 +130,24 @@ def purchase_listing(
     db: Session = Depends(get_db),
     client: Client = Depends(require_client),
 ):
-    logger.info(f"Cliente ID {client.id} ({client.email}) intenta comprar la propiedad de la publicación ID {listing_id}.")
+    logger.info(
+        f"Cliente ID {client.id} ({client.email}) intenta comprar la "
+        f"propiedad de la publicación ID {listing_id}."
+    )
     try:
         result = listing_service.purchase_listing(
             db=db,
             listing_id=listing_id,
             client=client,
         )
-        logger.info(f"Compra procesada con éxito para la publicación ID {listing_id} por el Cliente ID {client.id}.")
+        logger.info(
+            f"Compra procesada con éxito para la publicación ID {listing_id} "
+            f"por el Cliente ID {client.id}."
+        )
         return result
     except Exception as e:
-        logger.error(f"Error al procesar la compra de la publicación ID {listing_id} para Cliente ID {client.id}. Motivo: {str(e)}")
+        logger.error(
+            f"Error al procesar la compra de la publicación ID {listing_id} "
+            f"para Cliente ID {client.id}. Motivo: {str(e)}"
+        )
         raise HTTPException(status_code=400, detail=str(e))
