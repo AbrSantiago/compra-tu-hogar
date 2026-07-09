@@ -1,3 +1,5 @@
+import type { ReviewResponse } from './review';
+
 export type ListingStatus = 'active' | 'reserved' | 'sold' | 'paused';
 
 export interface ListingCreate {
@@ -27,4 +29,6 @@ export interface ListingResponse {
   status: ListingStatus;
   property?: ListingProperty;     
   real_estate?: ListingRealEstate;
+  average_rating: number | null;
+  reviews: ReviewResponse[];
 }

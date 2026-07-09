@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict
 from app.schema.client import ClientResponse
 from app.schema.property import PropertyResponse
 from app.schema.real_estate import RealEstateResponse
+from app.schema.review import ReviewResponse
 
 
 class ListingStatus(enum.Enum):
@@ -34,5 +35,8 @@ class ListingResponse(BaseModel):
     property: PropertyResponse
     real_estate: RealEstateResponse
     buyer: ClientResponse | None = None
+    
+    average_rating: float | None = None
+    reviews: list[ReviewResponse] = []
 
     model_config = ConfigDict(from_attributes=True)

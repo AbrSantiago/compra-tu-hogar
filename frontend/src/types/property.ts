@@ -1,3 +1,5 @@
+import type { ReviewResponse } from '@/types/review';
+
 export type PropertyType = "house" | "apartment";
 
 export interface PropertyCreate {
@@ -15,4 +17,17 @@ export interface PropertyResponse {
   location: string;
   type: PropertyType;
   characteristics: string | null;
+}
+
+export interface PropertyDetails {
+  id: number;
+  title: string;
+  location: string;
+  price: number;
+  image: string;
+  type: string;
+  realEstateName: string;
+  characteristics: string | null;
+  averageRating?: number | null;
+  reviews: ReviewResponse[];
 }

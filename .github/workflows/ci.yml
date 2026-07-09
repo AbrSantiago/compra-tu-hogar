@@ -4,12 +4,10 @@ on:
     branches:
       - main
       - dev
-      - pre-dev
   pull_request:
     branches: 
       - main 
       - dev
-      - pre-dev
 jobs:
   setup:
     runs-on: ubuntu-latest

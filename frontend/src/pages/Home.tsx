@@ -31,6 +31,11 @@ export const Home: React.FC = () => {
     await refetch();
   };
 
+  const handleReviewSubmit = async (listingId: number, rating: number, comment: string) => {
+    await listingService.addReview(listingId, { rating, comment });
+    await refetch(); 
+  };
+
   return (
     <div className="min-h-screen bg-white text-slate-800 font-sans antialiased">
       <header className="sticky top-0 z-50 bg-white border-b border-slate-100 px-6 py-4 flex justify-between items-center max-w-7xl mx-auto w-full">
@@ -53,7 +58,7 @@ export const Home: React.FC = () => {
                   </Link>
                   <Link
                     to="/mis-favoritos"
-                    className="hover:text-slate-900 active:scale-[0.99] transition-all cursor-pointer text-amber-500 font-bold flex items-center gap-1"
+                    className="hover:text-slate-900 active:scale-[0.99] transition-all cursor-pointer text-blue-600 font-bold flex items-center gap-1"
                   >
                     Mis Favoritos
                   </Link>
@@ -132,7 +137,7 @@ export const Home: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
-            {listings.map((property) => {
+            {listings.map((property: any) => {
               const isSaved = userFavIds.includes(property.id);
 
               return (
@@ -149,6 +154,8 @@ export const Home: React.FC = () => {
                   userRole={userRole}
                   onPurchaseConfirm={handlePurchaseConfirm}
                   initialIsFavorite={isSaved}
+                  averageRating={property.averageRating || property.average_rating} 
+                  reviews={property.reviews || []}
                 />
               );
             })}

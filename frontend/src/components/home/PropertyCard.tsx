@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PurchaseListingModal } from '../modals/PurchaseListingModal';
-import { clientService } from '@/services/clientService'; 
+import { PropertyDetailsModal } from '../modals/PropertyDetailsModal';
+import { clientService } from '@/services/clientService';
+import type { ReviewResponse } from '@/types/review';
+import { listingService } from '@/services/listingService';
 
 interface PropertyCardProps {
   id: number;
@@ -8,12 +11,14 @@ interface PropertyCardProps {
   location: string;
   price: number;
   image: string;
-  type: "house" | "apartment"; 
-  realEstateName: string; 
-  characteristics: string | null; 
-  userRole?: string | null; 
-  onPurchaseConfirm: (id: number) => Promise<void>; 
+  type: "house" | "apartment";
+  realEstateName: string;
+  characteristics: string | null;
+  userRole?: string | null;
+  onPurchaseConfirm: (id: number) => Promise<void>;
   initialIsFavorite?: boolean;
+  averageRating?: number | null;
+  reviews?: ReviewResponse[];
 }
 
 export const PropertyCard: React.FC<PropertyCardProps> = ({
@@ -27,28 +32,57 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   characteristics,
   userRole,
   onPurchaseConfirm,
-  initialIsFavorite = false
+  initialIsFavorite = false,
+  averageRating = null,
+  reviews = [],
 }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
   const [prevInitialIsFavorite, setPrevInitialIsFavorite] = useState(initialIsFavorite);
+
+  const [localReviews, setLocalReviews] = useState<ReviewResponse[]>(reviews);
+  const [localRating, setLocalRating] = useState<number | null>(averageRating);
+
+  useEffect(() => {
+    setLocalReviews(reviews);
+    setLocalRating(averageRating);
+  }, [reviews, averageRating]);
 
   if (initialIsFavorite !== prevInitialIsFavorite) {
     setIsFavorite(initialIsFavorite);
     setPrevInitialIsFavorite(initialIsFavorite);
   }
 
-  const handleOpenModal = (e: React.MouseEvent) => {
+  const handleOpenPurchaseModal = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsModalOpen(true);
+    setIsPurchaseModalOpen(true);
+  };
+
+  const handleOpenDetails = async () => {
+    try {
+      const freshListing = await listingService.getById(id);
+      
+      setLocalReviews(freshListing.reviews);
+      
+      if (freshListing.reviews.length > 0) {
+        const newAvg = freshListing.reviews.reduce((sum, rev) => sum + rev.rating, 0) / freshListing.reviews.length;
+        setLocalRating(newAvg);
+      }
+      
+      setIsDetailsModalOpen(true);
+    } catch (error) {
+      console.error("Error al refrescar datos de la propiedad:", error);
+      setIsDetailsModalOpen(true);
+    }
   };
 
   const handleConfirmPurchase = async () => {
     setIsSubmitting(true);
     try {
       await onPurchaseConfirm(id);
-      setIsModalOpen(false);
+      setIsPurchaseModalOpen(false);
     } catch (error) {
       console.error("Error al procesar la compra:", error);
     } finally {
@@ -74,9 +108,22 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
     }
   };
 
+  const handleReviewSubmit = async (listingId: number, rating: number, comment: string) => {
+    const newReview = await listingService.addReview(listingId, { rating, comment });
+    
+    const updatedReviews = [...localReviews, newReview];
+    setLocalReviews(updatedReviews);
+    
+    const newAvg = updatedReviews.reduce((sum, rev) => sum + rev.rating, 0) / updatedReviews.length;
+    setLocalRating(newAvg);
+  };
+
   return (
     <>
-      <div className="group cursor-pointer space-y-3 active:scale-[0.99] transition-all duration-150 bg-white rounded-2xl p-2 border border-transparent hover:border-slate-100 hover:shadow-xs relative">
+      <div 
+        onClick={handleOpenDetails}
+        className="group cursor-pointer space-y-3 active:scale-[0.99] transition-all duration-150 bg-white rounded-2xl p-2 border border-transparent hover:border-slate-100 hover:shadow-xs relative"
+      >
         <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-slate-100 border border-slate-100">
           <img
             src={image}
@@ -86,6 +133,15 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
           <span className="absolute top-3 left-3 px-2.5 py-1 text-xs font-semibold bg-white/90 backdrop-blur-xs text-slate-900 rounded-xl shadow-xs border border-slate-200/50">
             {realEstateName}
           </span>
+          
+          {localRating != null && (
+            <span className="absolute bottom-3 left-3 px-2.5 py-1 flex items-center gap-1 text-xs font-bold bg-slate-900/90 backdrop-blur-xs text-white rounded-xl shadow-xs border border-slate-700/50">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5 text-amber-400">
+                <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
+              </svg>
+              {localRating.toFixed(1)}
+            </span>
+          )}
 
           {userRole === 'client' && (
             <button
@@ -137,7 +193,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
             {userRole === 'client' && (
               <button
                 type="button"
-                onClick={handleOpenModal}
+                onClick={handleOpenPurchaseModal}
                 className="px-3 py-1.5 text-xs font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-all shadow-xs"
               >
                 Comprar
@@ -148,12 +204,31 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
       </div>
 
       <PurchaseListingModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isPurchaseModalOpen}
+        onClose={() => setIsPurchaseModalOpen(false)}
         title={title}
         price={price}
         onConfirm={handleConfirmPurchase}
         isSubmitting={isSubmitting}
+      />
+
+      <PropertyDetailsModal
+        isOpen={isDetailsModalOpen}
+        onClose={() => setIsDetailsModalOpen(false)}
+        property={{
+          id,
+          title,
+          location,
+          price,
+          image,
+          type,
+          realEstateName,
+          characteristics,
+          averageRating: localRating, 
+          reviews: localReviews       
+        }}
+        userRole={userRole}
+        onReviewSubmit={handleReviewSubmit}
       />
     </>
   );

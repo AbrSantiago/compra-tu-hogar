@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import builtins
 from typing import TYPE_CHECKING
 
 from sqlalchemy import Enum, Float, ForeignKey, UniqueConstraint
@@ -12,6 +13,8 @@ if TYPE_CHECKING:
     from app.model.client import Client
     from app.model.property import Property
     from app.model.real_estate import RealEstate
+    from app.model.favorite import Favorite
+    from app.model.review import Review
 
 
 class Listing(Base):
@@ -54,6 +57,23 @@ class Listing(Base):
     buyer: Mapped[Client | None] = relationship(
         back_populates="purchased_listings",
     )
+
+    favorited_by: Mapped[list["Favorite"]] = relationship(
+        back_populates="listing", 
+        cascade="all, delete-orphan",
+    )
+    
+    reviews: Mapped[list["Review"]] = relationship(
+        back_populates="listing", 
+        cascade="all, delete-orphan",
+    )
+
+    @builtins.property
+    def average_rating(self) -> float | None:
+        """Calcula el promedio de puntaje basado en las reseñas."""
+        if not self.reviews:
+            return None
+        return round(sum(r.rating for r in self.reviews) / len(self.reviews), 1)
 
     __table_args__ = (
         UniqueConstraint(

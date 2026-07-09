@@ -29,5 +29,10 @@ export const listingService = {
   purchase: async (id: number): Promise<ListingResponse> => {
     const response = await apiClient.post<ListingResponse>(`/listings/${id}/purchase`);
     return response.data;
+  },
+
+  addReview: async (id: number, reviewData: { rating: number; comment: string }): Promise<any> => {
+    const response = await apiClient.post(`/listings/${id}/reviews`, reviewData);
+    return response.data;
   }
 };

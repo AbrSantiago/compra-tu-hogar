@@ -7,6 +7,8 @@ from app.model.user import User
 
 if TYPE_CHECKING:
     from app.model.listing import Listing
+    from app.model.favorite import Favorite
+    from app.model.review import Review
 
 
 class Client(User):
@@ -21,4 +23,14 @@ class Client(User):
 
     purchased_listings: Mapped[list["Listing"]] = relationship(
         back_populates="buyer",
+    )
+
+    favorites: Mapped[list["Favorite"]] = relationship(
+        back_populates="client", 
+        cascade="all, delete-orphan",
+    )
+    
+    reviews: Mapped[list["Review"]] = relationship(
+        back_populates="client", 
+        cascade="all, delete-orphan",
     )

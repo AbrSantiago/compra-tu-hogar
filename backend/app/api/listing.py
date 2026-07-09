@@ -7,6 +7,9 @@ from app.core.auth import require_client, require_real_estate
 from app.core.database import get_db
 from app.model.client import Client
 from app.model.real_estate import RealEstate
+from app.model.review import Review  
+from app.model.listing import Listing
+from app.schema.review import ReviewCreate, ReviewResponse 
 from app.schema.listing import (
     ListingCreate,
     ListingResponse,
@@ -150,4 +153,56 @@ def purchase_listing(
             f"Error al procesar la compra de la publicación ID {listing_id} "
             f"para Cliente ID {client.id}. Motivo: {str(e)}"
         )
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post(
+    "/{listing_id}/reviews",
+    response_model=ReviewResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def add_review(
+    listing_id: int,
+    review_data: ReviewCreate,
+    db: Session = Depends(get_db),
+    client: Client = Depends(require_client),
+):
+    listing = db.get(Listing, listing_id)
+    if not listing:
+        raise HTTPException(status_code=404, detail="Publicación no encontrada")
+
+    existing_review = db.query(Review).filter_by(client_id=client.id, listing_id=listing_id).first()
+    if existing_review:
+        raise HTTPException(
+            status_code=400, 
+            detail="Ya dejaste una reseña para esta propiedad anteriormente."
+        )
+        
+    try:
+        new_review = Review(
+            client_id=client.id,
+            listing_id=listing_id,
+            rating=review_data.rating,
+            comment=review_data.comment
+        )
+        db.add(new_review)
+        db.commit()
+        db.refresh(new_review)
+        
+        logger.info(
+            f"Cliente ID {client.id} puntuó la publicación ID {listing_id} "
+            f"con un {review_data.rating}."
+        )
+        
+        return {
+            "id": new_review.id,
+            "client_id": new_review.client_id,
+            "listing_id": new_review.listing_id,
+            "rating": new_review.rating,
+            "comment": new_review.comment,
+            "client_name": client.name
+        }
+        
+    except Exception as e:
+        logger.error(f"Error al guardar la reseña. Motivo: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
