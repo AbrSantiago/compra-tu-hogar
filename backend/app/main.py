@@ -38,6 +38,7 @@ origins = [
     "http://127.0.0.1:5173",
     "http://localhost:30173",
     "http://127.0.0.1:30173",
+    "https://compra-tu-hogar-frontend.onrender.com",
 ]
 
 app.add_middleware(
