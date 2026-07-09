@@ -5,4 +5,4 @@ export interface ReviewResponse {
   rating: number;
   comment: string | null;
   client_name: string;
-}
+} 
