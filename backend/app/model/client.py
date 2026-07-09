@@ -6,8 +6,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.model.user import User
 
 if TYPE_CHECKING:
-    from app.model.listing import Listing
     from app.model.favorite import Favorite
+    from app.model.listing import Listing
     from app.model.review import Review
 
 

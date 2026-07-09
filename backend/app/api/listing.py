@@ -6,15 +6,15 @@ from sqlalchemy.orm import Session
 from app.core.auth import require_client, require_real_estate
 from app.core.database import get_db
 from app.model.client import Client
-from app.model.real_estate import RealEstate
-from app.model.review import Review  
 from app.model.listing import Listing
-from app.schema.review import ReviewCreate, ReviewResponse 
+from app.model.real_estate import RealEstate
+from app.model.review import Review
 from app.schema.listing import (
     ListingCreate,
     ListingResponse,
     ListingUpdate,
 )
+from app.schema.review import ReviewCreate, ReviewResponse
 from app.service import listing_service
 
 logger = logging.getLogger(__name__)

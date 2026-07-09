@@ -1,6 +1,5 @@
 import type { ReviewResponse } from '@/types/review';
-
-export type PropertyType = "house" | "apartment";
+import type { PropertyType } from './shared';
 
 export interface PropertyCreate {
   property_id: string;

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { listingService } from '../services/listingService';
+import { clientService } from '../services/clientService';
 import type { ReviewResponse } from '@/types/review';
 
 export interface EnrichedListing {
@@ -21,6 +22,7 @@ export const useHome = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => !!localStorage.getItem('token'));
   const [userRole, setUserRole] = useState<string | null>(() => localStorage.getItem('type'));
+  const [userFavIds, setUserFavIds] = useState<number[]>([]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -29,6 +31,7 @@ export const useHome = () => {
     setIsLoggedIn(false);
     setUserRole(null);
   };
+
   const fetchHomeData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -81,13 +84,35 @@ export const useHome = () => {
     };
   }, [fetchHomeData]);
 
+  useEffect(() => {
+    const loadUserFavorites = async () => {
+      const clientId = Number(localStorage.getItem('userId'));
+      if (isLoggedIn && userRole === 'client' && clientId) {
+        try {
+          const favs = await clientService.getFavorites(clientId);
+          setUserFavIds(favs.map((f) => f.id));
+        } catch (err) {
+          console.error("Error cargando favoritos del usuario:", err);
+        }
+      }
+    };
+    loadUserFavorites();
+  }, [isLoggedIn, userRole, listings]);
+
+  const handlePurchaseConfirm = async (listingId: number) => {
+    await listingService.purchase(listingId);
+    await fetchHomeData();
+  };
+
   return {
     listings,
     isLoading,
     error,
     isLoggedIn,
     userRole,
+    userFavIds,
     handleLogout,
+    handlePurchaseConfirm,
     refetch: fetchHomeData
   };
 };

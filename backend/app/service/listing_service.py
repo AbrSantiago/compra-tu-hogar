@@ -11,6 +11,7 @@ from app.schema.listing import (
     ListingUpdate,
 )
 
+
 def get_listings(db: Session):
     listings = db.query(Listing).options(
         joinedload(Listing.property),

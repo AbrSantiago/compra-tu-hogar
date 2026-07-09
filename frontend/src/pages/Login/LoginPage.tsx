@@ -1,17 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useLoginForm } from '@/hooks/useLoginForm';
 import { FloatingInput, FormHeader, FormFooter, SubmitButton } from '@/components/form';
 import { BackButton, ErrorMessage } from '@/components/ui';
 
 export const Login: React.FC = () => {
-  const { handleLogin, isLoading, errorMsg } = useLoginForm();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const onSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    handleLogin(email, password);
-  };
+  const { email, setEmail, password, setPassword, handleSubmit, isLoading, errorMsg } = useLoginForm();
 
   return (
     <div className="min-h-screen bg-white text-slate-800 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
@@ -26,7 +19,7 @@ export const Login: React.FC = () => {
 
         <ErrorMessage message={errorMsg} />
 
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <FloatingInput
             type="email"
             name="email"

@@ -13,8 +13,6 @@ from app.api.propertiy import router as property_router
 from app.api.real_estate import router as real_estate_router
 from app.core.database import Base, SessionLocal, engine
 from app.seeds.seed import run_seeds
-from app.model.favorite import Favorite
-from app.model.review import Review
 
 
 @asynccontextmanager

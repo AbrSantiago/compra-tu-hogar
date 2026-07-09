@@ -1,14 +1,9 @@
-export interface LoginRequest {
-  email: string; 
-  password: string;
-}
+import type { UserRole } from './shared';
 
 export interface LoginResponse {
   access_token: string;
   token_type: string;
 }
-
-export type UserRole = 'client' | 'real_estate' | 'admin';
 
 export interface UserMeResponse {
   id: number;

@@ -11,9 +11,9 @@ from app.schema.listing import ListingStatus
 
 if TYPE_CHECKING:
     from app.model.client import Client
+    from app.model.favorite import Favorite
     from app.model.property import Property
     from app.model.real_estate import RealEstate
-    from app.model.favorite import Favorite
     from app.model.review import Review
 
 

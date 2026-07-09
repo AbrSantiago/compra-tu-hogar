@@ -8,9 +8,9 @@ from app.core.auth import (
 )
 from app.core.database import get_db
 from app.model.admin import Admin
+from app.model.favorite import Favorite
 from app.model.listing import Listing
 from app.model.user import User
-from app.model.favorite import Favorite 
 from app.schema.client import ClientUpdate
 from app.schema.listing import ListingResponse
 from app.service import client_service
