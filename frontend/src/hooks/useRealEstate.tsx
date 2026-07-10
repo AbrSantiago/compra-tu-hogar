@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { propertyService } from '../services/propertyService';
 import { listingService } from '../services/listingService';
+import { extractErrorMessage } from '@/utils/errors';
 import type { PropertyResponse, PropertyType } from '../types/property';
 import type { ListingResponse, ListingStatus } from '../types/listing';
 
@@ -39,7 +40,7 @@ export const useRealEstate = () => {
         const perteneceAMisListings = filteredListings.some(
           (list: ListingResponse) => list.property_id === prop.id
         );
-        
+
         const esPropiedadNuevaSinPublicar = !listingsData.some(
           (list: ListingResponse) => list.property_id === prop.id
         );
@@ -84,8 +85,7 @@ export const useRealEstate = () => {
 
       await fetchRealEstateData();
     } catch (err: unknown) {
-      const backendMessage = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
-      setFormError(backendMessage || 'Error al registrar la propiedad.');
+      setFormError(extractErrorMessage(err, 'Error al registrar la propiedad.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -115,12 +115,11 @@ export const useRealEstate = () => {
 
       await fetchRealEstateData();
     } catch (err: unknown) {
-      const errorTyped = err as { response?: { status?: number, data?: { detail?: string } } };
+      const errorTyped = err as { response?: { status?: number } };
       if (errorTyped.response?.status === 409) {
         setFormError('Esta propiedad ya cuenta con una publicación activa creada por tu inmobiliaria.');
       } else {
-        const backendMessage = errorTyped.response?.data?.detail;
-        setFormError(backendMessage || 'Error al crear la publicación.');
+        setFormError(extractErrorMessage(err, 'Error al crear la publicación.'));
       }
     } finally {
       setIsSubmitting(false);
@@ -136,8 +135,7 @@ export const useRealEstate = () => {
       setFormSuccess('Publicación eliminada con éxito');
       await fetchRealEstateData();
     } catch (err: unknown) {
-      const backendMessage = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
-      setFormError(backendMessage || 'Error al eliminar la publicación.');
+      setFormError(extractErrorMessage(err, 'Error al eliminar la publicación.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -152,8 +150,7 @@ export const useRealEstate = () => {
       setFormSuccess('Publicación actualizada con éxito');
       await fetchRealEstateData();
     } catch (err: unknown) {
-      const backendMessage = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
-      setFormError(backendMessage || 'Error al actualizar la publicación.');
+      setFormError(extractErrorMessage(err, 'Error al actualizar la publicación.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -190,7 +187,7 @@ export const useRealEstate = () => {
     listingPrice, setListingPrice,
     handleCreateListingSubmit,
     handleDeleteListing,
-    handleUpdateListingPrice: handleUpdateListing,
+    handleUpdateListing,
     isSubmitting,
     formError,
     formSuccess,

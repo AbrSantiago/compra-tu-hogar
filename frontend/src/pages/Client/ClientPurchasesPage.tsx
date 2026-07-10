@@ -1,27 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { clientService } from '@/services/clientService';
+import React from 'react';
+import { useClientPurchases } from '@/hooks/useClientPurchases';
 import { Link } from 'react-router-dom';
-import type { ListingResponse } from '@/types/listing';
 
 export const ClientPurchasesPage: React.FC = () => {
-  const [purchases, setPurchases] = useState<ListingResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchPurchases = async () => {
-      try {
-        const clientId = Number(localStorage.getItem('userId')) || 1;
-        const data = await clientService.getPurchases(clientId);
-        setPurchases(data);
-      } catch (error) {
-        console.error("Error al buscar las compras:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchPurchases();
-  }, []);
+  const { purchases, isLoading } = useClientPurchases();
 
   return (
     <div className="min-h-screen bg-slate-50/50 text-slate-800 antialiased">

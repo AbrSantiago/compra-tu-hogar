@@ -1,27 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { clientService } from '@/services/clientService';
+import React from 'react';
+import { useClientFavorites } from '@/hooks/useClientFavorites';
 import { Link } from 'react-router-dom';
-import type { ListingResponse } from '@/types/listing';
 
 export const ClientFavoritesPage: React.FC = () => {
-  const [favorites, setFavorites] = useState<ListingResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      try {
-        const clientId = Number(localStorage.getItem('userId')) || 1;
-        const data = await clientService.getFavorites(clientId);
-        setFavorites(data);
-      } catch (error) {
-        console.error("Error al buscar los favoritos:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchFavorites();
-  }, []);
+  const { favorites, isLoading } = useClientFavorites();
 
   return (
     <div className="min-h-screen bg-slate-50/50 text-slate-800 antialiased">

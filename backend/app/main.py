@@ -8,9 +8,9 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from app.api.admin import router as admin_router
 from app.api.auth import router as auth_router
 from app.api.client import router as client_router
-from app.api.listing import router as real_estate_router
+from app.api.listing import router as listing_router
 from app.api.propertiy import router as property_router
-from app.api.real_estate import router as listing_router
+from app.api.real_estate import router as real_estate_router
 from app.core.database import Base, SessionLocal, engine
 from app.seeds.seed import run_seeds
 
