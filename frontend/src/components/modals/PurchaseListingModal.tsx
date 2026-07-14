@@ -49,7 +49,7 @@ export const PurchaseListingModal: React.FC<PurchaseListingModalProps> = ({
             type="button"
             onClick={onConfirm}
             disabled={isSubmitting}
-            className="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-slate-900 border border-slate-900 rounded-xl hover:bg-slate-800 transition-all shadow-xs disabled:opacity-50 flex items-center justify-center gap-2"
+            className="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-blue-700 border border-blue-700 rounded-xl hover:bg-blue-800 transition-all shadow-xs disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {isSubmitting ? (
               <>

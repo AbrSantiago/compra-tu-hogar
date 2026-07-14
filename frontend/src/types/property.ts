@@ -31,3 +31,10 @@ export interface PropertyDetails {
   averageRating?: number | null;
   reviews: ReviewResponse[];
 }
+
+export interface PropertyUpdate {
+  address?: string;
+  location?: string;
+  type?: PropertyType;
+  characteristics?: string | null;
+}

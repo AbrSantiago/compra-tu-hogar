@@ -53,6 +53,13 @@ export const PropertyCard: React.FC<PropertyCardProps> = (props) => {
         <div className="px-1 space-y-1">
           <h3 className="font-semibold text-sm truncate">{props.location}</h3>
           <p className="text-xs text-slate-700 truncate">{props.title}</p>
+          
+          {props.characteristics && (
+            <p className="text-xs text-slate-400 italic truncate">
+              {props.characteristics}
+            </p>
+          )}
+
           <div className="flex items-center justify-between pt-2">
             <span className="text-sm font-bold">USD {props.price.toLocaleString('es-AR')}</span>
             {props.userRole === 'client' && (
@@ -74,7 +81,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = (props) => {
       <PropertyDetailsModal
         isOpen={state.isDetailsModalOpen}
         onClose={() => actions.setIsDetailsModalOpen(false)}
-        property={{ ...props, averageRating: state.localRating, reviews: state.localReviews }}
+        property={{ ...props, title: props.title, averageRating: state.localRating, reviews: state.localReviews }}
         userRole={props.userRole}
         onReviewSubmit={actions.addReview}
       />

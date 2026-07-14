@@ -71,6 +71,14 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
               <span className="text-xl font-bold text-blue-700">USD {property.price.toLocaleString('es-AR')}</span>
             </div>
             <p className="text-slate-500 mt-1">{property.location} • {property.type === 'house' ? 'Casa' : 'Departamento'}</p>
+
+            {property.characteristics && (
+              <div className="mt-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-1">Características</h4>
+                <p className="text-sm text-slate-600 leading-relaxed">{property.characteristics}</p>
+              </div>
+            )}
+
             <p className="text-sm font-semibold mt-2 text-slate-700">Vendido por: {property.realEstateName}</p>
           </div>
 

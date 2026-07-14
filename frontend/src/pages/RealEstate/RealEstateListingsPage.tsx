@@ -3,8 +3,9 @@ import { useListingsManager, STATUS_LABELS } from '@/hooks/useListingsManager';
 import { FloatingInput, SubmitButton } from '@/components/form';
 import { ErrorMessage } from '@/components/ui';
 import { AdminHeader, AdminTable, SuccessMessage } from '@/components/admin';
-import { DeleteListingModal } from '@/components/modals/DeleteListingModal';
-import { EditListingModal } from '@/components/modals/EditListingModal';
+import { EditModal } from '@/components/modals/EditModal';
+import { DeleteModal } from '@/components/modals/DeleteModal';
+import type { ListingStatus } from '@/types/listing';
 
 export const RealEstateListingsPage: React.FC = () => {
   const {
@@ -37,9 +38,9 @@ export const RealEstateListingsPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <AdminHeader 
-        title="Publicaciones" 
-        description="Crea y gestioná tus publicaciones." 
+      <AdminHeader
+        title="Publicaciones"
+        description="Crea y gestioná tus publicaciones."
       />
 
       <ErrorMessage message={error} />
@@ -72,19 +73,20 @@ export const RealEstateListingsPage: React.FC = () => {
               </select>
             </div>
 
-            <FloatingInput 
-              type="number" 
-              name="price" 
-              label="Precio (USD)" 
-              value={listingPrice} 
-              onChange={(e) => setListingPrice(e.target.value)} 
-              required 
+            <FloatingInput
+              type="number"
+              name="price"
+              label="Precio (USD)"
+              min="0"
+              value={listingPrice}
+              onChange={(e) => setListingPrice(e.target.value)}
+              required
             />
 
-            <SubmitButton 
-              isLoading={isSubmitting} 
-              text="Publicar" 
-              loadingText="Publicando" 
+            <SubmitButton
+              isLoading={isSubmitting}
+              text="Publicar"
+              loadingText="Publicando"
             />
           </form>
         </div>
@@ -142,22 +144,44 @@ export const RealEstateListingsPage: React.FC = () => {
         </div>
       </div>
 
-      <EditListingModal
+      <EditModal
         isOpen={isEditModalOpen}
         onClose={closeEditModal}
-        listing={selectedListing}
-        price={editPrice}
-        setPrice={setEditPrice}
-        status={editStatus}
-        setStatus={setEditStatus}
+        title="Editar Publicación"
+        subtitle="Modificá los valores de la publicación"
         onSubmit={onConfirmEdit}
         isSubmitting={isSubmitting}
-      />
+      >
+        <FloatingInput
+          type="number"
+          name="price"
+          label="Precio (USD)"
+          min="0"
+          value={editPrice}
+          onChange={(e) => setEditPrice(e.target.value)}
+          required
+        />
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider pl-1">Estado de la publicación</label>
+          <select
+            value={editStatus}
+            onChange={(e) => setEditStatus(e.target.value as ListingStatus)}
+            className="w-full px-4 py-3 text-sm bg-white border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-all cursor-pointer font-medium"
+            required
+          >
+            <option value="active">Activo</option>
+            <option value="reserved">Reservado</option>
+            <option value="sold">Vendido</option>
+            <option value="paused">Pausado</option>
+          </select>
+        </div>
+      </EditModal>
 
-      <DeleteListingModal
+      <DeleteModal
         isOpen={isDeleteModalOpen}
         onClose={closeDeleteModal}
-        listing={selectedListing}
+        title="¿Eliminar publicación?"
+        description="¿Seguro que querés eliminar la publicación? Esta acción no se puede deshacer y el inmueble dejará de estar visible en el mercado."
         onConfirm={onConfirmDelete}
         isSubmitting={isSubmitting}
       />
