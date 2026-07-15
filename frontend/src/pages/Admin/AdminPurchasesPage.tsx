@@ -22,11 +22,11 @@ export const AdminPurchasesPage: React.FC = () => {
         emptyMessage="Aún no se han registrado ventas."
         renderRow={(purchase) => (
           <tr key={purchase.id} className="hover:bg-slate-50/70 transition-colors">
-            <td className="px-6 py-4 font-mono text-xs text-slate-400">#{purchase.id}</td>
+            <td className="px-6 py-4 font-mono text-xs text-slate-400">{purchase.id}</td>
             <td className="px-6 py-4 font-medium text-slate-900 truncate max-w-[200px]" title={purchase.property?.address}>
               {purchase.property?.address || 'Sin dirección'}
             </td>
-            <td className="px-6 py-4 font-semibold text-blue-700">
+            <td className="px-6 py-4 font-semibold text-slate-700">
               {purchase.buyer ? `${purchase.buyer.name} ${purchase.buyer.surname}` : 'N/A'}
             </td>
             <td className="px-6 py-4 text-slate-600">

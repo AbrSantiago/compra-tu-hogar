@@ -94,7 +94,7 @@ export const RealEstateListingsPage: React.FC = () => {
           <AdminTable
             isLoading={isLoading}
             data={listings}
-            headers={['ID Publicación', 'Propiedad', 'Precio', 'Estado', 'Acciones']}
+            headers={['ID', 'Propiedad', 'Precio', 'Estado', 'Acciones']}
             emptyMessage="No tenés publicaciones aún."
             renderRow={(list) => {
               const statusStyles: Record<string, string> = {
@@ -108,8 +108,8 @@ export const RealEstateListingsPage: React.FC = () => {
 
               return (
                 <tr key={list.id} className="hover:bg-slate-50/70 transition-colors">
-                  <td className="px-6 py-4 font-mono text-xs text-slate-400">#{list.id}</td>
-                  <td className="px-6 py-4 font-medium text-slate-900 truncate max-w-[200px]" title={list.property?.address}>
+                  <td className="px-6 py-4 font-mono text-xs text-slate-400">{list.id}</td>
+                  <td className="px-6 py-4 font-semibold text-slate-900 truncate max-w-[200px]" title={list.property?.address}>
                     {list.property?.address || `Propiedad #${list.property_id}`}
                   </td>
                   <td className="px-6 py-4 text-slate-900">USD {list.price.toLocaleString('es-AR')}</td>

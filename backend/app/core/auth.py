@@ -8,6 +8,7 @@ from app.model.admin import Admin
 from app.model.client import Client
 from app.model.real_estate import RealEstate
 from app.model.user import User
+from typing import Union
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
@@ -91,6 +92,17 @@ def require_admin_or_owner(
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized",
+        )
+
+    return current_user
+
+def require_admin_or_real_estate(
+    current_user: User = Depends(get_current_user),
+) -> Union[Admin, RealEstate]:
+    if not (isinstance(current_user, Admin) or isinstance(current_user, RealEstate)):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin or Real estate access required",
         )
 
     return current_user

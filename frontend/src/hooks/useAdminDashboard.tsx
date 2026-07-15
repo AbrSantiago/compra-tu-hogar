@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { AxiosError } from 'axios';
 import apiClient from '@/services/apiClient';
-import type { ListingResponse } from '@/types/listing'; 
+import type { ListingResponse, ListingStatus } from '@/types/listing'; 
 import type { PropertySaveResponse } from '@/types/property'; 
 
 export const useAdminDashboard = () => {
@@ -11,6 +11,16 @@ export const useAdminDashboard = () => {
   
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+
+  const [editPrice, setEditPrice] = useState('');
+  const [editStatus, setEditStatus] = useState<ListingStatus>('active');
+  const [editAddress, setEditAddress] = useState('');
+  const [editLocation, setEditLocation] = useState('');
 
   const fetchDashboardData = useCallback(async () => {
     setIsLoading(true);
@@ -27,34 +37,67 @@ export const useAdminDashboard = () => {
       setAllListings(listingsRes.data);
     } catch (err: unknown) {
       const errorData = (err as AxiosError<{ friendlyMessage?: string, detail?: string }>)?.response?.data;
-      setError(errorData?.friendlyMessage || errorData?.detail || 'Error al cargar los datos del panel.');
+      setError(errorData?.friendlyMessage || errorData?.detail || 'Error al cargar los datos.');
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  useEffect(() => {
-    let isMounted = true;
-    
-    const loadData = async () => {
-      if (isMounted) {
-        await fetchDashboardData();
+  useEffect(() => { fetchDashboardData(); }, [fetchDashboardData]);
+
+  const openEditModal = (item: any) => {
+    setSelectedItem(item);
+    if (item.price !== undefined) {
+        setEditPrice(item.price.toString());
+        setEditStatus(item.status);
+    } else { 
+        setEditAddress(item.address);
+        setEditLocation(item.location || '');
+    }
+    setIsEditModalOpen(true);
+  };
+
+  const openDeleteModal = (item: any) => {
+    setSelectedItem(item);
+    setIsDeleteModalOpen(true);
+  };
+
+  const onConfirmEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedItem) return;
+    setIsSubmitting(true);
+    try {
+      if (selectedItem.price !== undefined) {
+        await apiClient.put(`/listings/${selectedItem.id}`, { price: parseFloat(editPrice), status: editStatus });
+      } else {
+        await apiClient.put(`/properties/${selectedItem.id}`, { address: editAddress, location: editLocation });
       }
-    };
+      setIsEditModalOpen(false);
+      await fetchDashboardData();
+    } catch { setError('Error al guardar cambios.'); }
+    finally { setIsSubmitting(false); }
+  };
 
-    loadData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [fetchDashboardData]);
+  const onConfirmDelete = async () => {
+    if (!selectedItem) return;
+    setIsSubmitting(true);
+    try {
+      const url = selectedItem.price !== undefined ? `/listings/${selectedItem.id}` : `/properties/${selectedItem.id}`;
+      await apiClient.delete(url);
+      setIsDeleteModalOpen(false);
+      await fetchDashboardData();
+    } catch { setError('Error al eliminar.'); }
+    finally { setIsSubmitting(false); }
+  };
 
   return { 
-    propertiesSaves, 
-    purchases, 
-    allListings, 
-    isLoading, 
-    error, 
-    refetch: fetchDashboardData 
+    propertiesSaves, purchases, allListings, isLoading, error, refetch: fetchDashboardData,
+    isEditModalOpen, isDeleteModalOpen, isSubmitting,
+    editPrice, setEditPrice, editStatus, setEditStatus,
+    editAddress, setEditAddress, editLocation, setEditLocation,
+    openEditModal, openDeleteModal, 
+    closeEditModal: () => setIsEditModalOpen(false), 
+    closeDeleteModal: () => setIsDeleteModalOpen(false), 
+    onConfirmEdit, onConfirmDelete 
   };
 };

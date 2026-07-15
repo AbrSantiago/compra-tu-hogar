@@ -14,6 +14,7 @@ export const useAdminProperties = () => {
 
   const [editAddress, setEditAddress] = useState('');
   const [editLocation, setEditLocation] = useState('');
+const [editType, setEditType] = useState<'house' | 'apartment'>('house');
 
   const fetchProperties = useCallback(async () => {
     setIsLoading(true);
@@ -32,6 +33,7 @@ export const useAdminProperties = () => {
     setSelectedProp(prop);
     setEditAddress(prop.address);
     setEditLocation(prop.location || '');
+    setEditType(prop.type as 'house' | 'apartment');
     setIsEditModalOpen(true);
   };
 
@@ -42,7 +44,8 @@ export const useAdminProperties = () => {
     try {
       await apiClient.put<PropertyUpdate>(`/properties/${selectedProp.id}`, {
         address: editAddress,
-        location: editLocation
+        location: editLocation,
+        type: editType
       });
       setIsEditModalOpen(false);
       await fetchProperties();
@@ -68,6 +71,6 @@ export const useAdminProperties = () => {
     openDeleteModal: (p: PropertySaveResponse) => { setSelectedProp(p); setIsDeleteModalOpen(true); },
     closeEditModal: () => setIsEditModalOpen(false),
     closeDeleteModal: () => setIsDeleteModalOpen(false),
-    onConfirmEdit, onConfirmDelete
+    onConfirmEdit, onConfirmDelete, editType, setEditType
   };
 };

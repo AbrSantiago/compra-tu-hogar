@@ -31,7 +31,7 @@ export const AdminClientsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <AdminHeader 
-        title="Control de Clientes" 
+        title="Clientes" 
         description="Listado de los clientes registrados en la plataforma." 
       />
 
@@ -40,11 +40,11 @@ export const AdminClientsPage: React.FC = () => {
       <AdminTable
         isLoading={isLoading}
         data={clients}
-        headers={['ID', 'Nombre Completo', 'Email', 'Acciones']}
+        headers={['ID', 'Nombre', 'Email', 'Acciones']}
         emptyMessage="No hay clientes registrados aún."
         renderRow={(client) => (
           <tr key={client.id} className="hover:bg-slate-50/70 transition-colors">
-            <td className="px-6 py-4 font-mono text-xs text-slate-400">#{client.id}</td>
+            <td className="px-6 py-4 font-mono text-xs text-slate-400">{client.id}</td>
             <td className="px-6 py-4 font-semibold text-slate-900">{client.name} {client.surname}</td>
             <td className="px-6 py-4 text-slate-600">{client.email}</td>
             <td className="px-6 py-4 space-x-2 whitespace-nowrap">

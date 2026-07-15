@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import { ErrorMessage } from '@/components/ui';
 import { AdminHeader, AdminTable } from '@/components/admin';
-import { useAdminStats } from '@/hooks/useAdminStats.tsx'; 
+import { useAdminStats } from '@/hooks/useAdminStats.tsx';
 
 type TabType = 'clients' | 'properties' | 'realEstates';
 
 export const AdminStatsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('clients');
-  
-  const { 
-    topClients, 
-    topProperties, 
-    topRealEstates, 
-    isLoading, 
-    error 
+
+  const {
+    topClients,
+    topProperties,
+    topRealEstates,
+    isLoading,
+    error
   } = useAdminStats();
 
   const getTabClass = (tab: TabType) => {
@@ -26,34 +26,34 @@ export const AdminStatsPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <AdminHeader 
-        title="Reportes y Estadísticas" 
-        description="Visualizá el rendimiento y la actividad general de la plataforma." 
+      <AdminHeader
+        title="Estadísticas"
+        description="Visualizá el rendimiento y la actividad de la plataforma."
       />
 
       <ErrorMessage message={error} />
 
       <div className="flex flex-wrap gap-3 pb-2 border-b border-slate-100">
         <button onClick={() => setActiveTab('clients')} className={getTabClass('clients')}>
-          Top Clientes
+          Clientes con más compras
         </button>
         <button onClick={() => setActiveTab('properties')} className={getTabClass('properties')}>
-          Propiedades Más Vendidas
+          Propiedades mejores rankeadas
         </button>
         <button onClick={() => setActiveTab('realEstates')} className={getTabClass('realEstates')}>
-          Top Inmobiliarias
+          Inmobiliarias con más ventas
         </button>
       </div>
-      
+
       {activeTab === 'clients' && (
         <AdminTable
           isLoading={isLoading}
           data={topClients}
-          headers={['Ranking', 'Cliente', 'Total de Compras']}
+          headers={['Ranking', 'Cliente', 'Compras Totales']}
           emptyMessage="No hay datos suficientes para mostrar estadísticas de clientes."
           renderRow={(client, index) => (
             <tr key={index} className="hover:bg-slate-50/70 transition-colors">
-              <td className="px-6 py-4 font-mono text-xs text-slate-400">#{index + 1}</td>
+              <td className="px-6 py-4 font-mono text-xs text-slate-400">{index + 1}</td>
               <td className="px-6 py-4 font-semibold text-slate-900">{client.name} {client.surname}</td>
               <td className="px-6 py-4">
                 <span className="inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
@@ -64,20 +64,20 @@ export const AdminStatsPage: React.FC = () => {
           )}
         />
       )}
-
+      
       {activeTab === 'properties' && (
         <AdminTable
           isLoading={isLoading}
           data={topProperties}
-          headers={['Ranking', 'Propiedad', 'Total de Ventas']}
-          emptyMessage="No hay datos suficientes para mostrar estadísticas de propiedades."
+          headers={['Ranking', 'Propiedad', 'Puntaje Promedio']}
+          emptyMessage="No hay suficientes reseñas para mostrar el ranking."
           renderRow={(prop, index) => (
             <tr key={index} className="hover:bg-slate-50/70 transition-colors">
-              <td className="px-6 py-4 font-mono text-xs text-slate-400">#{index + 1}</td>
+              <td className="px-6 py-4 font-mono text-xs text-slate-400">{index + 1}</td>
               <td className="px-6 py-4 font-semibold text-slate-900">{prop.address}</td>
               <td className="px-6 py-4">
-                <span className="inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
-                  {prop.total} ventas
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold bg-amber-50 text-amber-600 border border-amber-100">
+                  ★ {prop.total}
                 </span>
               </td>
             </tr>
@@ -89,11 +89,11 @@ export const AdminStatsPage: React.FC = () => {
         <AdminTable
           isLoading={isLoading}
           data={topRealEstates}
-          headers={['Ranking', 'Inmobiliaria', 'Total de Ventas']}
+          headers={['Ranking', 'Inmobiliaria', 'Ventas Totales']}
           emptyMessage="No hay datos suficientes para mostrar estadísticas de inmobiliarias."
           renderRow={(realEstate, index) => (
             <tr key={index} className="hover:bg-slate-50/70 transition-colors">
-              <td className="px-6 py-4 font-mono text-xs text-slate-400">#{index + 1}</td>
+              <td className="px-6 py-4 font-mono text-xs text-slate-400">{index + 1}</td>
               <td className="px-6 py-4 font-semibold text-slate-900">{realEstate.name}</td>
               <td className="px-6 py-4">
                 <span className="inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
@@ -104,7 +104,7 @@ export const AdminStatsPage: React.FC = () => {
           )}
         />
       )}
-      
+
     </div>
   );
 };

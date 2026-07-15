@@ -3,7 +3,7 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.core.auth import require_client, require_real_estate
+from app.core.auth import require_admin_or_real_estate, require_client, require_real_estate
 from app.core.database import get_db
 from app.model.client import Client
 from app.model.listing import Listing
@@ -75,7 +75,7 @@ def update_listing(
     listing_id: int,
     listing_data: ListingUpdate,
     db: Session = Depends(get_db),
-    real_estate: RealEstate = Depends(require_real_estate),
+    real_estate: RealEstate = Depends(require_admin_or_real_estate),
 ):
     logger.info(
         f"Inmobiliaria ID {real_estate.id} intenta modificar "
@@ -104,7 +104,7 @@ def update_listing(
 def delete_listing(
     listing_id: int,
     db: Session = Depends(get_db),
-    real_estate: RealEstate = Depends(require_real_estate),
+    real_estate: RealEstate = Depends(require_admin_or_real_estate),
 ):
     logger.info(
         f"Inmobiliaria ID {real_estate.id} intenta eliminar "

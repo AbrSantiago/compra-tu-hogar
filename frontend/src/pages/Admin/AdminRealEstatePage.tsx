@@ -37,7 +37,7 @@ export const AdminRealEstatePage = () => {
   return (
     <div className="space-y-6">
       <AdminHeader 
-        title="Gestión de Inmobiliarias" 
+        title="Inmobiliarias" 
         description="Administrá las cuentas de las inmobiliarias asociadas." 
       />
 
@@ -70,7 +70,7 @@ export const AdminRealEstatePage = () => {
             emptyMessage="No hay inmobiliarias registradas aún."
             renderRow={(re) => (
               <tr key={re.id} className="hover:bg-slate-50/70 transition-colors">
-                <td className="px-6 py-4 font-mono text-xs text-slate-400">#{re.id}</td>
+                <td className="px-6 py-4 font-mono text-xs text-slate-400">{re.id}</td>
                 <td className="px-6 py-4 font-semibold text-slate-900">{re.name}</td>
                 <td className="px-6 py-4 text-slate-600">{re.email}</td>
                 <td className="px-6 py-4 space-x-2 whitespace-nowrap">

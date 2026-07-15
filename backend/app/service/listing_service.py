@@ -190,13 +190,21 @@ def get_stats_top_clients(db: Session, limit: int = 5):
     return [{"name": r.name, "surname": r.surname, "total": r.total} for r in results]
 
 def get_stats_top_properties(db: Session, limit: int = 5):
-    """Propiedades más vendidas."""
-    results = db.query(
-        Property.address, func.count(Listing.id).label("total")
-    ).join(Listing, Property.id == Listing.property_id).filter(Listing.status == ListingStatus.SOLD)\
-     .group_by(Property.id, Property.address).order_by(func.count(Listing.id).desc()).limit(limit).all()
+    """Propiedades mejor rankeadas por promedio de reseñas."""
+    results = (
+        db.query(
+            Property.address, 
+            func.avg(Review.rating).label("avg_rating")
+        )
+        .join(Listing, Property.id == Listing.property_id)
+        .join(Review, Listing.id == Review.listing_id)
+        .group_by(Property.id, Property.address)
+        .order_by(func.avg(Review.rating).desc())
+        .limit(limit)
+        .all()
+    )
      
-    return [{"address": r.address, "total": r.total} for r in results]
+    return [{"address": r.address, "total": round(r.avg_rating, 1)} for r in results]
 
 def get_stats_top_real_estates(db: Session, limit: int = 5):
     """Inmobiliarias con más ventas."""
