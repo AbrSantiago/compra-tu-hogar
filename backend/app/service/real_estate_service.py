@@ -1,3 +1,5 @@
+from multiprocessing.dummy.connection import Client
+
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
@@ -8,6 +10,8 @@ from app.schema.real_estate import (
     RealEstateCreate,
     RealEstateUpdate,
 )
+from app.model.listing import Listing
+from app.schema.listing import ListingStatus
 
 
 def create_real_estate(
@@ -96,3 +100,15 @@ def delete_real_estate(
     return {
         "message": "Real estate deleted",
     }
+
+def get_sales_by_real_estate(db: Session, real_estate_id: int):
+    return db.query(Listing).filter(
+        Listing.real_estate_id == real_estate_id,
+        Listing.status == ListingStatus.SOLD
+    ).all()
+
+def get_clients_by_real_estate(db: Session, real_estate_id: int):
+    return db.query(Client).join(Listing).filter(
+        Listing.real_estate_id == real_estate_id,
+        Listing.buyer_id != None
+    ).distinct().all()
