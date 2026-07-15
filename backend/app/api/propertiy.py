@@ -56,7 +56,7 @@ def update_property(
     property_id: int,
     property_data: PropertyUpdate,
     db: Session = Depends(get_db),
-    _: User = Depends(require_real_estate),
+    _: User = Depends(require_admin),
 ):
     return property_service.update_property(
         db=db,

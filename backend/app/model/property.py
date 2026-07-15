@@ -33,6 +33,8 @@ class Property(Base):
         nullable=True,
     )
 
-    listings: Mapped[list[Listing]] = relationship(
-        back_populates="property_",
+    listings: Mapped[list["Listing"]] = relationship(
+        "Listing", 
+        back_populates="property_", 
+        cascade="all, delete-orphan" 
     )

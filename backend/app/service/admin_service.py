@@ -110,14 +110,23 @@ def get_properties_with_saves(db: Session):
     results = db.query(
         Property.id,
         Property.address,
+        Property.location,
         Property.type,
         func.count(Favorite.id).label("total_saves")
     ).outerjoin(Listing, Property.id == Listing.property_id) \
      .outerjoin(Favorite, Listing.id == Favorite.listing_id) \
      .group_by(Property.id).order_by(func.count(Favorite.id).desc()).all()
-    
-    return [{"id": r.id, "address": r.address, "type": r.type.value, "total_saves": r.total_saves} for r in results]
 
+    return [
+        {
+            "id": r.id,
+            "address": r.address,
+            "location": r.location,
+            "type": r.type.value,
+            "total_saves": r.total_saves,
+        }
+        for r in results
+    ]
 
 def get_all_purchases(db: Session):
     return db.query(Listing).options(

@@ -23,7 +23,6 @@ export const RealEstateListingsPage: React.FC = () => {
     formSuccess,
     isEditModalOpen,
     isDeleteModalOpen,
-    selectedListing,
     editPrice,
     setEditPrice,
     editStatus,

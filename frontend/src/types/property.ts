@@ -42,6 +42,7 @@ export interface PropertyUpdate {
 export interface PropertySaveResponse {
   id: number;
   address: string;
+  location?: string;
   type: string;
   total_saves: number;
 }

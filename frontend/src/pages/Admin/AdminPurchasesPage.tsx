@@ -32,7 +32,7 @@ export const AdminPurchasesPage: React.FC = () => {
             <td className="px-6 py-4 text-slate-600">
               {purchase.real_estate?.name || 'N/A'}
             </td>
-            <td className="px-6 py-4 font-bold text-emerald-600 whitespace-nowrap">
+            <td className="px-6 py-4 font-semibold text-emerald-600 whitespace-nowrap">
               USD {purchase.price.toLocaleString('es-AR')}
             </td>
           </tr>
