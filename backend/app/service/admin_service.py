@@ -1,10 +1,16 @@
 from fastapi import HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy import func
+from sqlalchemy.orm import Session, joinedload
 
 from app.core.security import hash_password
 from app.model.admin import Admin
+from app.model.favorite import Favorite
+from app.model.listing import Listing
+from app.model.property import Property
+from app.model.review import Review
 from app.model.user import User
 from app.schema.admin import AdminCreate, AdminUpdate
+from app.schema.listing import ListingStatus
 
 
 def create_admin(
@@ -98,3 +104,46 @@ def delete_admin(
     return {
         "message": "Admin deleted",
     }
+
+
+def get_properties_with_saves(db: Session):
+    results = db.query(
+        Property.id,
+        Property.address,
+        Property.type,
+        func.count(Favorite.id).label("total_saves")
+    ).outerjoin(Listing, Property.id == Listing.property_id) \
+     .outerjoin(Favorite, Listing.id == Favorite.listing_id) \
+     .group_by(Property.id).order_by(func.count(Favorite.id).desc()).all()
+    
+    return [{"id": r.id, "address": r.address, "type": r.type.value, "total_saves": r.total_saves} for r in results]
+
+
+def get_all_purchases(db: Session):
+    return db.query(Listing).options(
+        joinedload(Listing.property_),
+        joinedload(Listing.buyer),
+        joinedload(Listing.real_estate)
+    ).filter(Listing.status == ListingStatus.SOLD).order_by(Listing.id.desc()).all()
+
+
+def get_all_listings_with_reviews(db: Session):
+    avg_query = db.query(
+        Review.listing_id, 
+        func.avg(Review.rating).label("avg_r")
+    ).group_by(Review.listing_id).subquery()
+
+    results = db.query(Listing, avg_query.c.avg_r).outerjoin(
+        avg_query, Listing.id == avg_query.c.listing_id
+    ).options(
+        joinedload(Listing.property_),
+        joinedload(Listing.real_estate),
+        joinedload(Listing.reviews).joinedload(Review.client)
+    ).order_by(Listing.id.desc()).all()
+
+    listings = []
+    for listing, avg_r in results:
+        listing.average_rating = float(avg_r) if avg_r is not None else None
+        listings.append(listing)
+        
+    return listings

@@ -38,3 +38,10 @@ export interface PropertyUpdate {
   type?: PropertyType;
   characteristics?: string | null;
 }
+
+export interface PropertySaveResponse {
+  id: number;
+  address: string;
+  type: string;
+  total_saves: number;
+}

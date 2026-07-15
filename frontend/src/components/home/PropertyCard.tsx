@@ -15,6 +15,7 @@ interface PropertyCardProps {
   characteristics: string | null;
   userRole?: string | null;
   onPurchaseConfirm: (id: number) => Promise<void>;
+  onReviewAdded: () => void;
   initialIsFavorite?: boolean;
   averageRating?: number | null;
   reviews?: ReviewResponse[];
@@ -22,8 +23,14 @@ interface PropertyCardProps {
 
 export const PropertyCard: React.FC<PropertyCardProps> = (props) => {
   const { state, actions } = usePropertyCard(
-    props.id, props.reviews || [], props.averageRating || null, props.initialIsFavorite || false
+    props.id, 
+    props.initialIsFavorite || false
   );
+
+  const handleReviewSubmit = async (listingId: number, rating: number, comment: string) => {
+    await actions.addReview(listingId, rating, comment);
+    props.onReviewAdded();
+  };
 
   return (
     <>
@@ -37,9 +44,9 @@ export const PropertyCard: React.FC<PropertyCardProps> = (props) => {
             {props.realEstateName}
           </span>
           
-          {state.localRating != null && (
+          {props.averageRating != null && (
             <span className="absolute bottom-3 left-3 px-2.5 py-1 flex items-center gap-1 text-xs font-bold bg-amber-400/80 backdrop-blur-xs text-white rounded-xl shadow-xs border border-amber-500/50">
-              ★ {state.localRating.toFixed(1)}
+              ★ {props.averageRating.toFixed(1)}
             </span>
           )}
 
@@ -55,15 +62,18 @@ export const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           <p className="text-xs text-slate-700 truncate">{props.title}</p>
           
           {props.characteristics && (
-            <p className="text-xs text-slate-400 truncate">
-              {props.characteristics}
-            </p>
+            <p className="text-xs text-slate-400 truncate">{props.characteristics}</p>
           )}
 
           <div className="flex items-center justify-between pt-2">
             <span className="text-sm font-bold">USD {props.price.toLocaleString('es-AR')}</span>
             {props.userRole === 'client' && (
-              <button onClick={(e) => { e.stopPropagation(); actions.setIsPurchaseModalOpen(true); }} className="px-3 py-1.5 text-xs font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700">Comprar</button>
+              <button 
+                onClick={(e) => { e.stopPropagation(); actions.setIsPurchaseModalOpen(true); }} 
+                className="px-3 py-1.5 text-xs font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700"
+              >
+                Comprar
+              </button>
             )}
           </div>
         </div>
@@ -81,9 +91,9 @@ export const PropertyCard: React.FC<PropertyCardProps> = (props) => {
       <PropertyDetailsModal
         isOpen={state.isDetailsModalOpen}
         onClose={() => actions.setIsDetailsModalOpen(false)}
-        property={{ ...props, title: props.title, averageRating: state.localRating, reviews: state.localReviews }}
+        property={{ ...props, title: props.title, averageRating: props.averageRating, reviews: props.reviews || [] }}
         userRole={props.userRole}
-        onReviewSubmit={actions.addReview}
+        onReviewSubmit={handleReviewSubmit}
       />
     </>
   );

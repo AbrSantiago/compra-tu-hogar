@@ -8,6 +8,13 @@ export interface ListingRealEstate {
   email: string;
 }
 
+export interface ListingBuyer {
+  id: number;
+  name: string;
+  surname: string;
+  email: string;
+}
+
 export interface ListingResponse {
   id: number;
   property_id: number;
@@ -20,6 +27,7 @@ export interface ListingResponse {
     type: string;
     characteristics: string | null;
   };
+  buyer?: ListingBuyer | null;
   real_estate?: ListingRealEstate;
   average_rating: number | null; 
   reviews: ReviewResponse[];

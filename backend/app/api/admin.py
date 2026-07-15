@@ -13,6 +13,30 @@ router = APIRouter(
 )
 
 
+@router.get("/properties-saves")
+def get_properties_saves(
+    db: Session = Depends(get_db),
+    _: Admin = Depends(require_admin),
+):
+    return admin_service.get_properties_with_saves(db)
+
+
+@router.get("/purchases")
+def get_purchases(
+    db: Session = Depends(get_db),
+    _: Admin = Depends(require_admin),
+):
+    return admin_service.get_all_purchases(db)
+
+
+@router.get("/listings-reviews")
+def get_listings_reviews(
+    db: Session = Depends(get_db),
+    _: Admin = Depends(require_admin),
+):
+    return admin_service.get_all_listings_with_reviews(db)
+
+
 @router.post("/")
 def create_admin(
     admin: AdminCreate,
@@ -69,3 +93,4 @@ def delete_admin(
         db=db,
         admin_id=admin_id,
     )
+

@@ -15,25 +15,19 @@ from app.model.client import Client
 
 def get_listings(db: Session):
     listings = db.query(Listing).options(
-        joinedload(Listing.property),
+        joinedload(Listing.property_), 
         joinedload(Listing.real_estate),
         joinedload(Listing.buyer),
         joinedload(Listing.reviews).joinedload(Review.client),
     ).order_by(Listing.id.asc()).all()
 
-    results = []
     for listing in listings:
-        listing_dict = listing.__dict__.copy()
-        
         if listing.reviews:
-            avg = round(sum(r.rating for r in listing.reviews) / len(listing.reviews), 1)
+            listing.average_rating = round(sum(r.rating for r in listing.reviews) / len(listing.reviews), 1)
         else:
-            avg = None
-        
-        listing_dict["average_rating"] = avg
-        results.append(listing_dict)
-        
-    return results
+            listing.average_rating = None
+            
+    return listings
 
 
 def get_listing(
@@ -43,7 +37,7 @@ def get_listing(
     listing = (
         db.query(Listing)
         .options(
-            joinedload(Listing.property),
+            joinedload(Listing.property_),
             joinedload(Listing.real_estate),
             joinedload(Listing.buyer),
             joinedload(Listing.reviews), 

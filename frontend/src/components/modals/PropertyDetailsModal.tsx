@@ -36,10 +36,9 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
       await onReviewSubmit(property.id, rating, comment);
       setComment('');
       setStatusMessage({ type: 'success', text: 'Reseña publicada con éxito.' });
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error("Error enviando reseña:", error);
-      const axiosError = error as { response?: { data?: { detail?: string } } };
-      const errorMsg = axiosError.response?.data?.detail || "Hubo un error al enviar tu reseña.";
+      const errorMsg = error.response?.data?.detail || "Hubo un error al enviar tu reseña.";
       setStatusMessage({ type: 'error', text: errorMsg });
     } finally {
       setIsSubmitting(false);
@@ -59,8 +58,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
 
         <div className="p-6 space-y-6 flex-1">
           {statusMessage && (
-            <div className={`p-4 rounded-xl border font-semibold text-sm flex items-center gap-2 ${statusMessage.type === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-red-50 text-red-800 border-red-200'
-              }`}>
+            <div className={`p-4 rounded-xl border font-semibold text-sm flex items-center gap-2 ${statusMessage.type === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-red-50 text-red-800 border-red-200'}`}>
               {statusMessage.type === 'success' ? '✅' : '⚠️'} {statusMessage.text}
             </div>
           )}

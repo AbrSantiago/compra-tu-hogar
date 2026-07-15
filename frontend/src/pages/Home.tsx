@@ -15,6 +15,7 @@ export const Home: React.FC = () => {
     userRole,
     userFavIds,
     handlePurchaseConfirm,
+    refetch,
   } = useHome();
 
   const { handleLogout } = useLogout();
@@ -136,6 +137,7 @@ export const Home: React.FC = () => {
                   characteristics={property.characteristics}
                   userRole={userRole}
                   onPurchaseConfirm={handlePurchaseConfirm}
+                  onReviewAdded={() => refetch()}
                   initialIsFavorite={isSaved}
                   averageRating={property.averageRating}
                   reviews={property.reviews}

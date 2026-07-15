@@ -22,10 +22,18 @@ class Listing(Base):
     price: Mapped[float] = mapped_column(Float, nullable=False)
     status: Mapped[ListingStatus] = mapped_column(Enum(ListingStatus), nullable=False, default=ListingStatus.ACTIVE)
 
-    property: Mapped[Property] = relationship(back_populates="listings")
+    property_: Mapped[Property] = relationship(back_populates="listings")
     real_estate: Mapped[RealEstate] = relationship(back_populates="listings")
     buyer: Mapped[Client | None] = relationship(back_populates="purchased_listings")
     favorited_by: Mapped[list[Favorite]] = relationship(back_populates="listing", cascade="all, delete-orphan")
     reviews: Mapped[list[Review]] = relationship(back_populates="listing", cascade="all, delete-orphan")
+
+    @property
+    def average_rating(self):
+        return getattr(self, "_average_rating", None)
+
+    @average_rating.setter
+    def average_rating(self, value):
+        self._average_rating = value
 
     __table_args__ = (UniqueConstraint("property_id", "real_estate_id", name="uq_property_real_estate"),)

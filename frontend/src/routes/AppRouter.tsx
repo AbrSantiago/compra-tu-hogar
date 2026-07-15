@@ -12,6 +12,9 @@ import RealEstatePage from '@/pages/RealEstate/RealEstatePage';
 import { ClientPurchasesPage } from '@/pages/Client/ClientPurchasesPage.tsx';
 import { ClientFavoritesPage } from '@/pages/Client/ClientFavoritesPage';
 import { AdminStatsPage } from '@/pages/Admin/AdminStatsPage';
+import { AdminPropertiesPage } from '@/pages/Admin/AdminPropertiesPage';
+import { AdminPurchasesPage } from '@/pages/Admin/AdminPurchasesPage';
+import { AdminReviewsPage } from '@/pages/Admin/AdminReviewsPage';
 
 export const AppRouter = () => {
   return (
@@ -59,6 +62,9 @@ export const AppRouter = () => {
           } />
           <Route path="clients" element={<AdminClientsPage />} />
           <Route path="real-estate" element={<AdminRealEstatePage />} />
+          <Route path="properties" element={<AdminPropertiesPage />} />
+          <Route path="purchases" element={<AdminPurchasesPage />} />
+          <Route path="reviews" element={<AdminReviewsPage />} />
           <Route path="stats" element={<AdminStatsPage />} />
         </Route>
 
