@@ -9,7 +9,7 @@ from app.schema.property import (
 
 
 def get_properties(db: Session):
-    return db.query(Property).all()
+    return db.query(Property).order_by(Property.id.asc()).all()
 
 
 def get_property(

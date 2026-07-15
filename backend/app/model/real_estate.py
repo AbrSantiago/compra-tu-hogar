@@ -21,7 +21,10 @@ class RealEstate(User):
         primary_key=True,
     )
 
-    listings: Mapped[list["Listing"]] = relationship(back_populates="real_estate")
+    listings: Mapped[list["Listing"]] = relationship(
+        back_populates="real_estate",
+        cascade="all, delete-orphan"
+    )
 
     __mapper_args__ = {
         "polymorphic_identity": "real_estate",

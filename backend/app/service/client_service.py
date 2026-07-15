@@ -8,7 +8,7 @@ from app.schema.client import ClientUpdate
 
 
 def get_clients(db: Session):
-    return db.query(Client).all()
+    return db.query(Client).order_by(Client.id.asc()).all()
 
 
 def get_client(

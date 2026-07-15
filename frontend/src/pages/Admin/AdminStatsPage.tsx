@@ -69,7 +69,7 @@ export const AdminStatsPage: React.FC = () => {
         <AdminTable
           isLoading={isLoading}
           data={topProperties}
-          headers={['Ranking', 'Propiedad (Dirección)', 'Total de Ventas']}
+          headers={['Ranking', 'Propiedad', 'Total de Ventas']}
           emptyMessage="No hay datos suficientes para mostrar estadísticas de propiedades."
           renderRow={(prop, index) => (
             <tr key={index} className="hover:bg-slate-50/70 transition-colors">

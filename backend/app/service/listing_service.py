@@ -19,7 +19,7 @@ def get_listings(db: Session):
         joinedload(Listing.real_estate),
         joinedload(Listing.buyer),
         joinedload(Listing.reviews).joinedload(Review.client),
-    ).all()
+    ).order_by(Listing.id.asc()).all()
 
     results = []
     for listing in listings:

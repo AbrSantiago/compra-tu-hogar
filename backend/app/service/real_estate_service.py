@@ -36,7 +36,7 @@ def create_real_estate(
 
 
 def get_real_estates(db: Session):
-    return db.query(RealEstate).all()
+    return db.query(RealEstate).order_by(RealEstate.id.asc()).all()
 
 
 def get_real_estate(

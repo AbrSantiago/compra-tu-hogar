@@ -38,7 +38,7 @@ def create_admin(
 
 
 def get_admins(db: Session):
-    return db.query(Admin).all()
+    return db.query(Admin).order_by(Admin.id.asc()).all()
 
 
 def get_admin(
