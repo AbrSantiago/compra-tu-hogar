@@ -17,8 +17,8 @@ export default function RealEstatePage() {
           </div>
 
           <nav className="flex flex-col gap-2">
-            <AdminNavLink to="/real-estate/properties">Gestionar Inmuebles</AdminNavLink>
-            <AdminNavLink to="/real-estate/listings">Gestionar Publicaciones</AdminNavLink>
+            <AdminNavLink to="/real-estate/properties">Inmuebles</AdminNavLink>
+            <AdminNavLink to="/real-estate/listings">Publicaciones</AdminNavLink>
           </nav>
         </div>
 

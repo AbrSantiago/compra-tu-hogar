@@ -18,7 +18,7 @@ const ReviewPagination = ({ reviews }: { reviews: any[] }) => {
                         <span className="text-xs font-bold text-slate-700">{rev.client_name}</span>
                         <span className="text-xs font-bold text-amber-500">★ {rev.rating}</span>
                     </div>
-                    <p className="text-xs text-slate-600 italic">"{rev.comment}"</p>
+                    <p className="text-xs text-slate-600">{rev.comment}</p>
                 </div>
             ))}
             {totalPages > 1 && (
@@ -84,14 +84,14 @@ export const AdminReviewsPage: React.FC = () => {
                                         ★ {listing.average_rating.toFixed(1)}
                                     </span>
                                 ) : (
-                                    <span className="text-xs text-slate-400 italic">Sin calificar</span>
+                                    <span className="text-xs text-slate-400">Sin calificar</span>
                                 )}
                             </td>
                             <td className="px-6 py-4">
                                 {listing.reviews && listing.reviews.length > 0 ? (
                                     <details className="group">
                                         <summary className="cursor-pointer text-xs font-semibold text-blue-600 hover:text-blue-800 list-none flex items-center gap-1">
-                                            Ver {listing.reviews.length} observación(es)
+                                            Ver {listing.reviews.length} reseña(s)
                                             <span className="transition group-open:rotate-180">▼</span>
                                         </summary>
                                         <div className="mt-3 bg-slate-50 p-3 rounded-xl border border-slate-200">

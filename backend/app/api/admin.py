@@ -6,6 +6,7 @@ from app.core.database import get_db
 from app.model.admin import Admin
 from app.schema.admin import AdminCreate, AdminUpdate
 from app.service import admin_service
+from app.schema.listing import ListingResponse
 
 router = APIRouter(
     prefix="/admins",
@@ -21,7 +22,7 @@ def get_properties_saves(
     return admin_service.get_properties_with_saves(db)
 
 
-@router.get("/purchases")
+@router.get("/purchases", response_model=list[ListingResponse])
 def get_purchases(
     db: Session = Depends(get_db),
     _: Admin = Depends(require_admin),
@@ -29,7 +30,7 @@ def get_purchases(
     return admin_service.get_all_purchases(db)
 
 
-@router.get("/listings-reviews")
+@router.get("/listings-reviews", response_model=list[ListingResponse])
 def get_listings_reviews(
     db: Session = Depends(get_db),
     _: Admin = Depends(require_admin),

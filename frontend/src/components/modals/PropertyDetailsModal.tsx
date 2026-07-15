@@ -134,7 +134,7 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
                           ★ {review.rating}/10
                         </span>
                       </div>
-                      <p className="text-sm text-slate-700 italic">{review.comment}</p>
+                      <p className="text-sm text-slate-700">{review.comment}</p>
                     </div>
                   );
                 })
