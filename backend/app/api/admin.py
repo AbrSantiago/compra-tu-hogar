@@ -5,8 +5,8 @@ from app.core.auth import require_admin
 from app.core.database import get_db
 from app.model.admin import Admin
 from app.schema.admin import AdminCreate, AdminUpdate
-from app.service import admin_service
 from app.schema.listing import ListingResponse
+from app.service import admin_service
 
 router = APIRouter(
     prefix="/admins",

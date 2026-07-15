@@ -8,6 +8,8 @@ import { DeleteModal } from '@/components/modals/DeleteModal';
 import { FloatingInput } from '@/components/form/FloatingInput';
 import { ReviewPagination } from '@/components/admin/ReviewPagination';
 
+type ListingStatus = 'active' | 'reserved' | 'sold' | 'paused';
+
 export const AdminReviewsPage: React.FC = () => {
     const {
         allListings, isLoading, error,
@@ -94,7 +96,7 @@ export const AdminReviewsPage: React.FC = () => {
 
             <EditModal isOpen={isEditModalOpen} onClose={closeEditModal} title="Editar Publicación" subtitle="Modificá los valores" onSubmit={onConfirmEdit} isSubmitting={isSubmitting}>
                 <FloatingInput type="number" name="price" label="Precio (USD)" value={editPrice} onChange={(e) => setEditPrice(e.target.value)} required />
-                <select value={editStatus} onChange={(e) => setEditStatus(e.target.value as any)} className="w-full px-4 py-3 border rounded-xl">
+                <select value={editStatus} onChange={(e) => setEditStatus(e.target.value as ListingStatus)} className="w-full px-4 py-3 border rounded-xl">
                     <option value="active">Activo</option>
                     <option value="reserved">Reservado</option>
                     <option value="sold">Vendido</option>

@@ -14,12 +14,13 @@ export const useAdminProperties = () => {
 
   const [editAddress, setEditAddress] = useState('');
   const [editLocation, setEditLocation] = useState('');
-const [editType, setEditType] = useState<'house' | 'apartment'>('house');
+  const [editType, setEditType] = useState<'house' | 'apartment'>('house');
 
   const fetchProperties = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await apiClient.get<PropertySaveResponse[]>('/admins/properties-saves'); setProperties(response.data);
+      const response = await apiClient.get<PropertySaveResponse[]>('/admins/properties-saves');
+      setProperties(response.data);
     } catch {
       setError('Error al cargar propiedades.');
     } finally {
@@ -27,7 +28,12 @@ const [editType, setEditType] = useState<'house' | 'apartment'>('house');
     }
   }, []);
 
-  useEffect(() => { fetchProperties(); }, [fetchProperties]);
+  useEffect(() => {
+    const loadProperties = async () => {
+      await fetchProperties();
+    };
+    loadProperties();
+  }, [fetchProperties]);
 
   const openEditModal = (prop: PropertySaveResponse) => {
     setSelectedProp(prop);
@@ -49,8 +55,11 @@ const [editType, setEditType] = useState<'house' | 'apartment'>('house');
       });
       setIsEditModalOpen(false);
       await fetchProperties();
-    } catch { setError('Error al actualizar.'); }
-    finally { setIsSubmitting(false); }
+    } catch { 
+      setError('Error al actualizar.'); 
+    } finally { 
+      setIsSubmitting(false); 
+    }
   };
 
   const onConfirmDelete = async () => {
@@ -60,8 +69,11 @@ const [editType, setEditType] = useState<'house' | 'apartment'>('house');
       await apiClient.delete(`/properties/${selectedProp.id}`);
       setIsDeleteModalOpen(false);
       await fetchProperties();
-    } catch { setError('Error al eliminar.'); }
-    finally { setIsSubmitting(false); }
+    } catch { 
+      setError('Error al eliminar.'); 
+    } finally { 
+      setIsSubmitting(false); 
+    }
   };
 
   return {

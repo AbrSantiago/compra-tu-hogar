@@ -1,6 +1,7 @@
 import React from 'react';
+import type { ReviewResponse } from '@/types/review';
 
-export const ReviewPagination = ({ reviews }: { reviews: any[] }) => {
+export const ReviewPagination = ({ reviews }: { reviews: ReviewResponse[] }) => {
     const [page, setPage] = React.useState(0);
     const pageSize = 3;
     const paginated = reviews.slice(page * pageSize, (page + 1) * pageSize);

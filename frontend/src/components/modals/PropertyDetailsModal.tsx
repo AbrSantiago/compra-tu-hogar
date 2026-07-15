@@ -36,9 +36,10 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
       await onReviewSubmit(property.id, rating, comment);
       setComment('');
       setStatusMessage({ type: 'success', text: 'Reseña publicada con éxito.' });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error enviando reseña:", error);
-      const errorMsg = error.response?.data?.detail || "Hubo un error al enviar tu reseña.";
+      const err = error as { response?: { data?: { detail?: string } } };
+      const errorMsg = err.response?.data?.detail || "Hubo un error al enviar tu reseña.";
       setStatusMessage({ type: 'error', text: errorMsg });
     } finally {
       setIsSubmitting(false);

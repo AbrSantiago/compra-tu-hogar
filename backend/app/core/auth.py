@@ -1,3 +1,5 @@
+from typing import Union
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
@@ -8,7 +10,6 @@ from app.model.admin import Admin
 from app.model.client import Client
 from app.model.real_estate import RealEstate
 from app.model.user import User
-from typing import Union
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 

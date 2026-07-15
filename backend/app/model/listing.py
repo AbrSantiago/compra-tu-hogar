@@ -1,9 +1,12 @@
 from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from sqlalchemy import Enum, Float, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from app.core.database import Base
 from app.schema.listing import ListingStatus
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from app.model.client import Client

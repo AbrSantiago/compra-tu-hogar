@@ -21,8 +21,8 @@ export const useHome = () => {
   const [listings, setListings] = useState<EnrichedListing[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [isLoggedIn] = useState<boolean>(() => !!localStorage.getItem('token'));
-  const [userRole] = useState<string | null>(() => localStorage.getItem('type'));
+  const [isLoggedIn] = useState<boolean>(() => typeof window !== 'undefined' && !!localStorage.getItem('token'));
+  const [userRole] = useState<string | null>(() => typeof window !== 'undefined' ? localStorage.getItem('type') : null);
   const [userFavIds, setUserFavIds] = useState<number[]>([]);
 
   const isValidPropertyType = (t: string | undefined): t is PropertyType => {
@@ -67,7 +67,10 @@ export const useHome = () => {
   }, []);
 
   useEffect(() => {
-    fetchHomeData();
+    const loadInitialData = async () => {
+      await fetchHomeData();
+    };
+    loadInitialData();
   }, [fetchHomeData]);
 
   useEffect(() => {

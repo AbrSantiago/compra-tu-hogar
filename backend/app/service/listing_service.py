@@ -1,6 +1,8 @@
 from fastapi import HTTPException, status
+from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 
+from app.model.client import Client
 from app.model.listing import Listing
 from app.model.property import Property
 from app.model.real_estate import RealEstate
@@ -10,8 +12,7 @@ from app.schema.listing import (
     ListingStatus,
     ListingUpdate,
 )
-from sqlalchemy import func
-from app.model.client import Client
+
 
 def get_listings(db: Session):
     listings = db.query(Listing).options(
