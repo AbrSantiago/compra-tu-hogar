@@ -10,7 +10,8 @@ from app.schema.listing import (
     ListingStatus,
     ListingUpdate,
 )
-
+from sqlalchemy import func
+from app.model.client import Client
 
 def get_listings(db: Session):
     listings = db.query(Listing).options(
@@ -184,3 +185,30 @@ def purchase_listing(
     db.refresh(listing)
 
     return listing
+
+def get_stats_top_clients(db: Session, limit: int = 5):
+    """Usuarios con más compras."""
+    results = db.query(
+        Client.name, Client.surname, func.count(Listing.id).label("total")
+    ).join(Listing, Client.id == Listing.buyer_id).filter(Listing.status == ListingStatus.SOLD)\
+     .group_by(Client.id, Client.name, Client.surname).order_by(func.count(Listing.id).desc()).limit(limit).all()
+    
+    return [{"name": r.name, "surname": r.surname, "total": r.total} for r in results]
+
+def get_stats_top_properties(db: Session, limit: int = 5):
+    """Propiedades más vendidas."""
+    results = db.query(
+        Property.address, func.count(Listing.id).label("total")
+    ).join(Listing, Property.id == Listing.property_id).filter(Listing.status == ListingStatus.SOLD)\
+     .group_by(Property.id, Property.address).order_by(func.count(Listing.id).desc()).limit(limit).all()
+     
+    return [{"address": r.address, "total": r.total} for r in results]
+
+def get_stats_top_real_estates(db: Session, limit: int = 5):
+    """Inmobiliarias con más ventas."""
+    results = db.query(
+        RealEstate.name, func.count(Listing.id).label("total")
+    ).join(Listing, RealEstate.id == Listing.real_estate_id).filter(Listing.status == ListingStatus.SOLD)\
+     .group_by(RealEstate.id, RealEstate.name).order_by(func.count(Listing.id).desc()).limit(limit).all()
+     
+    return [{"name": r.name, "total": r.total} for r in results]

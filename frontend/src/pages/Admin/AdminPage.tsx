@@ -18,6 +18,7 @@ export default function AdminPage() {
           <nav className="flex flex-col gap-2">
             <AdminNavLink to="/admin/clients">Listar Clientes</AdminNavLink>
             <AdminNavLink to="/admin/real-estate">Gestionar Inmobiliarias</AdminNavLink>
+            <AdminNavLink to="/admin/stats">Reportes y Estadísticas</AdminNavLink>
           </nav>
         </div>
 

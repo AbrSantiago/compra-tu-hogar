@@ -55,7 +55,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = (props) => {
           <p className="text-xs text-slate-700 truncate">{props.title}</p>
           
           {props.characteristics && (
-            <p className="text-xs text-slate-400 italic truncate">
+            <p className="text-xs text-slate-400 truncate">
               {props.characteristics}
             </p>
           )}

@@ -11,6 +11,7 @@ import { RealEstateListingsPage } from '@/pages/RealEstate/RealEstateListingsPag
 import RealEstatePage from '@/pages/RealEstate/RealEstatePage';
 import { ClientPurchasesPage } from '@/pages/Client/ClientPurchasesPage.tsx';
 import { ClientFavoritesPage } from '@/pages/Client/ClientFavoritesPage';
+import { AdminStatsPage } from '@/pages/Admin/AdminStatsPage';
 
 export const AppRouter = () => {
   return (
@@ -58,6 +59,7 @@ export const AppRouter = () => {
           } />
           <Route path="clients" element={<AdminClientsPage />} />
           <Route path="real-estate" element={<AdminRealEstatePage />} />
+          <Route path="stats" element={<AdminStatsPage />} />
         </Route>
 
         <Route
