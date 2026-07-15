@@ -37,10 +37,6 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
       setComment('');
       setStatusMessage({ type: 'success', text: 'Reseña publicada con éxito.' });
     } catch (error: unknown) {
-      console.error("Error enviando reseña:", error);
-      const err = error as { response?: { data?: { detail?: string } } };
-      const errorMsg = err.response?.data?.detail || "Hubo un error al enviar tu reseña.";
-      setStatusMessage({ type: 'error', text: errorMsg });
     } finally {
       setIsSubmitting(false);
     }
@@ -69,14 +65,17 @@ export const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
               <h2 className="text-2xl font-bold text-slate-900">{property.title}</h2>
               <span className="text-xl font-bold text-blue-700">USD {property.price.toLocaleString('es-AR')}</span>
             </div>
-            <p className="text-slate-500 mt-1">{property.location} • {property.type === 'house' ? 'Casa' : 'Departamento'}</p>
+            <p className="text-slate-500 mt-1">{property.location}</p>
 
-            {property.characteristics && (
-              <div className="mt-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-1">Características</h4>
-                <p className="text-sm text-slate-600 leading-relaxed">{property.characteristics}</p>
-              </div>
-            )}
+            <div className="mt-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-1">
+                Información Adicional
+              </h4>
+              <p className="text-sm text-slate-600 leading-relaxed">
+                {property.type === 'house' ? 'Casa' : 'Departamento'}
+                {property.characteristics && ` • ${property.characteristics}`}
+              </p>
+            </div>
 
             <p className="text-sm font-semibold mt-2 text-slate-700">Vendido por: {property.realEstateName}</p>
           </div>
