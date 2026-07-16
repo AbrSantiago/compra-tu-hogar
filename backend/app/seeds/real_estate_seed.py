@@ -27,7 +27,7 @@ def create_demo_real_estates(db: Session) -> None:
         db.add(
             RealEstate(
                 name=name,
-                email=f"{name.lower()}@test.com",
+                email=f"{name.lower().replace(' ', '.')}@test.com",
                 password=hash_password("123456"),
             )
         )
