@@ -107,14 +107,17 @@ def get_sales_by_real_estate(db: Session, real_estate_id: int):
     )
 
 
+
+
 def get_clients_by_real_estate(db: Session, real_estate_id: int):
-    return (
-        db.query(Client)
-        .join(Listing, Client.id == Listing.buyer_id)
-        .filter(
-            Listing.real_estate_id == real_estate_id,
-            Listing.buyer_id.isnot(None),
-        )
-        .distinct()
-        .all()
-    )
+    client_ids = db.query(Listing.buyer_id).filter(
+        Listing.real_estate_id == real_estate_id,
+        Listing.buyer_id.isnot(None)
+    ).distinct().all()
+    
+    ids = [c[0] for c in client_ids]
+    
+    if not ids:
+        return []
+        
+    return db.query(Client).filter(Client.id.in_(ids)).all()

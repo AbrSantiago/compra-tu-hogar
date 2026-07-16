@@ -20,7 +20,7 @@ export const RealEstateSalesPage: React.FC = () => {
       <AdminTable
         isLoading={isLoading}
         data={sales}
-        headers={['ID', 'Propiedad', 'Comprador', 'Precio Final']}
+        headers={['ID', 'Propiedad', 'Comprador', 'Precio']}
         emptyMessage="Aún no hay ventas registradas para esta inmobiliaria."
         renderRow={(sale) => (
           <tr key={sale.id} className="hover:bg-slate-50/70 transition-colors">
@@ -29,7 +29,7 @@ export const RealEstateSalesPage: React.FC = () => {
             <td className="px-6 py-4 text-slate-600">
               {sale.buyer ? `${sale.buyer.name} ${sale.buyer.surname}` : 'Cliente externo'}
             </td>
-            <td className="px-6 py-4 font-bold text-emerald-600">
+            <td className="px-6 py-4 font-semibold text-emerald-600">
               USD {sale.price.toLocaleString('es-AR')}
             </td>
           </tr>

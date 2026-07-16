@@ -29,7 +29,6 @@ def test_api_does_not_query_database() -> None:
             continue
 
         tree = parse_ast(file)
-
         calls = get_calls(tree)
 
         for forbidden in FORBIDDEN_CALLS:
@@ -41,17 +40,12 @@ def test_api_does_not_query_database() -> None:
 
 def test_all_endpoints_define_response_model() -> None:
     """
-    Every endpoint should define a response_model.
+    Every endpoint should define a response_model, 
+    unless it returns status_code 204 (No Content).
     """
     violations: list[str] = []
 
-    HTTP_METHODS = {
-        "get",
-        "post",
-        "put",
-        "delete",
-        "patch",
-    }
+    HTTP_METHODS = {"get", "post", "put", "delete", "patch"}
 
     for file in iter_python_files("api"):
         if file.name == "__init__.py":
@@ -75,7 +69,15 @@ def test_all_endpoints_define_response_model() -> None:
 
                 has_response_model = any(kw.arg == "response_model" for kw in decorator.keywords)
 
-                if not has_response_model:
+                has_status_204 = any(
+                    kw.arg == "status_code" and (
+                        (isinstance(kw.value, ast.Attribute) and kw.value.attr == "HTTP_204_NO_CONTENT") or
+                        (isinstance(kw.value, ast.Constant) and kw.value.value == 204)
+                    )
+                    for kw in decorator.keywords
+                )
+
+                if not has_response_model and not has_status_204:
                     violations.append(
                         f"{file.relative_to(APP_ROOT)}::{node.name} is missing response_model"
                     )
