@@ -56,10 +56,12 @@ When('confirma la eliminación', async function (this: CustomWorld) {
   const modalContainer = this.page.locator('div.fixed.inset-0.z-50');
   await expect(modalContainer).toBeVisible();
   await modalContainer.getByRole('button', { name: 'Confirmar' }).click();
+  await expect(modalContainer).not.toBeVisible();
 });
 
 Then('la publicación no debería figurar en la lista', async function (this: CustomWorld) {
-  await expect(this.page.locator('table')).not.toContainText('Belgrano 145');
+  const row = this.page.locator('table tr').filter({ hasText: 'Belgrano 145' });
+  await expect(row).toHaveCount(0);
 });
 
 Then('debería ver el panel de administración', async function (this: CustomWorld) {
