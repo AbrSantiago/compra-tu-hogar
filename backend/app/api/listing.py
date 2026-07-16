@@ -31,7 +31,7 @@ router = APIRouter(
 
 @router.get("/", response_model=list[ListingResponse])
 def get_listings(
-    zone: Annotated[str | None, Query()] = None,
+    location: Annotated[str | None, Query()] = None,
     min_price: Annotated[float | None, Query(ge=0)] = None,
     max_price: Annotated[float | None, Query(ge=0)] = None,
     property_type: Annotated[PropertyType | None, Query()] = None,
@@ -39,7 +39,7 @@ def get_listings(
 ):
     return listing_service.get_listings(
         db=db,
-        zone=zone,
+        location=location,
         min_price=min_price,
         max_price=max_price,
         property_type=property_type,

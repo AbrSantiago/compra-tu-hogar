@@ -18,15 +18,15 @@ from app.schema.review import ReviewCreate
 
 def get_listings(
     db: Session,
-    zone: str | None = None,
+    location: str | None = None,
     min_price: float | None = None,
     max_price: float | None = None,
     property_type: PropertyType | None = None,
 ):
     query = db.query(Listing).join(Property)
 
-    if zone:
-        query = query.filter(Property.location.ilike(f"%{zone}%"))
+    if location:
+        query = query.filter(Property.location.ilike(f"%{location}%"))
 
     if min_price is not None:
         query = query.filter(Listing.price >= min_price)

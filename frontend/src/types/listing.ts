@@ -43,3 +43,10 @@ export interface ListingUpdate {
   price?: number;
   status?: ListingStatus;
 }
+
+export interface ListingFilters {
+  location?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  propertyType?: 'house' | 'apartment';
+}
