@@ -11,7 +11,9 @@ from app.core.auth import (
     require_admin_or_owner,
 )
 from app.core.database import get_db
+from app.schema.client import ClientResponse
 from app.schema.common import MessageResponse
+from app.schema.listing import ListingResponse
 from app.schema.real_estate import (
     RealEstateCreate,
     RealEstateResponse,
@@ -34,10 +36,7 @@ def create_real_estate(
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
-    return real_estate_service.create_real_estate(
-        db=db,
-        real_estate_data=real_estate,
-    )
+    return real_estate_service.create_real_estate(db=db, real_estate_data=real_estate)
 
 
 @router.get("/", response_model=list[RealEstateResponse])
@@ -48,21 +47,34 @@ def get_real_estates(
     return real_estate_service.get_real_estates(db)
 
 
+@router.get("/{real_estate_id}/sales", response_model=list[ListingResponse])
+def get_real_estate_sales(
+    real_estate_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    require_admin_or_owner(current_user, real_estate_id)
+    return real_estate_service.get_sales_by_real_estate(db, real_estate_id)
+
+
+@router.get("/{real_estate_id}/clients", response_model=list[ClientResponse])
+def get_real_estate_clients(
+    real_estate_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    require_admin_or_owner(current_user, real_estate_id)
+    return real_estate_service.get_clients_by_real_estate(db, real_estate_id)
+
+
 @router.get("/{real_estate_id}", response_model=RealEstateResponse)
 def get_real_estate(
     real_estate_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    require_admin_or_owner(
-        current_user,
-        real_estate_id,
-    )
-
-    return real_estate_service.get_real_estate(
-        db=db,
-        real_estate_id=real_estate_id,
-    )
+    require_admin_or_owner(current_user, real_estate_id)
+    return real_estate_service.get_real_estate(db=db, real_estate_id=real_estate_id)
 
 
 @router.put("/{real_estate_id}", response_model=RealEstateResponse)
@@ -72,15 +84,9 @@ def update_real_estate(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    require_admin_or_owner(
-        current_user,
-        real_estate_id,
-    )
-
+    require_admin_or_owner(current_user, real_estate_id)
     return real_estate_service.update_real_estate(
-        db=db,
-        real_estate_id=real_estate_id,
-        real_estate_data=real_estate_data,
+        db=db, real_estate_id=real_estate_id, real_estate_data=real_estate_data
     )
 
 
@@ -93,7 +99,4 @@ def delete_real_estate(
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
-    return real_estate_service.delete_real_estate(
-        db=db,
-        real_estate_id=real_estate_id,
-    )
+    return real_estate_service.delete_real_estate(db=db, real_estate_id=real_estate_id)

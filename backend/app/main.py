@@ -11,6 +11,7 @@ from app.api.client import router as client_router
 from app.api.listing import router as listing_router
 from app.api.propertiy import router as property_router
 from app.api.real_estate import router as real_estate_router
+from app.api.stats import router as stats_router
 from app.core.database import Base, SessionLocal, engine
 from app.seeds.seed import run_seeds
 
@@ -59,7 +60,7 @@ app.include_router(client_router)
 app.include_router(real_estate_router)
 app.include_router(property_router)
 app.include_router(listing_router)
-
+app.include_router(stats_router)
 
 @app.get("/")
 def read_root():

@@ -1,3 +1,5 @@
+from typing import Union
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
@@ -91,6 +93,17 @@ def require_admin_or_owner(
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized",
+        )
+
+    return current_user
+
+def require_admin_or_real_estate(
+    current_user: User = Depends(get_current_user),
+) -> Union[Admin, RealEstate]:
+    if not (isinstance(current_user, Admin) or isinstance(current_user, RealEstate)):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin or Real estate access required",
         )
 
     return current_user

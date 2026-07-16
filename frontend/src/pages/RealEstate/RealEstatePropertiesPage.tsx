@@ -26,8 +26,8 @@ export const RealEstatePropertiesPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <AdminHeader 
-        title="Mis Inmuebles" 
-        description="Registrá y administrá tus propiedades." 
+        title="Inmuebles" 
+        description="Registrá y administrá propiedades." 
       />
 
       <ErrorMessage message={error} />
@@ -55,7 +55,7 @@ export const RealEstatePropertiesPage: React.FC = () => {
             <FloatingInput 
               type="text" 
               name="location" 
-              label="Provincia" 
+              label="Localidad" 
               value={propLocation} 
               onChange={(e) => setPropLocation(e.target.value)} 
               required 
@@ -83,7 +83,7 @@ export const RealEstatePropertiesPage: React.FC = () => {
 
             <SubmitButton 
               isLoading={isSubmitting} 
-              text="Registrar Unidad" 
+              text="Registrar" 
               loadingText="Guardando" 
             />
           </form>
@@ -93,11 +93,11 @@ export const RealEstatePropertiesPage: React.FC = () => {
           <AdminTable
             isLoading={isLoading}
             data={properties}
-            headers={['ID', 'Dirección', 'Provincia', 'Tipo']}
+            headers={['ID', 'Dirección', 'Localidad', 'Tipo']}
             emptyMessage="No cargaste ninguna propiedad aún."
             renderRow={(prop) => (
               <tr key={prop.id} className="hover:bg-slate-50/70 transition-colors">
-                <td className="px-6 py-4 font-mono text-xs text-slate-400">#{prop.id}</td>
+                <td className="px-6 py-4 font-mono text-xs text-slate-400">{prop.id}</td>
                 <td className="px-6 py-4 text-slate-900">{prop.address}</td>
                 <td className="px-6 py-4 text-slate-600">{prop.location}</td>
                 <td className="px-6 py-4 capitalize">

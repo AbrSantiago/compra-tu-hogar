@@ -1,9 +1,17 @@
 import React from 'react';
 import { useClientFavorites } from '@/hooks/useClientFavorites';
+import { listingService } from '@/services/listingService';
 import { Link } from 'react-router-dom';
+import { PropertyCard } from '@/components/home/PropertyCard';
+import { getPropertyImage } from '@/utils/imageMapper';
 
 export const ClientFavoritesPage: React.FC = () => {
-  const { favorites, isLoading } = useClientFavorites();
+  const { favorites, isLoading, refetch } = useClientFavorites();
+
+  const handlePurchase = async (id: number) => {
+    await listingService.purchase(id);
+    refetch();
+  };
 
   return (
     <div className="min-h-screen bg-slate-50/50 text-slate-800 antialiased">
@@ -14,9 +22,7 @@ export const ClientFavoritesPage: React.FC = () => {
               <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
             </svg>
           </Link>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            Mis Favoritos
-          </h1>
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Mis Favoritos</h1>
         </div>
         <Link to="/" className="text-sm font-semibold text-blue-600 hover:underline">Volver al Home</Link>
       </header>
@@ -24,53 +30,36 @@ export const ClientFavoritesPage: React.FC = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16 w-full">
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {[1, 2].map((n) => (
-              <div key={n} className="space-y-3 animate-pulse bg-white p-4 rounded-2xl border border-slate-100">
-                <div className="aspect-square bg-slate-100 rounded-xl w-full" />
-                <div className="h-4 bg-slate-100 rounded-xl w-3/4" />
-                <div className="h-3 bg-slate-50 rounded-xl w-1/2" />
-              </div>
-            ))}
+            {[1, 2, 3, 4].map((n) => <div key={n} className="h-64 bg-white rounded-2xl animate-pulse border border-slate-100" />)}
           </div>
         ) : favorites.length === 0 ? (
           <div className="text-center py-20 border border-dashed border-slate-200 rounded-2xl bg-white max-w-md mx-auto space-y-3 p-6">
-            <div className="p-3 bg-amber-50 text-amber-500 rounded-full w-fit mx-auto">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499c.151-.326.617-.326.768 0l2.124 4.592 4.937.697c.36.051.503.504.234.757l-3.606 3.424 1.011 5.006c.074.364-.32.659-.636.471L12 16.142l-4.428 2.396c-.317.189-.711-.107-.636-.47l1.011-5.006L4.34 9.545c-.269-.253-.125-.706.234-.757l4.937-.697 2.124-4.592z" />
-              </svg>
-            </div>
             <h3 className="text-md font-semibold text-slate-900">No tenés favoritos guardados</h3>
-            <p className="text-xs text-slate-500">Toca la estrella en las publicaciones del Home para organizarlas acá.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {favorites.map((list) => (
-              <div key={list.id} className="bg-white border border-slate-100 rounded-2xl p-3 shadow-xs space-y-3 relative">
-                <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-slate-100">
-                  <img
-                    src={list.property?.type === 'house'
-                      ? 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80'
-                      : 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80'
-                    }
-                    alt="Propiedad"
-                    className="h-full w-full object-cover"
-                  />
-                  <span className="absolute top-2 left-2 px-2.5 py-1 text-[10px] font-bold bg-amber-500 text-white rounded-lg shadow-xs uppercase tracking-wider">
-                    ★ Guardado
-                  </span>
-                </div>
-                <div className="space-y-1">
-                  <h3 className="font-semibold text-slate-900 text-sm truncate">{list.property?.location || 'Buenos Aires'}</h3>
-                  <p className="text-xs text-slate-600 truncate">{list.property?.address}</p>
-                  <div className="pt-2 flex justify-between items-center border-t border-slate-50">
-                    <span className="text-sm font-bold text-slate-900">USD {list.price.toLocaleString('es-AR')}</span>
-                    <span className="text-[11px] font-medium text-slate-400 bg-slate-50 px-2 py-0.5 rounded-md">
-                      {list.property?.type === 'house' ? 'Casa' : 'Depto'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
+            {favorites
+              .filter((list) => list.status === 'active')
+              .map((list) => (
+                <PropertyCard
+                  key={list.id}
+                  id={list.id}
+                  title={list.property?.address || 'Sin dirección'}
+                  location={list.property?.location || 'Buenos Aires'}
+                  price={list.price}
+                  image={getPropertyImage(list.id)}
+                  type={list.property?.type === 'house' ? 'house' : 'apartment'}
+                  realEstateName={list.real_estate?.name || 'Inmobiliaria'}
+                  characteristics={list.property?.characteristics || null}
+                  userRole="client"
+                  initialIsFavorite={true}
+                  onToggleFavorite={refetch}
+                  onPurchaseConfirm={handlePurchase}
+                  onReviewAdded={refetch}
+                  averageRating={list.average_rating}
+                  reviews={list.reviews}
+                />
+              ))}
           </div>
         )}
       </main>

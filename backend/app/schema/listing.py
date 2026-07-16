@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.core.enums import ListingStatus
 from app.schema.client import ClientResponse
@@ -23,12 +23,10 @@ class ListingResponse(BaseModel):
     id: int
     price: float
     status: ListingStatus
-
-    property: PropertyResponse
+    property: PropertyResponse = Field(..., validation_alias="property_")
     real_estate: RealEstateResponse
     buyer: ClientResponse | None = None
 
     average_rating: float | None = None
     reviews: list[ReviewResponse] = []
-
     model_config = ConfigDict(from_attributes=True)

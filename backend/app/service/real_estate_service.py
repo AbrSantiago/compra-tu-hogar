@@ -2,8 +2,11 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from app.core.security import hash_password
+from app.model.client import Client
+from app.model.listing import Listing
 from app.model.real_estate import RealEstate
 from app.model.user import User
+from app.schema.listing import ListingStatus
 from app.schema.real_estate import (
     RealEstateCreate,
     RealEstateUpdate,
@@ -36,7 +39,7 @@ def create_real_estate(
 
 
 def get_real_estates(db: Session):
-    return db.query(RealEstate).all()
+    return db.query(RealEstate).order_by(RealEstate.id.asc()).all()
 
 
 def get_real_estate(
@@ -96,3 +99,25 @@ def delete_real_estate(
     return {
         "message": "Real estate deleted",
     }
+
+
+def get_sales_by_real_estate(db: Session, real_estate_id: int):
+    return (
+        db.query(Listing).filter(Listing.real_estate_id == real_estate_id, Listing.status == ListingStatus.SOLD).all()
+    )
+
+
+
+
+def get_clients_by_real_estate(db: Session, real_estate_id: int):
+    client_ids = db.query(Listing.buyer_id).filter(
+        Listing.real_estate_id == real_estate_id,
+        Listing.buyer_id.isnot(None)
+    ).distinct().all()
+    
+    ids = [c[0] for c in client_ids]
+    
+    if not ids:
+        return []
+        
+    return db.query(Client).filter(Client.id.in_(ids)).all()

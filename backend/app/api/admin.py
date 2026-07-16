@@ -7,8 +7,9 @@ from sqlalchemy.orm import Session
 
 from app.core.auth import require_admin
 from app.core.database import get_db
-from app.schema.admin import AdminCreate, AdminResponse, AdminUpdate
+from app.schema.admin import AdminCreate, AdminResponse, AdminUpdate, PropertySavesResponse
 from app.schema.common import MessageResponse
+from app.schema.listing import ListingResponse
 from app.service import admin_service
 
 if TYPE_CHECKING:
@@ -18,6 +19,33 @@ router = APIRouter(
     prefix="/admins",
     tags=["admins"],
 )
+
+
+@router.get(
+    "/properties-saves",
+    response_model=list[PropertySavesResponse],
+)
+def get_properties_saves(
+    db: Session = Depends(get_db),
+    _: Admin = Depends(require_admin),
+):
+    return admin_service.get_properties_with_saves(db)
+
+
+@router.get("/purchases", response_model=list[ListingResponse])
+def get_purchases(
+    db: Session = Depends(get_db),
+    _: Admin = Depends(require_admin),
+):
+    return admin_service.get_all_purchases(db)
+
+
+@router.get("/listings-reviews", response_model=list[ListingResponse])
+def get_listings_reviews(
+    db: Session = Depends(get_db),
+    _: Admin = Depends(require_admin),
+):
+    return admin_service.get_all_listings_with_reviews(db)
 
 
 @router.post(

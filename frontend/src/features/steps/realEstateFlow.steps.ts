@@ -37,7 +37,7 @@ When('registra una nueva propiedad con dirección {string}, ubicación {string},
 
     await this.page.locator('input[name="characteristics"]').fill(characteristics);
 
-    await this.page.getByRole('button', { name: 'Registrar Unidad' }).click();
+    await this.page.getByRole('button', { name: 'Registrar' }).click();
   });
 
 Then('la propiedad debería figurar en la lista de inmuebles', async function (this: CustomWorld) {

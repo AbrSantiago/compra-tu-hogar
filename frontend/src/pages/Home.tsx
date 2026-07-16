@@ -15,6 +15,8 @@ export const Home: React.FC = () => {
     userRole,
     userFavIds,
     handlePurchaseConfirm,
+    refetch,
+    refreshFavorites
   } = useHome();
 
   const { handleLogout } = useLogout();
@@ -121,7 +123,6 @@ export const Home: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
             {listings.map((property) => {
-              const isSaved = userFavIds.includes(property.id);
 
               return (
                 <PropertyCard
@@ -136,7 +137,9 @@ export const Home: React.FC = () => {
                   characteristics={property.characteristics}
                   userRole={userRole}
                   onPurchaseConfirm={handlePurchaseConfirm}
-                  initialIsFavorite={isSaved}
+                  onReviewAdded={() => refetch()}
+                  initialIsFavorite={userFavIds.includes(property.id)}
+                  onToggleFavorite={() => refreshFavorites()}
                   averageRating={property.averageRating}
                   reviews={property.reviews}
                 />

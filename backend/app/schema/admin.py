@@ -1,5 +1,7 @@
 from pydantic import BaseModel, ConfigDict, EmailStr
 
+from app.core.enums import PropertyType
+
 
 class AdminCreate(BaseModel):
     name: str
@@ -20,3 +22,11 @@ class AdminResponse(BaseModel):
     type: str
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class PropertySavesResponse(BaseModel):
+    id: int
+    address: str
+    location: str
+    type: PropertyType
+    total_saves: int

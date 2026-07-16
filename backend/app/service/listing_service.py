@@ -1,6 +1,8 @@
 from fastapi import HTTPException, status
+from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 
+from app.model.client import Client
 from app.model.listing import Listing
 from app.model.property import Property
 from app.model.real_estate import RealEstate
@@ -17,7 +19,7 @@ def get_listings(db: Session):
     listings = (
         db.query(Listing)
         .options(
-            joinedload(Listing.property),
+            joinedload(Listing.property_),
             joinedload(Listing.real_estate),
             joinedload(Listing.buyer),
             joinedload(Listing.reviews).joinedload(Review.client),
@@ -25,19 +27,13 @@ def get_listings(db: Session):
         .all()
     )
 
-    results = []
     for listing in listings:
-        listing_dict = listing.__dict__.copy()
-
         if listing.reviews:
-            avg = round(sum(r.rating for r in listing.reviews) / len(listing.reviews), 1)
+            listing.average_rating = round(sum(r.rating for r in listing.reviews) / len(listing.reviews), 1)
         else:
-            avg = None
+            listing.average_rating = None
 
-        listing_dict["average_rating"] = avg
-        results.append(listing_dict)
-
-    return results
+    return listings
 
 
 def get_listing(
@@ -47,7 +43,7 @@ def get_listing(
     listing = (
         db.query(Listing)
         .options(
-            joinedload(Listing.property),
+            joinedload(Listing.property_),
             joinedload(Listing.real_estate),
             joinedload(Listing.buyer),
             joinedload(Listing.reviews),
@@ -240,3 +236,48 @@ def add_review(
         "comment": review.comment,
         "client_name": client.name,
     }
+
+
+def get_stats_top_clients(db: Session, limit: int = 5):
+    """Usuarios con más compras."""
+    results = (
+        db.query(Client.name, Client.surname, func.count(Listing.id).label("total"))
+        .join(Listing, Client.id == Listing.buyer_id)
+        .filter(Listing.status == ListingStatus.SOLD)
+        .group_by(Client.id, Client.name, Client.surname)
+        .order_by(func.count(Listing.id).desc())
+        .limit(limit)
+        .all()
+    )
+
+    return [{"name": r.name, "surname": r.surname, "total": r.total} for r in results]
+
+
+def get_stats_top_properties(db: Session, limit: int = 5):
+    """Propiedades mejor rankeadas por promedio de reseñas."""
+    results = (
+        db.query(Property.address, func.avg(Review.rating).label("avg_rating"))
+        .join(Listing, Property.id == Listing.property_id)
+        .join(Review, Listing.id == Review.listing_id)
+        .group_by(Property.id, Property.address)
+        .order_by(func.avg(Review.rating).desc())
+        .limit(limit)
+        .all()
+    )
+
+    return [{"address": r.address, "total": round(r.avg_rating, 1)} for r in results]
+
+
+def get_stats_top_real_estates(db: Session, limit: int = 5):
+    """Inmobiliarias con más ventas."""
+    results = (
+        db.query(RealEstate.name, func.count(Listing.id).label("total"))
+        .join(Listing, RealEstate.id == Listing.real_estate_id)
+        .filter(Listing.status == ListingStatus.SOLD)
+        .group_by(RealEstate.id, RealEstate.name)
+        .order_by(func.count(Listing.id).desc())
+        .limit(limit)
+        .all()
+    )
+
+    return [{"name": r.name, "total": r.total} for r in results]

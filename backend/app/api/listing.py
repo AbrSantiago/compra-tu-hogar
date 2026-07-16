@@ -6,9 +6,8 @@ from typing import TYPE_CHECKING
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
-from app.core.auth import require_client, require_real_estate
+from app.core.auth import require_admin_or_real_estate, require_client, require_real_estate
 from app.core.database import get_db
-from app.schema.common import MessageResponse
 from app.schema.listing import (
     ListingCreate,
     ListingResponse,
@@ -81,7 +80,7 @@ def update_listing(
     listing_id: int,
     listing_data: ListingUpdate,
     db: Session = Depends(get_db),
-    real_estate: RealEstate = Depends(require_real_estate),
+    real_estate: RealEstate = Depends(require_admin_or_real_estate),
 ):
     logger.info(
         "Real estate ID %s updating listing %s",
@@ -98,23 +97,16 @@ def update_listing(
 
 @router.delete(
     "/{listing_id}",
-    response_model=MessageResponse,
+    status_code=status.HTTP_204_NO_CONTENT,
 )
 def delete_listing(
     listing_id: int,
     db: Session = Depends(get_db),
-    real_estate: RealEstate = Depends(require_real_estate),
+    real_estate: RealEstate = Depends(require_admin_or_real_estate),
 ):
-    logger.info(
-        "Real estate ID %s deleting listing %s",
-        real_estate.id,
-        listing_id,
-    )
-
-    return listing_service.delete_listing(
-        db=db,
-        listing_id=listing_id,
-    )
+    logger.info("Real estate ID %s deleting listing %s", real_estate.id, listing_id)
+    listing_service.delete_listing(db=db, listing_id=listing_id)
+    return None
 
 
 @router.post(
