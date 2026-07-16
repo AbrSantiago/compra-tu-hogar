@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session, joinedload
 from app.model.listing import Listing
 from app.model.property import Property
 from app.model.real_estate import RealEstate
+from app.model.review import Review
 from app.schema.listing import (
     ListingCreate,
     ListingStatus,
@@ -12,15 +13,26 @@ from app.schema.listing import (
 
 
 def get_listings(db: Session):
-    return (
-        db.query(Listing)
-        .options(
-            joinedload(Listing.property),
-            joinedload(Listing.real_estate),
-            joinedload(Listing.buyer),
-        )
-        .all()
-    )
+    listings = db.query(Listing).options(
+        joinedload(Listing.property),
+        joinedload(Listing.real_estate),
+        joinedload(Listing.buyer),
+        joinedload(Listing.reviews).joinedload(Review.client),
+    ).all()
+
+    results = []
+    for listing in listings:
+        listing_dict = listing.__dict__.copy()
+        
+        if listing.reviews:
+            avg = round(sum(r.rating for r in listing.reviews) / len(listing.reviews), 1)
+        else:
+            avg = None
+        
+        listing_dict["average_rating"] = avg
+        results.append(listing_dict)
+        
+    return results
 
 
 def get_listing(
@@ -33,6 +45,7 @@ def get_listing(
             joinedload(Listing.property),
             joinedload(Listing.real_estate),
             joinedload(Listing.buyer),
+            joinedload(Listing.reviews), 
         )
         .filter(Listing.id == listing_id)
         .first()
@@ -45,7 +58,6 @@ def get_listing(
         )
 
     return listing
-
 
 def create_listing(
     db: Session,

@@ -1,8 +1,21 @@
-import { When, Then } from '@cucumber/cucumber';
+import { Given, When, Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import type { CustomWorld } from './world'; 
+import type { CustomWorld } from './world';
 
 let direccionCreada: string;
+
+Given('que el usuario está en la página de login', async function (this: CustomWorld) {
+  await this.page.goto('http://localhost:5173/login');
+});
+
+When('ingresa el usuario {string} y la contraseña {string}', async function (this: CustomWorld, email, password) {
+  await this.page.locator('input[name="email"]').fill(email);
+  await this.page.locator('input[name="password"]').fill(password);
+});
+
+When('hace clic en el botón de ingresar', async function (this: CustomWorld) {
+  await this.page.getByRole('button', { name: 'Iniciar Sesión' }).click();
+});
 
 Then('debería ver el panel de la inmobiliaria', async function (this: CustomWorld) {
   await expect(this.page.locator('aside')).toContainText('Panel Inmobiliario', { timeout: 10000 });
@@ -46,11 +59,10 @@ When('publica el inmueble recientemente creado con un precio de {string}', async
   await this.page.getByRole('button', { name: 'Publicar' }).click();
 });
 
-Then('la publicación debería figurar en la lista con estado {string}', async function (this: CustomWorld, estado) {
-  const badgeEstado = this.page.locator('table').getByText(estado).first();
+Then('la publicación debería figurar en la lista con estado Activo', async function (this: CustomWorld) {
+  const badgeEstado = this.page.locator('table').getByText('Activo').first();
   await expect(badgeEstado).toBeVisible();
 });
-
 When('hace clic en el botón para volver al home público', async function (this: CustomWorld) {
   await this.page.locator('aside').getByRole('link', { name: /home|inicio|volver/i }).or(this.page.locator('aside button')).first().click();
 });

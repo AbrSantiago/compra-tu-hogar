@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { propertyService } from '../services/propertyService';
 import { listingService } from '../services/listingService';
+import { extractErrorMessage } from '@/utils/errors';
 import type { PropertyResponse, PropertyType } from '../types/property';
 import type { ListingResponse, ListingStatus } from '../types/listing';
 
@@ -19,7 +20,7 @@ export const useRealEstate = () => {
   const [formError, setFormError] = useState<string | null>(null);
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
 
-const fetchRealEstateData = useCallback(async () => {
+  const fetchRealEstateData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -30,19 +31,19 @@ const fetchRealEstateData = useCallback(async () => {
         listingService.getAll(),
       ]);
 
-      // 1. Filtrás las publicaciones pertenecientes a tu inmobiliaria
-      const filteredListings = listingsData.filter((list: any) => {
-        const idInmo = list.real_estate_id || list.real_estate?.id;
-        return idInmo == currentRealEstateId;
+      const filteredListings = listingsData.filter((list: ListingResponse) => {
+        const idInmo = list.real_estate?.id;
+        return idInmo === currentRealEstateId;
       });
 
-      // 2. Filtrás tus propiedades usando un doble criterio:
       const filteredProperties = propertiesData.filter((prop) => {
-        // Criterio A: La propiedad ya tiene al menos una publicación hecha por vos
-        const perteneceAMisListings = filteredListings.some((list) => list.property_id === prop.id);
-        
-        // Criterio B: Es una propiedad nueva recién creada (no tiene publicaciones de NADIE en el sistema)
-        const esPropiedadNuevaSinPublicar = !listingsData.some((list: any) => list.property_id === prop.id);
+        const perteneceAMisListings = filteredListings.some(
+          (list: ListingResponse) => list.property_id === prop.id
+        );
+
+        const esPropiedadNuevaSinPublicar = !listingsData.some(
+          (list: ListingResponse) => list.property_id === prop.id
+        );
 
         return perteneceAMisListings || esPropiedadNuevaSinPublicar;
       });
@@ -84,8 +85,7 @@ const fetchRealEstateData = useCallback(async () => {
 
       await fetchRealEstateData();
     } catch (err: unknown) {
-      const backendMessage = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
-      setFormError(backendMessage || 'Error al registrar la propiedad.');
+      setFormError(extractErrorMessage(err, 'Error al registrar la propiedad.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -115,12 +115,11 @@ const fetchRealEstateData = useCallback(async () => {
 
       await fetchRealEstateData();
     } catch (err: unknown) {
-      const errorTyped = err as { response?: { status?: number, data?: { detail?: string } } };
+      const errorTyped = err as { response?: { status?: number } };
       if (errorTyped.response?.status === 409) {
         setFormError('Esta propiedad ya cuenta con una publicación activa creada por tu inmobiliaria.');
       } else {
-        const backendMessage = errorTyped.response?.data?.detail;
-        setFormError(backendMessage || 'Error al crear la publicación.');
+        setFormError(extractErrorMessage(err, 'Error al crear la publicación.'));
       }
     } finally {
       setIsSubmitting(false);
@@ -136,8 +135,7 @@ const fetchRealEstateData = useCallback(async () => {
       setFormSuccess('Publicación eliminada con éxito');
       await fetchRealEstateData();
     } catch (err: unknown) {
-      const backendMessage = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
-      setFormError(backendMessage || 'Error al eliminar la publicación.');
+      setFormError(extractErrorMessage(err, 'Error al eliminar la publicación.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -152,8 +150,7 @@ const fetchRealEstateData = useCallback(async () => {
       setFormSuccess('Publicación actualizada con éxito');
       await fetchRealEstateData();
     } catch (err: unknown) {
-      const backendMessage = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
-      setFormError(backendMessage || 'Error al actualizar la publicación.');
+      setFormError(extractErrorMessage(err, 'Error al actualizar la publicación.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -190,7 +187,7 @@ const fetchRealEstateData = useCallback(async () => {
     listingPrice, setListingPrice,
     handleCreateListingSubmit,
     handleDeleteListing,
-    handleUpdateListingPrice: handleUpdateListing,
+    handleUpdateListing,
     isSubmitting,
     formError,
     formSuccess,

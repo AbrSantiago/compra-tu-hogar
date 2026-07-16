@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
-import { useRealEstate } from '@/hooks/useRealEstate';
+import React from 'react';
+import { useListingsManager, STATUS_LABELS } from '@/hooks/useListingsManager';
 import { FloatingInput, SubmitButton } from '@/components/form';
 import { ErrorMessage } from '@/components/ui';
 import { AdminHeader, AdminTable, SuccessMessage } from '@/components/admin';
-import type { ListingStatus, ListingResponse } from '@/types/listing';
 import { DeleteListingModal } from '@/components/modals/DeleteListingModal';
 import { EditListingModal } from '@/components/modals/EditListingModal';
 
@@ -21,53 +20,20 @@ export const RealEstateListingsPage: React.FC = () => {
     isSubmitting,
     formError,
     formSuccess,
-    handleDeleteListing,
-    handleUpdateListingPrice
-  } = useRealEstate();
-
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedListing, setSelectedListing] = useState<ListingResponse | null>(null);
-
-  const [editPrice, setEditPrice] = useState<string>('');
-  const [editStatus, setEditStatus] = useState<ListingStatus>('active');
-
-  const statusMap: Record<string, string> = {
-    active: 'Activo',
-    reserved: 'Reservado',
-    sold: 'Vendido',
-    paused: 'Pausado',
-  };
-
-  const openEditModal = (list: ListingResponse) => {
-    setSelectedListing(list);
-    setEditPrice(list.price.toString());
-    setEditStatus(list.status);
-    setIsEditModalOpen(true);
-  };
-
-  const openDeleteModal = (list: ListingResponse) => {
-    setSelectedListing(list);
-    setIsDeleteModalOpen(true);
-  };
-
-  const onConfirmEdit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (selectedListing) {
-      await handleUpdateListingPrice(selectedListing.id, {
-        price: Number(editPrice),
-        status: editStatus
-      });
-      setIsEditModalOpen(false);
-    }
-  };
-
-  const onConfirmDelete = async () => {
-    if (selectedListing) {
-      await handleDeleteListing(selectedListing.id);
-      setIsDeleteModalOpen(false);
-    }
-  };
+    isEditModalOpen,
+    isDeleteModalOpen,
+    selectedListing,
+    editPrice,
+    setEditPrice,
+    editStatus,
+    setEditStatus,
+    openEditModal,
+    openDeleteModal,
+    closeEditModal,
+    closeDeleteModal,
+    onConfirmEdit,
+    onConfirmDelete,
+  } = useListingsManager();
 
   return (
     <div className="space-y-6">
@@ -146,7 +112,7 @@ export const RealEstateListingsPage: React.FC = () => {
                   <td className="px-6 py-4 text-slate-900">USD {list.price.toLocaleString('es-AR')}</td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-semibold border transition-all ${currentBadgeClass}`}>
-                      {statusMap[list.status] || list.status}
+                      {STATUS_LABELS[list.status] || list.status}
                     </span>
                   </td>
                   <td className="px-6 py-4 space-x-2 whitespace-nowrap">
@@ -178,7 +144,7 @@ export const RealEstateListingsPage: React.FC = () => {
 
       <EditListingModal
         isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
+        onClose={closeEditModal}
         listing={selectedListing}
         price={editPrice}
         setPrice={setEditPrice}
@@ -190,7 +156,7 @@ export const RealEstateListingsPage: React.FC = () => {
 
       <DeleteListingModal
         isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
+        onClose={closeDeleteModal}
         listing={selectedListing}
         onConfirm={onConfirmDelete}
         isSubmitting={isSubmitting}

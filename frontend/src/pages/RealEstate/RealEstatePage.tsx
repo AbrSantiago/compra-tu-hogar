@@ -1,16 +1,11 @@
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { AdminNavLink } from '@/components/admin/index';
 import { HomeButton } from '@/components/ui/HomeButton';
 import { LogoutButton } from '@/components/ui/LogoutButton';
+import { useLogout } from '@/hooks/useLogout';
 
 export default function RealEstatePage() {
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('type');
-    navigate('/login');
-  };
+  const { handleLogout } = useLogout();
 
   return (
     <div className="flex min-h-screen bg-slate-50 font-sans antialiased text-slate-800">
