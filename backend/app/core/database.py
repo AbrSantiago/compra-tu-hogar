@@ -13,7 +13,13 @@ class Base(DeclarativeBase):
 SessionLocal = None
 
 if DATABASE_URL is not None:
-    engine = create_engine(DATABASE_URL)
+    engine = create_engine(
+        DATABASE_URL,
+        pool_size=20,
+        max_overflow=40,
+        pool_timeout=30,
+        pool_pre_ping=True,
+    )
     SessionLocal = sessionmaker(bind=engine)
 
 
