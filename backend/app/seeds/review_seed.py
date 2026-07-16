@@ -1,8 +1,11 @@
+import random
+
 from sqlalchemy.orm import Session
-from app.model.review import Review
+
 from app.model.client import Client
 from app.model.listing import Listing
-import random
+from app.model.review import Review
+
 
 def create_demo_reviews(db: Session) -> None:
     if db.query(Review).first():
@@ -27,16 +30,16 @@ def create_demo_reviews(db: Session) -> None:
 
     while len(reviews) < 40:
         c = random.choice(clients)
-        l = random.choice(listings)
+        ls = random.choice(listings)
         
-        pair = (c.id, l.id)
+        pair = (c.id, ls.id)
         
         if pair not in unique_pairs:
             unique_pairs.add(pair)
             reviews.append(
                 Review(
                     client_id=c.id,
-                    listing_id=l.id,
+                    listing_id=ls.id,
                     rating=random.randint(3, 10),
                     comment=random.choice(comments)
                 )
