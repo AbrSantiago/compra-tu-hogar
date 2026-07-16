@@ -4,8 +4,8 @@ from sqlalchemy import Enum, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
+from app.core.enums import PropertyType
 from app.model.listing import Listing
-from app.schema.property import PropertyType
 
 
 class Property(Base):
@@ -33,6 +33,6 @@ class Property(Base):
         nullable=True,
     )
 
-    listings: Mapped[list[Listing]] = relationship(
-        back_populates="property",
+    listings: Mapped[list["Listing"]] = relationship(
+        "Listing", back_populates="property_", cascade="all, delete-orphan"
     )

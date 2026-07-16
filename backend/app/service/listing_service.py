@@ -1,26 +1,39 @@
 from fastapi import HTTPException, status
+from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 
+from app.model.client import Client
 from app.model.listing import Listing
 from app.model.property import Property
 from app.model.real_estate import RealEstate
+from app.model.review import Review
 from app.schema.listing import (
     ListingCreate,
     ListingStatus,
     ListingUpdate,
 )
+from app.schema.review import ReviewCreate
 
 
 def get_listings(db: Session):
-    return (
+    listings = (
         db.query(Listing)
         .options(
-            joinedload(Listing.property),
+            joinedload(Listing.property_),
             joinedload(Listing.real_estate),
             joinedload(Listing.buyer),
+            joinedload(Listing.reviews).joinedload(Review.client),
         )
         .all()
     )
+
+    for listing in listings:
+        if listing.reviews:
+            listing.average_rating = round(sum(r.rating for r in listing.reviews) / len(listing.reviews), 1)
+        else:
+            listing.average_rating = None
+
+    return listings
 
 
 def get_listing(
@@ -30,9 +43,10 @@ def get_listing(
     listing = (
         db.query(Listing)
         .options(
-            joinedload(Listing.property),
+            joinedload(Listing.property_),
             joinedload(Listing.real_estate),
             joinedload(Listing.buyer),
+            joinedload(Listing.reviews),
         )
         .filter(Listing.id == listing_id)
         .first()
@@ -172,3 +186,98 @@ def purchase_listing(
     db.refresh(listing)
 
     return listing
+
+
+def add_review(
+    db: Session,
+    listing_id: int,
+    review_data: ReviewCreate,
+    client,
+):
+    listing = db.get(Listing, listing_id)
+
+    if listing is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Listing not found",
+        )
+
+    existing_review = (
+        db.query(Review)
+        .filter_by(
+            client_id=client.id,
+            listing_id=listing_id,
+        )
+        .first()
+    )
+
+    if existing_review:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Ya dejaste una reseña para esta propiedad anteriormente.",
+        )
+
+    review = Review(
+        client_id=client.id,
+        listing_id=listing_id,
+        rating=review_data.rating,
+        comment=review_data.comment,
+    )
+
+    db.add(review)
+    db.commit()
+    db.refresh(review)
+
+    return {
+        "id": review.id,
+        "client_id": review.client_id,
+        "listing_id": review.listing_id,
+        "rating": review.rating,
+        "comment": review.comment,
+        "client_name": client.name,
+    }
+
+
+def get_stats_top_clients(db: Session, limit: int = 5):
+    """Usuarios con más compras."""
+    results = (
+        db.query(Client.name, Client.surname, func.count(Listing.id).label("total"))
+        .join(Listing, Client.id == Listing.buyer_id)
+        .filter(Listing.status == ListingStatus.SOLD)
+        .group_by(Client.id, Client.name, Client.surname)
+        .order_by(func.count(Listing.id).desc())
+        .limit(limit)
+        .all()
+    )
+
+    return [{"name": r.name, "surname": r.surname, "total": r.total} for r in results]
+
+
+def get_stats_top_properties(db: Session, limit: int = 5):
+    """Propiedades mejor rankeadas por promedio de reseñas."""
+    results = (
+        db.query(Property.address, func.avg(Review.rating).label("avg_rating"))
+        .join(Listing, Property.id == Listing.property_id)
+        .join(Review, Listing.id == Review.listing_id)
+        .group_by(Property.id, Property.address)
+        .order_by(func.avg(Review.rating).desc())
+        .limit(limit)
+        .all()
+    )
+
+    return [{"address": r.address, "total": round(r.avg_rating, 1)} for r in results]
+
+
+def get_stats_top_real_estates(db: Session, limit: int = 5):
+    """Inmobiliarias con más ventas."""
+    results = (
+        db.query(RealEstate.name, func.count(Listing.id).label("total"))
+        .join(Listing, RealEstate.id == Listing.real_estate_id)
+        .filter(Listing.status == ListingStatus.SOLD)
+        .group_by(RealEstate.id, RealEstate.name)
+        .order_by(func.count(Listing.id).desc())
+        .limit(limit)
+        .all()
+    )
+
+    return [{"name": r.name, "total": r.total} for r in results]

@@ -5,7 +5,7 @@ interface AdminTableProps<T> {
   data: T[];
   headers: string[];
   emptyMessage?: string;
-  renderRow: (item: T) => React.ReactNode;
+  renderRow: (item: T, index: number) => React.ReactNode;
 }
 
 export function AdminTable<T>({
@@ -46,7 +46,7 @@ export function AdminTable<T>({
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 text-sm">
-            {data.map((item) => renderRow(item))}
+            {data.map((item, index) => renderRow(item, index))}
           </tbody>
         </table>
       </div>

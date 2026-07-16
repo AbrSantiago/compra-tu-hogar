@@ -1,35 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { SearchBar, PropertyCard } from '@/components/home/index.ts';
 import { Link } from 'react-router-dom';
 import { useHome } from '@/hooks/useHome';
 import { ErrorMessage } from '@/components/ui';
 import { LogoutButton } from '@/components/ui/LogoutButton';
-import { listingService } from '@/services/listingService';
-import { clientService } from '@/services/clientService'; 
+import { useLogout } from "@/hooks/useLogout";
 
 export const Home: React.FC = () => {
-  const { listings, isLoading, error, isLoggedIn, userRole, handleLogout, refetch } = useHome();
-  const [userFavIds, setUserFavIds] = useState<number[]>([]); 
+  const {
+    listings,
+    isLoading,
+    error,
+    isLoggedIn,
+    userRole,
+    userFavIds,
+    handlePurchaseConfirm,
+    refetch,
+    refreshFavorites
+  } = useHome();
 
-  useEffect(() => {
-    const loadUserFavorites = async () => {
-      const clientId = Number(localStorage.getItem('userId'));
-      if (isLoggedIn && userRole === 'client' && clientId) {
-        try {
-          const favs = await clientService.getFavorites(clientId);
-          setUserFavIds(favs.map((f) => f.id));
-        } catch (err) {
-          console.error("Error cargando favoritos del usuario:", err);
-        }
-      }
-    };
-    loadUserFavorites();
-  }, [isLoggedIn, userRole, listings]); 
-
-  const handlePurchaseConfirm = async (listingId: number) => {
-    await listingService.purchase(listingId);
-    await refetch();
-  };
+  const { handleLogout } = useLogout();
 
   return (
     <div className="min-h-screen bg-white text-slate-800 font-sans antialiased">
@@ -53,7 +43,7 @@ export const Home: React.FC = () => {
                   </Link>
                   <Link
                     to="/mis-favoritos"
-                    className="hover:text-slate-900 active:scale-[0.99] transition-all cursor-pointer text-amber-500 font-bold flex items-center gap-1"
+                    className="hover:text-slate-900 active:scale-[0.99] transition-all cursor-pointer text-blue-600 font-bold flex items-center gap-1"
                   >
                     Mis Favoritos
                   </Link>
@@ -133,7 +123,6 @@ export const Home: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
             {listings.map((property) => {
-              const isSaved = userFavIds.includes(property.id);
 
               return (
                 <PropertyCard
@@ -148,7 +137,11 @@ export const Home: React.FC = () => {
                   characteristics={property.characteristics}
                   userRole={userRole}
                   onPurchaseConfirm={handlePurchaseConfirm}
-                  initialIsFavorite={isSaved}
+                  onReviewAdded={() => refetch()}
+                  initialIsFavorite={userFavIds.includes(property.id)}
+                  onToggleFavorite={() => refreshFavorites()}
+                  averageRating={property.averageRating}
+                  reviews={property.reviews}
                 />
               );
             })}

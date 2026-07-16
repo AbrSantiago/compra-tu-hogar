@@ -1,5 +1,6 @@
 import apiClient from './apiClient';
 import type { ListingResponse, ListingCreate } from '../types/listing';
+import type { ReviewResponse } from '@/types/review';
 
 export const listingService = {
   getAll: async (): Promise<ListingResponse[]> => {
@@ -28,6 +29,11 @@ export const listingService = {
 
   purchase: async (id: number): Promise<ListingResponse> => {
     const response = await apiClient.post<ListingResponse>(`/listings/${id}/purchase`);
+    return response.data;
+  },
+
+  addReview: async (id: number, reviewData: { rating: number; comment: string }): Promise<ReviewResponse> => {
+    const response = await apiClient.post<ReviewResponse>(`/listings/${id}/reviews`, reviewData);
     return response.data;
   }
 };

@@ -1,15 +1,10 @@
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { AdminNavLink } from '@/components/admin';
 import { HomeButton, LogoutButton } from '@/components/ui';
+import { useLogout } from '@/hooks/useLogout';
 
 export default function AdminPage() {
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('type');
-    navigate('/login');
-  };
+  const { handleLogout } = useLogout();
 
   return (
     <div className="flex min-h-screen bg-slate-50 font-sans antialiased text-slate-800">
@@ -21,8 +16,12 @@ export default function AdminPage() {
           </div>
 
           <nav className="flex flex-col gap-2">
-            <AdminNavLink to="/admin/clients">Listar Clientes</AdminNavLink>
-            <AdminNavLink to="/admin/real-estate">Gestionar Inmobiliarias</AdminNavLink>
+            <AdminNavLink to="/admin/clients">Clientes</AdminNavLink>
+            <AdminNavLink to="/admin/real-estate">Inmobiliarias</AdminNavLink>
+            <AdminNavLink to="/admin/properties">Inmuebles</AdminNavLink>
+            <AdminNavLink to="/admin/purchases">Ventas</AdminNavLink>
+            <AdminNavLink to="/admin/reviews">Publicaciones</AdminNavLink>
+            <AdminNavLink to="/admin/stats">Estadísticas</AdminNavLink>
           </nav>
         </div>
 

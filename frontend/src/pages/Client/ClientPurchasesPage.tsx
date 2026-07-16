@@ -1,27 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { clientService } from '@/services/clientService';
+import React from 'react';
+import { useClientPurchases } from '@/hooks/useClientPurchases';
 import { Link } from 'react-router-dom';
-import type { ListingResponse } from '@/types/listing';
+import { PropertyCard } from '@/components/home/PropertyCard';
 
 export const ClientPurchasesPage: React.FC = () => {
-  const [purchases, setPurchases] = useState<ListingResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchPurchases = async () => {
-      try {
-        const clientId = Number(localStorage.getItem('userId')) || 1;
-        const data = await clientService.getPurchases(clientId);
-        setPurchases(data);
-      } catch (error) {
-        console.error("Error al buscar las compras:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchPurchases();
-  }, []);
+  const { purchases, isLoading } = useClientPurchases();
 
   return (
     <div className="min-h-screen bg-slate-50/50 text-slate-800 antialiased">
@@ -40,13 +23,7 @@ export const ClientPurchasesPage: React.FC = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16 w-full">
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {[1, 2].map((n) => (
-              <div key={n} className="space-y-3 animate-pulse bg-white p-4 rounded-2xl border border-slate-100">
-                <div className="aspect-square bg-slate-100 rounded-xl w-full" />
-                <div className="h-4 bg-slate-100 rounded-xl w-3/4" />
-                <div className="h-3 bg-slate-50 rounded-xl w-1/2" />
-              </div>
-            ))}
+            {[1, 2, 3, 4].map((n) => <div key={n} className="h-64 bg-white rounded-2xl animate-pulse border border-slate-100" />)}
           </div>
         ) : purchases.length === 0 ? (
           <div className="text-center py-20 border border-dashed border-slate-200 rounded-2xl bg-white max-w-md mx-auto space-y-3 p-6">
@@ -56,36 +33,27 @@ export const ClientPurchasesPage: React.FC = () => {
               </svg>
             </div>
             <h3 className="text-md font-semibold text-slate-900">Aún no compraste ninguna propiedad</h3>
-            <p className="text-xs text-slate-500">Explorá el catálogo del home para realizar tu primera adquisición inmobiliaria.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {purchases.map((list) => (
-              <div key={list.id} className="bg-white border border-slate-100 rounded-2xl p-3 shadow-xs space-y-3 relative">
-                <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-slate-100">
-                  <img
-                    src={list.property?.type === 'house'
-                      ? 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80'
-                      : 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80'
-                    }
-                    alt="Propiedad"
-                    className="h-full w-full object-cover"
-                  />
-                  <span className="absolute top-2 left-2 px-2.5 py-1 text-[10px] font-bold bg-emerald-600 text-white rounded-lg shadow-xs uppercase tracking-wider">
-                    Adquirido
-                  </span>
-                </div>
-                <div className="space-y-1">
-                  <h3 className="font-semibold text-slate-900 text-sm truncate">{list.property?.location || 'Buenos Aires'}</h3>
-                  <p className="text-xs text-slate-600 truncate">{list.property?.address}</p>
-                  <div className="pt-2 flex justify-between items-center border-t border-slate-50">
-                    <span className="text-sm font-bold text-slate-900">USD {list.price.toLocaleString('es-AR')}</span>
-                    <span className="text-[11px] font-medium text-slate-400 bg-slate-50 px-2 py-0.5 rounded-md">
-                      {list.property?.type === 'house' ? 'Casa' : 'Depto'}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <PropertyCard
+                key={list.id}
+                id={list.id}
+                title={list.property?.address || 'Sin dirección'}
+                location={list.property?.location || 'Buenos Aires'}
+                price={list.price}
+                image={list.image}
+                type={list.property?.type === 'house' ? 'house' : 'apartment'}
+                realEstateName={list.real_estate?.name || 'Inmobiliaria'}
+                characteristics={list.property?.characteristics || null}
+                userRole={null}
+                onToggleFavorite={() => { }}
+                onPurchaseConfirm={async () => { }}
+                onReviewAdded={() => { }}
+                averageRating={list.average_rating}
+                reviews={list.reviews}
+              />
             ))}
           </div>
         )}

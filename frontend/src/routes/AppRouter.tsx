@@ -9,8 +9,14 @@ import { AdminRealEstatePage } from '@/pages/Admin/AdminRealEstatePage';
 import { RealEstatePropertiesPage } from '@/pages/RealEstate/RealEstatePropertiesPage';
 import { RealEstateListingsPage } from '@/pages/RealEstate/RealEstateListingsPage';
 import RealEstatePage from '@/pages/RealEstate/RealEstatePage';
-import { ClientPurchasesPage } from '@/pages/Client/ClientPurchasesPage.tsx';
+import { ClientPurchasesPage } from '@/pages/Client/ClientPurchasesPage';
 import { ClientFavoritesPage } from '@/pages/Client/ClientFavoritesPage';
+import { AdminStatsPage } from '@/pages/Admin/AdminStatsPage';
+import { AdminPropertiesPage } from '@/pages/Admin/AdminPropertiesPage';
+import { AdminPurchasesPage } from '@/pages/Admin/AdminPurchasesPage';
+import { AdminReviewsPage } from '@/pages/Admin/AdminReviewsPage';
+import { RealEstateSalesPage } from '@/pages/RealEstate/RealEstateSalesPage.tsx';
+import { RealEstateClientsPage } from '@/pages/RealEstate/RealEstateClientsPage';
 
 export const AppRouter = () => {
   return (
@@ -58,6 +64,10 @@ export const AppRouter = () => {
           } />
           <Route path="clients" element={<AdminClientsPage />} />
           <Route path="real-estate" element={<AdminRealEstatePage />} />
+          <Route path="properties" element={<AdminPropertiesPage />} />
+          <Route path="purchases" element={<AdminPurchasesPage />} />
+          <Route path="reviews" element={<AdminReviewsPage />} />
+          <Route path="stats" element={<AdminStatsPage />} />
         </Route>
 
         <Route
@@ -74,12 +84,14 @@ export const AppRouter = () => {
                 ¡Bienvenido al Panel Inmobiliario! 👋🏻
               </h1>
               <p className="text-md text-slate-500">
-                Gestioná tus inmobiliarias o publicá nuevas ofertas.
+                Gestioná tus propiedades, publicaciones, ventas y clientes.
               </p>
             </div>
           } />
           <Route path="properties" element={<RealEstatePropertiesPage />} />
           <Route path="listings" element={<RealEstateListingsPage />} />
+          <Route path=":realEstateId/sales" element={<RealEstateSalesPage />} />
+          <Route path=":realEstateId/clients" element={<RealEstateClientsPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

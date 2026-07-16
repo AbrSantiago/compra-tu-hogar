@@ -1,5 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { listingService } from '../services/listingService';
+import { clientService } from '../services/clientService';
+import type { ReviewResponse } from '@/types/review';
+import type { PropertyType } from '@/types/property';
+import { getPropertyImage } from '@/utils/imageMapper';
 
 export interface EnrichedListing {
   id: number;
@@ -7,25 +11,25 @@ export interface EnrichedListing {
   location: string;
   price: number;
   image: string;
-  type: "house" | "apartment";
+  type: PropertyType;
   realEstateName: string;
   characteristics: string | null;
+  averageRating: number | null;
+  reviews: ReviewResponse[];
 }
 
 export const useHome = () => {
   const [listings, setListings] = useState<EnrichedListing[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => !!localStorage.getItem('token'));
-  const [userRole, setUserRole] = useState<string | null>(() => localStorage.getItem('type'));
+  const [isLoggedIn] = useState<boolean>(() => typeof window !== 'undefined' && !!localStorage.getItem('token'));
+  const [userRole] = useState<string | null>(() => typeof window !== 'undefined' ? localStorage.getItem('type') : null);
+  const [userFavIds, setUserFavIds] = useState<number[]>([]);
 
-const handleLogout = () => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('type');
-  localStorage.removeItem('userId');
-  setIsLoggedIn(false);
-  setUserRole(null);
-};
+  const isValidPropertyType = (t: string | undefined): t is PropertyType => {
+    return t === 'house' || t === 'apartment';
+  };
+
   const fetchHomeData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -37,44 +41,70 @@ const handleLogout = () => {
         .map((list) => {
           const prop = list.property;
           const inmo = list.real_estate;
-
+          const propType = isValidPropertyType(prop?.type) ? prop.type : 'house';
           return {
             id: list.id,
             title: prop?.address || 'Dirección no especificada',
             location: prop?.location || 'Localidad no especificada',
             price: list.price,
-            image: prop?.type === 'house'
-              ? 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80'
-              : 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80',
-            type: prop?.type || 'house',
+            image: getPropertyImage(list.id),
+            type: propType,
             realEstateName: inmo?.name || 'Inmobiliaria',
-            characteristics: prop?.characteristics || null
+            characteristics: prop?.characteristics || null,
+            averageRating: list.average_rating ?? null,
+            reviews: list.reviews ?? [],
           };
         });
 
       setListings(enriched);
     } catch {
-      setError('No se pudieron cargar las publicaciones del mercado inmobiliario.');
+      setError('No se pudieron cargar las publicaciones.');
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  useEffect(() => {
-    let isMounted = true;
+  const refreshFavorites = useCallback(async () => {
+    const clientId = Number(localStorage.getItem('userId'));
+    if (isLoggedIn && userRole === 'client' && clientId) {
+      const favs = await clientService.getFavorites(clientId);
+      setUserFavIds(favs.map((f) => f.id));
+    }
+  }, [isLoggedIn, userRole]);
 
-    const loadData = async () => {
-      if (isMounted) {
-        await fetchHomeData();
+  useEffect(() => {
+    const init = async () => {
+      await Promise.all([fetchHomeData(), refreshFavorites()]);
+    };
+    init();
+  }, [fetchHomeData, refreshFavorites]);
+
+  useEffect(() => {
+    const loadInitialData = async () => {
+      await fetchHomeData();
+    };
+    loadInitialData();
+  }, [fetchHomeData]);
+
+  useEffect(() => {
+    const loadUserFavorites = async () => {
+      const clientId = Number(localStorage.getItem('userId'));
+      if (isLoggedIn && userRole === 'client' && clientId) {
+        try {
+          const favs = await clientService.getFavorites(clientId);
+          setUserFavIds(favs.map((f) => f.id));
+        } catch (err) {
+          console.error("Error cargando favoritos:", err);
+        }
       }
     };
+    loadUserFavorites();
+  }, [isLoggedIn, userRole]);
 
-    loadData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [fetchHomeData]);
+  const handlePurchaseConfirm = async (listingId: number) => {
+    await listingService.purchase(listingId);
+    await fetchHomeData();
+  };
 
   return {
     listings,
@@ -82,7 +112,9 @@ const handleLogout = () => {
     error,
     isLoggedIn,
     userRole,
-    handleLogout,
-    refetch: fetchHomeData
+    userFavIds,
+    handlePurchaseConfirm,
+    refetch: fetchHomeData,
+    refreshFavorites
   };
 };
