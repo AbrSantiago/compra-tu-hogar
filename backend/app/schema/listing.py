@@ -1,18 +1,10 @@
-import enum
-
 from pydantic import BaseModel, ConfigDict
 
+from app.core.enums import ListingStatus
 from app.schema.client import ClientResponse
 from app.schema.property import PropertyResponse
 from app.schema.real_estate import RealEstateResponse
 from app.schema.review import ReviewResponse
-
-
-class ListingStatus(enum.Enum):
-    ACTIVE = "active"
-    RESERVED = "reserved"
-    SOLD = "sold"
-    PAUSED = "paused"
 
 
 class ListingCreate(BaseModel):
@@ -35,7 +27,7 @@ class ListingResponse(BaseModel):
     property: PropertyResponse
     real_estate: RealEstateResponse
     buyer: ClientResponse | None = None
-    
+
     average_rating: float | None = None
     reviews: list[ReviewResponse] = []
 
