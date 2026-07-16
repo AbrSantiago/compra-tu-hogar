@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Annotated
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 
 from app.core.auth import require_admin_or_real_estate, require_client, require_real_estate
 from app.core.database import get_db
+from app.core.enums import PropertyType
 from app.schema.listing import (
     ListingCreate,
     ListingResponse,
@@ -30,9 +31,19 @@ router = APIRouter(
 
 @router.get("/", response_model=list[ListingResponse])
 def get_listings(
+    zone: Annotated[str | None, Query()] = None,
+    min_price: Annotated[float | None, Query(ge=0)] = None,
+    max_price: Annotated[float | None, Query(ge=0)] = None,
+    property_type: Annotated[PropertyType | None, Query()] = None,
     db: Session = Depends(get_db),
 ):
-    return listing_service.get_listings(db)
+    return listing_service.get_listings(
+        db=db,
+        zone=zone,
+        min_price=min_price,
+        max_price=max_price,
+        property_type=property_type,
+    )
 
 
 @router.get("/{listing_id}", response_model=ListingResponse)
