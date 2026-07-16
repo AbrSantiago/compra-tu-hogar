@@ -16,7 +16,8 @@ export const Home: React.FC = () => {
     userFavIds,
     handlePurchaseConfirm,
     refetch,
-    refreshFavorites
+    refreshFavorites,
+    applyFilters
   } = useHome();
 
   const { handleLogout } = useLogout();
@@ -100,7 +101,7 @@ export const Home: React.FC = () => {
           </p>
         </div>
 
-        <SearchBar />
+        <SearchBar onSearch={applyFilters} />
       </section>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 w-full">

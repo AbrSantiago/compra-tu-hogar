@@ -1,10 +1,31 @@
 import apiClient from './apiClient';
-import type { ListingResponse, ListingCreate } from '../types/listing';
+import type { ListingResponse, ListingCreate, ListingFilters } from '../types/listing';
 import type { ReviewResponse } from '@/types/review';
 
 export const listingService = {
-  getAll: async (): Promise<ListingResponse[]> => {
-    const response = await apiClient.get<ListingResponse[]>('/listings/');
+  getAll: async (filters?: ListingFilters): Promise<ListingResponse[]> => {
+    const params = new URLSearchParams();
+
+    if (filters?.location) {
+      params.append("location", filters.location);
+    }
+
+    if (filters?.minPrice !== undefined) {
+      params.append("min_price", filters.minPrice.toString());
+    }
+
+    if (filters?.maxPrice !== undefined) {
+      params.append("max_price", filters.maxPrice.toString());
+    }
+
+    if (filters?.propertyType) {
+      params.append("property_type", filters.propertyType);
+    }
+
+    const response = await apiClient.get<ListingResponse[]>(
+      `/listings/?${params.toString()}`
+    );
+
     return response.data;
   },
 
