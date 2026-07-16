@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.core.auth import require_admin, require_real_estate
 from app.core.database import get_db
 from app.model.user import User
+from app.schema.common import MessageResponse
 from app.schema.property import (
     PropertyCreate,
     PropertyResponse,
@@ -67,14 +68,14 @@ def update_property(
 
 @router.delete(
     "/{property_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
+    response_model=MessageResponse,
 )
 def delete_property(
     property_id: int,
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
-    property_service.delete_property(
+    return property_service.delete_property(
         db=db,
         property_id=property_id,
     )

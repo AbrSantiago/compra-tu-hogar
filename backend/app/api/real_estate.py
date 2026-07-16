@@ -8,6 +8,7 @@ from app.core.auth import (
 )
 from app.core.database import get_db
 from app.model.user import User
+from app.schema.common import MessageResponse
 from app.schema.real_estate import (
     RealEstateCreate,
     RealEstateResponse,
@@ -77,7 +78,10 @@ def update_real_estate(
     )
 
 
-@router.delete("/{real_estate_id}")
+@router.delete(
+    "/{real_estate_id}",
+    response_model=MessageResponse,
+)
 def delete_real_estate(
     real_estate_id: int,
     db: Session = Depends(get_db),

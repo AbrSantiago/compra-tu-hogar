@@ -9,7 +9,8 @@ from app.core.auth import (
 from app.core.database import get_db
 from app.model.admin import Admin
 from app.model.user import User
-from app.schema.client import ClientUpdate
+from app.schema.client import ClientResponse, ClientUpdate
+from app.schema.common import MessageResponse
 from app.schema.listing import ListingResponse
 from app.service import client_service
 
@@ -19,7 +20,10 @@ router = APIRouter(
 )
 
 
-@router.get("/")
+@router.get(
+    "/",
+    response_model=list[ClientResponse],
+)
 def get_clients(
     db: Session = Depends(get_db),
     _: Admin = Depends(require_admin),
@@ -27,7 +31,10 @@ def get_clients(
     return client_service.get_clients(db)
 
 
-@router.get("/{client_id}")
+@router.get(
+    "/{client_id}",
+    response_model=ClientResponse,
+)
 def get_client(
     client_id: int,
     db: Session = Depends(get_db),
@@ -42,7 +49,10 @@ def get_client(
     )
 
 
-@router.put("/{client_id}")
+@router.put(
+    "/{client_id}",
+    response_model=ClientResponse,
+)
 def update_client(
     client_id: int,
     client_data: ClientUpdate,
@@ -58,7 +68,10 @@ def update_client(
     )
 
 
-@router.delete("/{client_id}")
+@router.delete(
+    "/{client_id}",
+    response_model=MessageResponse,
+)
 def delete_client(
     client_id: int,
     db: Session = Depends(get_db),
@@ -87,7 +100,10 @@ def get_purchased_properties(
     )
 
 
-@router.post("/{client_id}/favorites/{listing_id}")
+@router.post(
+    "/{client_id}/favorites/{listing_id}",
+    response_model=MessageResponse,
+)
 def add_to_favorites(
     client_id: int,
     listing_id: int,
@@ -103,7 +119,10 @@ def add_to_favorites(
     )
 
 
-@router.delete("/{client_id}/favorites/{listing_id}")
+@router.delete(
+    "/{client_id}/favorites/{listing_id}",
+    response_model=MessageResponse,
+)
 def remove_from_favorites(
     client_id: int,
     listing_id: int,

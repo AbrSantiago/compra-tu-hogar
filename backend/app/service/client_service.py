@@ -119,7 +119,6 @@ def add_to_favorites(
         db.commit()
 
     return {
-        "status": "success",
         "message": "Agregado a favoritos",
     }
 
@@ -148,7 +147,6 @@ def remove_from_favorites(
         db.commit()
 
     return {
-        "status": "success",
         "message": "Eliminado de favoritos",
     }
 

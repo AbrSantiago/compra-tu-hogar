@@ -1,11 +1,13 @@
 import logging
 
 from fastapi import APIRouter, Depends, status
+from sqlalchemy.orm import Session
 
 from app.core.auth import require_client, require_real_estate
 from app.core.database import get_db
 from app.model.client import Client
 from app.model.real_estate import RealEstate
+from app.schema.common import MessageResponse
 from app.schema.listing import (
     ListingCreate,
     ListingResponse,
@@ -24,7 +26,7 @@ router = APIRouter(
 
 @router.get("/", response_model=list[ListingResponse])
 def get_listings(
-    db=Depends(get_db),
+    db: Session = Depends(get_db),
 ):
     return listing_service.get_listings(db)
 
@@ -32,7 +34,7 @@ def get_listings(
 @router.get("/{listing_id}", response_model=ListingResponse)
 def get_listing(
     listing_id: int,
-    db=Depends(get_db),
+    db: Session = Depends(get_db),
 ):
     return listing_service.get_listing(
         db=db,
@@ -47,7 +49,7 @@ def get_listing(
 )
 def create_listing(
     listing_data: ListingCreate,
-    db=Depends(get_db),
+    db: Session = Depends(get_db),
     real_estate: RealEstate = Depends(require_real_estate),
 ):
     logger.info(
@@ -73,7 +75,7 @@ def create_listing(
 def update_listing(
     listing_id: int,
     listing_data: ListingUpdate,
-    db=Depends(get_db),
+    db: Session = Depends(get_db),
     real_estate: RealEstate = Depends(require_real_estate),
 ):
     logger.info(
@@ -91,11 +93,11 @@ def update_listing(
 
 @router.delete(
     "/{listing_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
+    response_model=MessageResponse,
 )
 def delete_listing(
     listing_id: int,
-    db=Depends(get_db),
+    db: Session = Depends(get_db),
     real_estate: RealEstate = Depends(require_real_estate),
 ):
     logger.info(
@@ -104,7 +106,7 @@ def delete_listing(
         listing_id,
     )
 
-    listing_service.delete_listing(
+    return listing_service.delete_listing(
         db=db,
         listing_id=listing_id,
     )
@@ -116,7 +118,7 @@ def delete_listing(
 )
 def purchase_listing(
     listing_id: int,
-    db=Depends(get_db),
+    db: Session = Depends(get_db),
     client: Client = Depends(require_client),
 ):
     logger.info(
@@ -140,7 +142,7 @@ def purchase_listing(
 def add_review(
     listing_id: int,
     review_data: ReviewCreate,
-    db=Depends(get_db),
+    db: Session = Depends(get_db),
     client: Client = Depends(require_client),
 ):
     logger.info(

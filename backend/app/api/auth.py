@@ -6,8 +6,9 @@ from sqlalchemy.orm import Session
 from app.core.auth import get_current_user
 from app.core.database import get_db
 from app.model.user import User
-from app.schema.auth import LoginRequest
-from app.schema.client import ClientCreate
+from app.schema.auth import LoginRequest, TokenResponse
+from app.schema.client import ClientCreate, ClientResponse
+from app.schema.user import UserResponse
 from app.service import auth_service
 
 logger = logging.getLogger(__name__)
@@ -18,7 +19,10 @@ router = APIRouter(
 )
 
 
-@router.post("/register")
+@router.post(
+    "/register",
+    response_model=ClientResponse,
+)
 def register(
     client: ClientCreate,
     db: Session = Depends(get_db),
@@ -41,7 +45,10 @@ def register(
     return result
 
 
-@router.post("/login")
+@router.post(
+    "/login",
+    response_model=TokenResponse,
+)
 def login(
     login_request: LoginRequest,
     db: Session = Depends(get_db),
@@ -64,7 +71,10 @@ def login(
     return result
 
 
-@router.get("/me")
+@router.get(
+    "/me",
+    response_model=UserResponse,
+)
 def me(
     current_user: User = Depends(get_current_user),
 ):
