@@ -13,7 +13,7 @@ ALLOWED_DEPENDENCIES = {
     "service": {"model", "schema", "core"},
     "schema": {"core"},
     "model": {"core"},
-    "core": set(),
+    "core": {"model"},
 }
 
 

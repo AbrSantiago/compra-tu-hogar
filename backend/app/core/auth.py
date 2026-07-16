@@ -1,17 +1,13 @@
-from typing import TYPE_CHECKING
-
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.security import decode_access_token
-
-if TYPE_CHECKING:
-    from app.model.admin import Admin
-    from app.model.client import Client
-    from app.model.real_estate import RealEstate
-    from app.model.user import User
+from app.model.admin import Admin
+from app.model.client import Client
+from app.model.real_estate import RealEstate
+from app.model.user import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
