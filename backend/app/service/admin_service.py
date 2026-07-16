@@ -107,15 +107,20 @@ def delete_admin(
 
 
 def get_properties_with_saves(db: Session):
-    results = db.query(
-        Property.id,
-        Property.address,
-        Property.location,
-        Property.type,
-        func.count(Favorite.id).label("total_saves")
-    ).outerjoin(Listing, Property.id == Listing.property_id) \
-     .outerjoin(Favorite, Listing.id == Favorite.listing_id) \
-     .group_by(Property.id).order_by(func.count(Favorite.id).desc()).all()
+    results = (
+        db.query(
+            Property.id,
+            Property.address,
+            Property.location,
+            Property.type,
+            func.count(Favorite.id).label("total_saves"),
+        )
+        .outerjoin(Listing, Property.id == Listing.property_id)
+        .outerjoin(Favorite, Listing.id == Favorite.listing_id)
+        .group_by(Property.id)
+        .order_by(func.count(Favorite.id).desc())
+        .all()
+    )
 
     return [
         {
@@ -128,31 +133,37 @@ def get_properties_with_saves(db: Session):
         for r in results
     ]
 
+
 def get_all_purchases(db: Session):
-    return db.query(Listing).options(
-        joinedload(Listing.property_),
-        joinedload(Listing.buyer),
-        joinedload(Listing.real_estate)
-    ).filter(Listing.status == ListingStatus.SOLD).order_by(Listing.id.desc()).all()
+    return (
+        db.query(Listing)
+        .options(joinedload(Listing.property_), joinedload(Listing.buyer), joinedload(Listing.real_estate))
+        .filter(Listing.status == ListingStatus.SOLD)
+        .order_by(Listing.id.desc())
+        .all()
+    )
 
 
 def get_all_listings_with_reviews(db: Session):
-    avg_query = db.query(
-        Review.listing_id, 
-        func.avg(Review.rating).label("avg_r")
-    ).group_by(Review.listing_id).subquery()
+    avg_query = (
+        db.query(Review.listing_id, func.avg(Review.rating).label("avg_r")).group_by(Review.listing_id).subquery()
+    )
 
-    results = db.query(Listing, avg_query.c.avg_r).outerjoin(
-        avg_query, Listing.id == avg_query.c.listing_id
-    ).options(
-        joinedload(Listing.property_),
-        joinedload(Listing.real_estate),
-        joinedload(Listing.reviews).joinedload(Review.client)
-    ).order_by(Listing.id.desc()).all()
+    results = (
+        db.query(Listing, avg_query.c.avg_r)
+        .outerjoin(avg_query, Listing.id == avg_query.c.listing_id)
+        .options(
+            joinedload(Listing.property_),
+            joinedload(Listing.real_estate),
+            joinedload(Listing.reviews).joinedload(Review.client),
+        )
+        .order_by(Listing.id.desc())
+        .all()
+    )
 
     listings = []
     for listing, avg_r in results:
         listing.average_rating = float(avg_r) if avg_r is not None else None
         listings.append(listing)
-        
+
     return listings

@@ -12,6 +12,6 @@ class ReviewResponse(BaseModel):
     listing_id: int
     rating: int
     comment: str | None
-    client_name: str 
+    client_name: str
 
     model_config = ConfigDict(from_attributes=True)

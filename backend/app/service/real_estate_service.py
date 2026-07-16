@@ -1,9 +1,8 @@
-from multiprocessing.dummy.connection import Client
-
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from app.core.security import hash_password
+from app.model.client import Client
 from app.model.listing import Listing
 from app.model.real_estate import RealEstate
 from app.model.user import User
@@ -111,8 +110,11 @@ def get_sales_by_real_estate(db: Session, real_estate_id: int):
 def get_clients_by_real_estate(db: Session, real_estate_id: int):
     return (
         db.query(Client)
-        .join(Listing)
-        .filter(Listing.real_estate_id == real_estate_id, Listing.buyer_id is not None)
+        .join(Listing, Client.id == Listing.buyer_id)
+        .filter(
+            Listing.real_estate_id == real_estate_id,
+            Listing.buyer_id.isnot(None),
+        )
         .distinct()
         .all()
     )
