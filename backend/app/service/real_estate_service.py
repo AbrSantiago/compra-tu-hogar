@@ -4,14 +4,14 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from app.core.security import hash_password
+from app.model.listing import Listing
 from app.model.real_estate import RealEstate
 from app.model.user import User
+from app.schema.listing import ListingStatus
 from app.schema.real_estate import (
     RealEstateCreate,
     RealEstateUpdate,
 )
-from app.model.listing import Listing
-from app.schema.listing import ListingStatus
 
 
 def create_real_estate(
@@ -101,14 +101,18 @@ def delete_real_estate(
         "message": "Real estate deleted",
     }
 
+
 def get_sales_by_real_estate(db: Session, real_estate_id: int):
-    return db.query(Listing).filter(
-        Listing.real_estate_id == real_estate_id,
-        Listing.status == ListingStatus.SOLD
-    ).all()
+    return (
+        db.query(Listing).filter(Listing.real_estate_id == real_estate_id, Listing.status == ListingStatus.SOLD).all()
+    )
+
 
 def get_clients_by_real_estate(db: Session, real_estate_id: int):
-    return db.query(Client).join(Listing).filter(
-        Listing.real_estate_id == real_estate_id,
-        Listing.buyer_id != None
-    ).distinct().all()
+    return (
+        db.query(Client)
+        .join(Listing)
+        .filter(Listing.real_estate_id == real_estate_id, Listing.buyer_id is not None)
+        .distinct()
+        .all()
+    )
