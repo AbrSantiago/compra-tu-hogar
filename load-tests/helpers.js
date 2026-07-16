@@ -49,8 +49,6 @@ export function login(credentials) {
 export function getCurrentUser(token) {
   const res = http.get(`${BASE_URL}/auth/me`, authHeaders(token));
 
-  console.log("AUTH ME STATUS:", res.status, "BODY:", res.body);
-
   check(res, {
     "get current user": (r) => r.status === 200,
   });
