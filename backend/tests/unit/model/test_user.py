@@ -1,50 +1,56 @@
-# import pytest
-# from sqlalchemy import create_engine
-# from sqlalchemy.orm import sessionmaker
+import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
-# from app.core.database import Base
-# from app.model.client import Client
-# from app.model.user import User
-
-# # ---------- Test DB setup ----------
+from app.core.database import Base
+from app.model.client import Client
+from app.model.user import User
 
 
-# @pytest.fixture
-# def db():
-#     engine = create_engine("sqlite:///:memory:", echo=False)
-#     TestingSessionLocal = sessionmaker(bind=engine)
+@pytest.fixture
+def db():
+    engine = create_engine("sqlite:///:memory:", echo=False)
+    TestingSessionLocal = sessionmaker(bind=engine)
 
-#     Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
 
-#     session = TestingSessionLocal()
-#     yield session
+    session = TestingSessionLocal()
+    yield session
 
-#     session.close()
-
-
-# # ---------- Tests ----------
+    session.close()
 
 
-# def test_create_client(db):
-#     client = Client(name="Juan", surname="Perez", email="juan@test.com", password="1234")
+def test_create_client(db):
+    client = Client(
+        name="Juan", 
+        surname="Perez", 
+        email="juan@test.com", 
+        password="1234",
+        type="client"
+    )
 
-#     db.add(client)
-#     db.commit()
-#     db.refresh(client)
+    db.add(client)
+    db.commit()
+    db.refresh(client)
 
-#     assert client.id is not None
-#     assert client.name == "Juan"
-#     assert client.surname == "Perez"
+    assert client.id is not None
+    assert client.name == "Juan"
+    assert client.surname == "Perez"
 
 
-# def test_polymorphic_query(db):
-#     client = Client(name="Ana", surname="Gomez", email="ana@test.com", password="abcd")
+def test_polymorphic_query(db):
+    client = Client(
+        name="Ana", 
+        surname="Gomez", 
+        email="ana@test.com", 
+        password="abcd",
+        type="client"
+    )
 
-#     db.add(client)
-#     db.commit()
+    db.add(client)
+    db.commit()
 
-#     user = db.query(User).first()
+    user = db.query(User).first()
 
-#     # 🔥 Esto es lo importante
-#     assert isinstance(user, Client)
-#     assert user.email == "ana@test.com"
+    assert isinstance(user, Client)
+    assert user.email == "ana@test.com"
