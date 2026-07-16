@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.core.security import hash_password
 from app.model.client import Client
+from app.model.favorite import Favorite
 from app.model.listing import Listing
 from app.schema.client import ClientUpdate
 
@@ -79,3 +80,93 @@ def get_purchased_properties(
     )
 
     return db.query(Listing).filter(Listing.buyer_id == client_id).all()
+
+
+def add_to_favorites(
+    db: Session,
+    client_id: int,
+    listing_id: int,
+):
+    get_client(
+        db=db,
+        client_id=client_id,
+    )
+
+    listing = db.get(Listing, listing_id)
+
+    if listing is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Publicación no encontrada",
+        )
+
+    existing_favorite = (
+        db.query(Favorite)
+        .filter_by(
+            client_id=client_id,
+            listing_id=listing_id,
+        )
+        .first()
+    )
+
+    if existing_favorite is None:
+        db.add(
+            Favorite(
+                client_id=client_id,
+                listing_id=listing_id,
+            )
+        )
+        db.commit()
+
+    return {
+        "status": "success",
+        "message": "Agregado a favoritos",
+    }
+
+
+def remove_from_favorites(
+    db: Session,
+    client_id: int,
+    listing_id: int,
+):
+    get_client(
+        db=db,
+        client_id=client_id,
+    )
+
+    favorite = (
+        db.query(Favorite)
+        .filter_by(
+            client_id=client_id,
+            listing_id=listing_id,
+        )
+        .first()
+    )
+
+    if favorite is not None:
+        db.delete(favorite)
+        db.commit()
+
+    return {
+        "status": "success",
+        "message": "Eliminado de favoritos",
+    }
+
+
+def get_favorites(
+    db: Session,
+    client_id: int,
+):
+    get_client(
+        db=db,
+        client_id=client_id,
+    )
+
+    favorites = db.query(Favorite).filter_by(client_id=client_id).all()
+
+    favorite_ids = [favorite.listing_id for favorite in favorites]
+
+    if not favorite_ids:
+        return []
+
+    return db.query(Listing).filter(Listing.id.in_(favorite_ids)).all()

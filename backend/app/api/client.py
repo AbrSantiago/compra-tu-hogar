@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.core.auth import (
@@ -8,8 +8,6 @@ from app.core.auth import (
 )
 from app.core.database import get_db
 from app.model.admin import Admin
-from app.model.favorite import Favorite
-from app.model.listing import Listing
 from app.model.user import User
 from app.schema.client import ClientUpdate
 from app.schema.listing import ListingResponse
@@ -19,6 +17,7 @@ router = APIRouter(
     prefix="/clients",
     tags=["clients"],
 )
+
 
 @router.get("/")
 def get_clients(
@@ -35,10 +34,7 @@ def get_client(
     _: Admin = Depends(require_admin),
     current_user: User = Depends(get_current_user),
 ):
-    require_admin_or_owner(
-        current_user,
-        client_id,
-    )
+    require_admin_or_owner(current_user, client_id)
 
     return client_service.get_client(
         db=db,
@@ -53,10 +49,7 @@ def update_client(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    require_admin_or_owner(
-        current_user,
-        client_id,
-    )
+    require_admin_or_owner(current_user, client_id)
 
     return client_service.update_client(
         db=db,
@@ -86,10 +79,7 @@ def get_purchased_properties(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    require_admin_or_owner(
-        current_user,
-        client_id,
-    )
+    require_admin_or_owner(current_user, client_id)
 
     return client_service.get_purchased_properties(
         db=db,
@@ -105,49 +95,42 @@ def add_to_favorites(
     current_user: User = Depends(get_current_user),
 ):
     require_admin_or_owner(current_user, client_id)
-    
-    listing = db.get(Listing, listing_id)
-    if not listing:
-        raise HTTPException(status_code=404, detail="Publicación no encontrada")
 
-    existing_fav = db.query(Favorite).filter_by(client_id=client_id, listing_id=listing_id).first()
-    if not existing_fav:
-        new_fav = Favorite(client_id=client_id, listing_id=listing_id)
-        db.add(new_fav)
-        db.commit()
-
-    return {"status": "success", "message": "Agregado a favoritos"}
+    return client_service.add_to_favorites(
+        db=db,
+        client_id=client_id,
+        listing_id=listing_id,
+    )
 
 
 @router.delete("/{client_id}/favorites/{listing_id}")
 def remove_from_favorites(
     client_id: int,
     listing_id: int,
-    db: Session = Depends(get_db), 
+    db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     require_admin_or_owner(current_user, client_id)
-    
-    existing_fav = db.query(Favorite).filter_by(client_id=client_id, listing_id=listing_id).first()
-    if existing_fav:
-        db.delete(existing_fav)
-        db.commit()
-        
-    return {"status": "success", "message": "Eliminado de favoritos"}
+
+    return client_service.remove_from_favorites(
+        db=db,
+        client_id=client_id,
+        listing_id=listing_id,
+    )
 
 
-@router.get("/{client_id}/favorites", response_model=list[ListingResponse])
+@router.get(
+    "/{client_id}/favorites",
+    response_model=list[ListingResponse],
+)
 def get_favorites(
     client_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     require_admin_or_owner(current_user, client_id)
-    
-    favorites = db.query(Favorite).filter_by(client_id=client_id).all()
-    fav_ids = [fav.listing_id for fav in favorites]
-    
-    if not fav_ids:
-        return []
-        
-    return db.query(Listing).filter(Listing.id.in_(fav_ids)).all()
+
+    return client_service.get_favorites(
+        db=db,
+        client_id=client_id,
+    )

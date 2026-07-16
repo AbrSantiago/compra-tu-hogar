@@ -10,28 +10,33 @@ from app.schema.listing import (
     ListingStatus,
     ListingUpdate,
 )
+from app.schema.review import ReviewCreate
 
 
 def get_listings(db: Session):
-    listings = db.query(Listing).options(
-        joinedload(Listing.property),
-        joinedload(Listing.real_estate),
-        joinedload(Listing.buyer),
-        joinedload(Listing.reviews).joinedload(Review.client),
-    ).all()
+    listings = (
+        db.query(Listing)
+        .options(
+            joinedload(Listing.property),
+            joinedload(Listing.real_estate),
+            joinedload(Listing.buyer),
+            joinedload(Listing.reviews).joinedload(Review.client),
+        )
+        .all()
+    )
 
     results = []
     for listing in listings:
         listing_dict = listing.__dict__.copy()
-        
+
         if listing.reviews:
             avg = round(sum(r.rating for r in listing.reviews) / len(listing.reviews), 1)
         else:
             avg = None
-        
+
         listing_dict["average_rating"] = avg
         results.append(listing_dict)
-        
+
     return results
 
 
@@ -45,7 +50,7 @@ def get_listing(
             joinedload(Listing.property),
             joinedload(Listing.real_estate),
             joinedload(Listing.buyer),
-            joinedload(Listing.reviews), 
+            joinedload(Listing.reviews),
         )
         .filter(Listing.id == listing_id)
         .first()
@@ -58,6 +63,7 @@ def get_listing(
         )
 
     return listing
+
 
 def create_listing(
     db: Session,
@@ -184,3 +190,53 @@ def purchase_listing(
     db.refresh(listing)
 
     return listing
+
+
+def add_review(
+    db: Session,
+    listing_id: int,
+    review_data: ReviewCreate,
+    client,
+):
+    listing = db.get(Listing, listing_id)
+
+    if listing is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Listing not found",
+        )
+
+    existing_review = (
+        db.query(Review)
+        .filter_by(
+            client_id=client.id,
+            listing_id=listing_id,
+        )
+        .first()
+    )
+
+    if existing_review:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Ya dejaste una reseña para esta propiedad anteriormente.",
+        )
+
+    review = Review(
+        client_id=client.id,
+        listing_id=listing_id,
+        rating=review_data.rating,
+        comment=review_data.comment,
+    )
+
+    db.add(review)
+    db.commit()
+    db.refresh(review)
+
+    return {
+        "id": review.id,
+        "client_id": review.client_id,
+        "listing_id": review.listing_id,
+        "rating": review.rating,
+        "comment": review.comment,
+        "client_name": client.name,
+    }
