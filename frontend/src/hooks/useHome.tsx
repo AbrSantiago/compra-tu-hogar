@@ -4,6 +4,7 @@ import { clientService } from '../services/clientService';
 import type { ReviewResponse } from '@/types/review';
 import type { PropertyType } from '@/types/property';
 import { getPropertyImage } from '@/utils/imageMapper';
+import type { ListingFilters } from '@/types';
 
 export interface EnrichedListing {
   id: number;
@@ -25,16 +26,17 @@ export const useHome = () => {
   const [isLoggedIn] = useState<boolean>(() => typeof window !== 'undefined' && !!localStorage.getItem('token'));
   const [userRole] = useState<string | null>(() => typeof window !== 'undefined' ? localStorage.getItem('type') : null);
   const [userFavIds, setUserFavIds] = useState<number[]>([]);
+  const [filters, setFilters] = useState<ListingFilters>({});
 
   const isValidPropertyType = (t: string | undefined): t is PropertyType => {
     return t === 'house' || t === 'apartment';
   };
 
-  const fetchHomeData = useCallback(async () => {
+  const fetchHomeData = useCallback(async (currentFilters = filters) => {
     setIsLoading(true);
     setError(null);
     try {
-      const listingsData = await listingService.getAll().catch(() => []);
+      const listingsData = await listingService.getAll(currentFilters).catch(() => []);
 
       const enriched: EnrichedListing[] = listingsData
         .filter((list) => list.status === 'active')
@@ -106,6 +108,11 @@ export const useHome = () => {
     await fetchHomeData();
   };
 
+  const applyFilters = async (newFilters: ListingFilters) => {
+      setFilters(newFilters);
+      await fetchHomeData(newFilters);
+  };
+
   return {
     listings,
     isLoading,
@@ -115,6 +122,7 @@ export const useHome = () => {
     userFavIds,
     handlePurchaseConfirm,
     refetch: fetchHomeData,
-    refreshFavorites
+    refreshFavorites,
+    applyFilters
   };
 };

@@ -2,6 +2,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 
+from app.core.enums import PropertyType
 from app.model.client import Client
 from app.model.listing import Listing
 from app.model.property import Property
@@ -15,25 +16,28 @@ from app.schema.listing import (
 from app.schema.review import ReviewCreate
 
 
-def get_listings(db: Session):
-    listings = (
-        db.query(Listing)
-        .options(
-            joinedload(Listing.property_),
-            joinedload(Listing.real_estate),
-            joinedload(Listing.buyer),
-            joinedload(Listing.reviews).joinedload(Review.client),
-        )
-        .all()
-    )
+def get_listings(
+    db: Session,
+    location: str | None = None,
+    min_price: float | None = None,
+    max_price: float | None = None,
+    property_type: PropertyType | None = None,
+):
+    query = db.query(Listing).join(Property)
 
-    for listing in listings:
-        if listing.reviews:
-            listing.average_rating = round(sum(r.rating for r in listing.reviews) / len(listing.reviews), 1)
-        else:
-            listing.average_rating = None
+    if location:
+        query = query.filter(Property.location.ilike(f"%{location}%"))
 
-    return listings
+    if min_price is not None:
+        query = query.filter(Listing.price >= min_price)
+
+    if max_price is not None:
+        query = query.filter(Listing.price <= max_price)
+
+    if property_type:
+        query = query.filter(Property.type == property_type)
+
+    return query.all()
 
 
 def get_listing(

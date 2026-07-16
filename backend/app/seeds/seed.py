@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.seeds.admin_seed import create_default_admin
+from app.seeds.buyers import create_demo_buyers
 from app.seeds.client_seed import create_demo_clients
 from app.seeds.listing_seed import create_demo_listings
 from app.seeds.property_seed import create_demo_properties
@@ -15,3 +16,4 @@ def run_seeds(db: Session) -> None:
     create_demo_properties(db)
     create_demo_listings(db)
     create_demo_reviews(db)
+    create_demo_buyers(db)

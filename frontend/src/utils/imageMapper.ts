@@ -13,7 +13,7 @@ const PROPERTY_IMAGES = [
   'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b', 'https://images.unsplash.com/photo-1472224371017-088a7d117a3a',
   'https://images.unsplash.com/photo-1500382017468-9049fed747ef', 'https://images.unsplash.com/photo-1518780664697-55e3ad937233',
   'https://images.unsplash.com/photo-1460317442991-0c2094391a17', 'https://images.unsplash.com/photo-1507089947368-19c1da9775ae',
-  'https://images.unsplash.com/photo-1516455590571-18256e5bb9ff', 'https://images.unsplash.com/photo-1504233527756-2c13a4931a74'
+  'https://images.unsplash.com/photo-1516455590571-18256e5bb9ff'
 ].map(url => `${url}?auto=format&fit=crop&w=800&q=80`);
 
 export const getPropertyImage = (id: number): string => {

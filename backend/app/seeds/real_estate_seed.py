@@ -16,6 +16,11 @@ def create_demo_real_estates(db: Session) -> None:
         "Nativa",
         "Delta",
         "Sur",
+        "Inmobiliaria Norte",
+        "Horizonte",
+        "Open House",
+        "Altos",
+        "Urbania",
     ]
 
     for name in real_estates:
