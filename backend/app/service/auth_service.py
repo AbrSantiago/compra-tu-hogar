@@ -18,7 +18,7 @@ def register(
 ):
     existing_user = db.query(User).filter(User.email == client_data.email).first()
 
-    if existing_user:
+    if existing_user is not None:
         raise HTTPException(
             status_code=400,
             detail="Email already registered",
@@ -50,13 +50,7 @@ def login(
 ):
     user = db.query(User).filter(User.email == login_request.email).first()
 
-    if user is None:
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid credentials",
-        )
-
-    if not verify_password(
+    if user is None or not verify_password(
         login_request.password,
         user.password,
     ):

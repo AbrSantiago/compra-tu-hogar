@@ -1,18 +1,10 @@
-import enum
-
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.core.enums import ListingStatus
 from app.schema.client import ClientResponse
 from app.schema.property import PropertyResponse
 from app.schema.real_estate import RealEstateResponse
 from app.schema.review import ReviewResponse
-
-
-class ListingStatus(enum.Enum):
-    ACTIVE = "active"
-    RESERVED = "reserved"
-    SOLD = "sold"
-    PAUSED = "paused"
 
 
 class ListingCreate(BaseModel):
