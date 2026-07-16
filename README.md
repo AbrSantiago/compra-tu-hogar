@@ -5,14 +5,33 @@ Web app for browsing, tracking, and managing real estate properties, helping use
 ---
 
 ## 🛠 Tech Stack
-* React
-* TypeScript
-* Python
-* FastAPI
-* SQLAlchemy
-* PostgreSQL
-* uv (dependency & environment manager)
-* Docker & Docker Compose
+
+### Frontend
+- React
+- TypeScript
+- Vite
+
+### Backend
+- Python
+- FastAPI
+- SQLAlchemy
+
+### Database
+- PostgreSQL
+
+### DevOps & Development
+- Docker
+- Docker Compose
+- uv (dependency & environment manager)
+
+### Observability
+- Prometheus
+- Grafana
+
+### Testing
+- Pytest
+- Playwright
+- ⁠Cucumber
 
 ---
 
@@ -23,6 +42,18 @@ This project uses Docker Compose to run the complete application stack:
 * React frontend
 * FastAPI backend
 * PostgreSQL database
+
+---
+
+## ⚙️ Environment Variables
+
+Before running the project, create a `.env` file in the `backend` & `fronted` directory using the provided template:
+
+```bash
+cp .env.example .env
+```
+
+For example, fill in the required value `SECRET_KEY` with a random secret.
 
 ---
 
