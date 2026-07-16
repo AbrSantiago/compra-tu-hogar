@@ -1,15 +1,18 @@
 import logging
+from typing import TYPE_CHECKING
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.core.auth import get_current_user
 from app.core.database import get_db
-from app.model.user import User
 from app.schema.auth import LoginRequest, TokenResponse
 from app.schema.client import ClientCreate, ClientResponse
 from app.schema.user import UserResponse
 from app.service import auth_service
+
+if TYPE_CHECKING:
+    from app.model.user import User
 
 logger = logging.getLogger(__name__)
 

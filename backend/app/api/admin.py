@@ -1,12 +1,16 @@
+from typing import TYPE_CHECKING
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.core.auth import require_admin
 from app.core.database import get_db
-from app.model.admin import Admin
 from app.schema.admin import AdminCreate, AdminResponse, AdminUpdate
 from app.schema.common import MessageResponse
 from app.service import admin_service
+
+if TYPE_CHECKING:
+    from app.model.admin import Admin
 
 router = APIRouter(
     prefix="/admins",

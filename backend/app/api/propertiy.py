@@ -1,9 +1,10 @@
+from typing import TYPE_CHECKING
+
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.core.auth import require_admin, require_real_estate
 from app.core.database import get_db
-from app.model.user import User
 from app.schema.common import MessageResponse
 from app.schema.property import (
     PropertyCreate,
@@ -11,6 +12,9 @@ from app.schema.property import (
     PropertyUpdate,
 )
 from app.service import property_service
+
+if TYPE_CHECKING:
+    from app.model.user import User
 
 router = APIRouter(
     prefix="/properties",

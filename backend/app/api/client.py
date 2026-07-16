@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
@@ -7,12 +9,14 @@ from app.core.auth import (
     require_admin_or_owner,
 )
 from app.core.database import get_db
-from app.model.admin import Admin
-from app.model.user import User
 from app.schema.client import ClientResponse, ClientUpdate
 from app.schema.common import MessageResponse
 from app.schema.listing import ListingResponse
 from app.service import client_service
+
+if TYPE_CHECKING:
+    from app.model.admin import Admin
+    from app.model.user import User
 
 router = APIRouter(
     prefix="/clients",

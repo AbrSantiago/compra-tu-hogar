@@ -79,15 +79,37 @@ def resolve_import(current_file: Path, node: ast.ImportFrom) -> list[str]:
 def get_imports(path: Path, tree: ast.AST) -> list[str]:
     """
     Return all imported modules as absolute module names.
+
+    Imports inside `if TYPE_CHECKING:` blocks are ignored because they
+    are only used for static type checking and do not represent runtime
+    dependencies.
     """
     imports: list[str] = []
 
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Import):
-            imports.extend(alias.name for alias in node.names)
+    def visit(node: ast.AST) -> None:
+        for child in ast.iter_child_nodes(node):
+            # Ignore:
+            #
+            # if TYPE_CHECKING:
+            #     from app.model.user import User
+            #
+            if (
+                isinstance(child, ast.If)
+                and isinstance(child.test, ast.Name)
+                and child.test.id == "TYPE_CHECKING"
+            ):
+                continue
 
-        elif isinstance(node, ast.ImportFrom):
-            imports.extend(resolve_import(path, node))
+            if isinstance(child, ast.Import):
+                imports.extend(alias.name for alias in child.names)
+
+            elif isinstance(child, ast.ImportFrom):
+                imports.extend(resolve_import(path, child))
+
+            else:
+                visit(child)
+
+    visit(tree)
 
     return imports
 
