@@ -5,6 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from app.core.database import Base
 from app.model.property import Property, PropertyType
 
+
 @pytest.fixture
 def db():
     engine = create_engine("sqlite:///:memory:", echo=False)

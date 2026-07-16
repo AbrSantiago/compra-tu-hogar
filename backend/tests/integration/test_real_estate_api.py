@@ -1,10 +1,10 @@
-import pytest
-from app.model.real_estate import RealEstate
-from app.model.listing import Listing
-from app.model.client import Client
-from app.core.enums import ListingStatus, PropertyType
 from app.core.auth import get_current_user
+from app.core.enums import ListingStatus, PropertyType
+from app.model.client import Client
+from app.model.listing import Listing
 from app.model.property import Property
+from app.model.real_estate import RealEstate
+
 
 def login_as_real_estate(client, real_estate):
     client.app.dependency_overrides[get_current_user] = lambda: real_estate

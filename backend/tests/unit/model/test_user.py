@@ -6,6 +6,7 @@ from app.core.database import Base
 from app.model.client import Client
 from app.model.user import User
 
+
 @pytest.fixture
 def db():
     engine = create_engine("sqlite:///:memory:", echo=False)

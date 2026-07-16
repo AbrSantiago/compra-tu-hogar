@@ -1,7 +1,7 @@
-import pytest
-from app.model.client import Client
 from app.core.auth import get_current_user
 from app.model.admin import Admin
+from app.model.client import Client
+
 
 def login_as_client(client, client_user):
     client.app.dependency_overrides[get_current_user] = lambda: client_user
