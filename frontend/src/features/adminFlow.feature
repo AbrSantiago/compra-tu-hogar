@@ -8,13 +8,13 @@ Característica: Flujo Completo de Administración
     Entonces debería ver el panel de administración
 
     Cuando navega a la sección de "Inmuebles"
-    Y edita la propiedad con dirección "Belgrano 150" cambiando el tipo a "Departamento" y dirección a "Belgrano 145"
-    Entonces la propiedad debería mostrar la dirección "Belgrano 145" y tipo "Departamento" en la tabla
+    Y edita la propiedad con dirección "Alem 60" cambiando el tipo a "Casa" y dirección a "Alem 61"
+    Entonces la propiedad debería mostrar la dirección "Alem 61" y tipo "Casa" en la tabla
 
     Cuando navega a la sección de "Publicaciones"
-    Y edita la publicación de la propiedad "Belgrano 145" cambiando el precio a "175000" y estado a "Pausado"
-    Entonces la publicación debería reflejar el precio "USD 175.000" y estado "Pausado"
+    Y edita la publicación de la propiedad "Alem 61" cambiando el precio a "175000" y estado a "Pausado"
+    Entonces la publicación debería reflejar el precio "USD 175.000" y estado "Pausado" en la propiedad "Alem 61"
 
-    Cuando hace clic en el botón de eliminar la publicación de "Belgrano 145"
+    Cuando hace clic en el botón de eliminar la publicación de "Alem 61"
     Y confirma la eliminación
-    Entonces la publicación no debería figurar en la lista
+    Entonces la publicación de "Alem 61" no debería figurar en la lista
