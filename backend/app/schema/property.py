@@ -1,11 +1,6 @@
-import enum
-
 from pydantic import BaseModel, ConfigDict
 
-
-class PropertyType(enum.Enum):
-    HOUSE = "house"
-    APARTMENT = "apartment"
+from app.core.enums import PropertyType
 
 
 class PropertyCreate(BaseModel):

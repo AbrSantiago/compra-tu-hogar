@@ -152,9 +152,23 @@ uv run pytest
 │   │   ├── core/
 │   │   ├── model/
 │   │   ├── schema/
+│   │   ├── seeds/
+│   │   ├── service/
 │   │   └── main.py
 │   ├── pyproject.toml
 │   ├── uv.lock
+│   └── Dockerfile
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── contexts/
+│   │   ├── features/
+│   │   ├── hooks/
+│   │   ├── pages/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── types/
+│   │   └── main.tsx
 │   └── Dockerfile
 ├── docker-compose.yml
 └── README.md

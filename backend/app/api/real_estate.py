@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
@@ -7,13 +11,16 @@ from app.core.auth import (
     require_admin_or_owner,
 )
 from app.core.database import get_db
-from app.model.user import User
+from app.schema.common import MessageResponse
 from app.schema.real_estate import (
     RealEstateCreate,
     RealEstateResponse,
     RealEstateUpdate,
 )
 from app.service import real_estate_service
+
+if TYPE_CHECKING:
+    from app.model.user import User
 
 router = APIRouter(
     prefix="/real-estates",
@@ -77,7 +84,10 @@ def update_real_estate(
     )
 
 
-@router.delete("/{real_estate_id}")
+@router.delete(
+    "/{real_estate_id}",
+    response_model=MessageResponse,
+)
 def delete_real_estate(
     real_estate_id: int,
     db: Session = Depends(get_db),

@@ -7,7 +7,7 @@ from sqlalchemy import Enum, Float, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
-from app.schema.listing import ListingStatus
+from app.core.enums import ListingStatus
 
 if TYPE_CHECKING:
     from app.model.client import Client
@@ -59,12 +59,12 @@ class Listing(Base):
     )
 
     favorited_by: Mapped[list["Favorite"]] = relationship(
-        back_populates="listing", 
+        back_populates="listing",
         cascade="all, delete-orphan",
     )
-    
+
     reviews: Mapped[list["Review"]] = relationship(
-        back_populates="listing", 
+        back_populates="listing",
         cascade="all, delete-orphan",
     )
 

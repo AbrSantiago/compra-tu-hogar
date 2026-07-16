@@ -1,11 +1,18 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.core.auth import require_admin
 from app.core.database import get_db
-from app.model.admin import Admin
-from app.schema.admin import AdminCreate, AdminUpdate
+from app.schema.admin import AdminCreate, AdminResponse, AdminUpdate
+from app.schema.common import MessageResponse
 from app.service import admin_service
+
+if TYPE_CHECKING:
+    from app.model.admin import Admin
 
 router = APIRouter(
     prefix="/admins",
@@ -13,7 +20,10 @@ router = APIRouter(
 )
 
 
-@router.post("/")
+@router.post(
+    "/",
+    response_model=AdminResponse,
+)
 def create_admin(
     admin: AdminCreate,
     db: Session = Depends(get_db),
@@ -25,7 +35,10 @@ def create_admin(
     )
 
 
-@router.get("/")
+@router.get(
+    "/",
+    response_model=list[AdminResponse],
+)
 def get_admins(
     db: Session = Depends(get_db),
     _: Admin = Depends(require_admin),
@@ -33,7 +46,10 @@ def get_admins(
     return admin_service.get_admins(db)
 
 
-@router.get("/{admin_id}")
+@router.get(
+    "/{admin_id}",
+    response_model=AdminResponse,
+)
 def get_admin(
     admin_id: int,
     db: Session = Depends(get_db),
@@ -45,7 +61,10 @@ def get_admin(
     )
 
 
-@router.put("/{admin_id}")
+@router.put(
+    "/{admin_id}",
+    response_model=AdminResponse,
+)
 def update_admin(
     admin_id: int,
     admin_data: AdminUpdate,
@@ -59,7 +78,10 @@ def update_admin(
     )
 
 
-@router.delete("/{admin_id}")
+@router.delete(
+    "/{admin_id}",
+    response_model=MessageResponse,
+)
 def delete_admin(
     admin_id: int,
     db: Session = Depends(get_db),

@@ -70,10 +70,17 @@ def delete_property(
     db: Session,
     property_id: int,
 ):
-    property_obj = get_property(
-        db=db,
-        property_id=property_id,
-    )
+    property_obj = db.get(Property, property_id)
+
+    if property_obj is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Property not found",
+        )
 
     db.delete(property_obj)
     db.commit()
+
+    return {
+        "message": "Property deleted",
+    }
