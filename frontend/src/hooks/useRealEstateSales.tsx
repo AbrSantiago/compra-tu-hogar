@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
-import { realEstateService } from '@/services/realEstateService';
-import { extractErrorMessage } from '@/utils/errors';
-import type { ListingResponse } from '@/types/listing';
+import { useState, useEffect, useCallback } from "react";
+import { realEstateService } from "@/services/realEstateService";
+import { extractErrorMessage } from "@/utils/errors";
+import type { ListingResponse } from "@/types/listing";
 
 export const useRealEstateSales = (realEstateId: string | undefined) => {
   const [sales, setSales] = useState<ListingResponse[]>([]);
@@ -9,21 +9,30 @@ export const useRealEstateSales = (realEstateId: string | undefined) => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchSales = useCallback(async () => {
-    if (!realEstateId) return;
+    if (!realEstateId) {
+      setSales([]);
+      setIsLoading(false);
+      return;
+    }
+    
     setIsLoading(true);
     setError(null);
     try {
       const data = await realEstateService.getSales(Number(realEstateId));
       setSales(data);
     } catch (err) {
-      setError(extractErrorMessage(err, 'No se pudieron cargar las ventas.'));
+      setError(extractErrorMessage(err, "No se pudieron cargar las ventas."));
     } finally {
       setIsLoading(false);
     }
   }, [realEstateId]);
 
   useEffect(() => {
-    fetchSales();
+    const loadSales = async () => {
+      await fetchSales();
+    };
+
+    loadSales();
   }, [fetchSales]);
 
   return { sales, isLoading, error, refetch: fetchSales };

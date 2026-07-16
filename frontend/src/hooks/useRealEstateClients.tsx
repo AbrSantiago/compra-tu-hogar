@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
-import { realEstateService } from '@/services/realEstateService';
-import { extractErrorMessage } from '@/utils/errors';
-import type { ClientResponse } from '@/types/client';
+import { useState, useEffect, useCallback } from "react";
+import { realEstateService } from "@/services/realEstateService";
+import { extractErrorMessage } from "@/utils/errors";
+import type { ClientResponse } from "@/types/client";
 
 export const useRealEstateClients = (realEstateId: string | undefined) => {
   const [clients, setClients] = useState<ClientResponse[]>([]);
@@ -16,14 +16,18 @@ export const useRealEstateClients = (realEstateId: string | undefined) => {
       const data = await realEstateService.getClients(Number(realEstateId));
       setClients(data);
     } catch (err) {
-      setError(extractErrorMessage(err, 'No se pudieron cargar los clientes.'));
+      setError(extractErrorMessage(err, "No se pudieron cargar los clientes."));
     } finally {
       setIsLoading(false);
     }
   }, [realEstateId]);
 
   useEffect(() => {
-    fetchClients();
+    const loadClients = async () => {
+      await fetchClients();
+    };
+
+    loadClients();
   }, [fetchClients]);
 
   return { clients, isLoading, error, refetch: fetchClients };

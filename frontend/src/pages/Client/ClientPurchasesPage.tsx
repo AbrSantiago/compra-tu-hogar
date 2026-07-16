@@ -2,7 +2,6 @@ import React from 'react';
 import { useClientPurchases } from '@/hooks/useClientPurchases';
 import { Link } from 'react-router-dom';
 import { PropertyCard } from '@/components/home/PropertyCard';
-import { getPropertyImage } from '@/utils/imageMapper';
 
 export const ClientPurchasesPage: React.FC = () => {
   const { purchases, isLoading } = useClientPurchases();
