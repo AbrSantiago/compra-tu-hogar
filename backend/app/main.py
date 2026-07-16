@@ -17,12 +17,16 @@ from app.seeds.seed import run_seeds
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    Base.metadata.create_all(bind=engine)
-    db = SessionLocal()
-    try:
-        run_seeds(db)
-    finally:
-        db.close()
+    if engine is not None:
+        Base.metadata.create_all(bind=engine)
+
+        db = SessionLocal()
+
+        try:
+            run_seeds(db)
+        finally:
+            db.close()
+
     yield
 
 
